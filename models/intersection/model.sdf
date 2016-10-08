@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="intersection">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>5 5 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>5 5 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://intersection/materials/scripts</uri>
+            <uri>model://intersection/materials/textures</uri>
+            <name>intersection</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
