@@ -77,6 +77,20 @@ namespace gazebo {
         // Begin Non-Gazebo Related Definitions //
         //////////////////////////////////////////
 
+        // ================================================
+        // 2016 states
+        // ================================================
+        enum MetaStates { START, FINISH, ROAD, INTERSECTION, PARKING };
+
+        // The different sub-states within the ROAD metastate
+        enum RoadStates {
+            ENTER, EXIT, FOLLOW, APPROACH, STOP, WAIT, PASS, AVOID, RETURN
+        };
+
+        // ================================================
+        // 2015 states
+        // ================================================
+
         // The different states the car can be in. The logic and behavior of
         // the car will change depending on which state it's in, with various
         // sensor readings affecting the decision to transition states
@@ -100,6 +114,10 @@ namespace gazebo {
         ///////////////////////////
         // SDC-defined variables //
         ///////////////////////////
+
+        // High and low level controllers for the car
+        sdcHLC *hlc;
+        sdcHLC *llc;
 
         // The current state of the car
         CarState DEFAULT_STATE;
