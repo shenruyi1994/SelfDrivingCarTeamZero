@@ -153,7 +153,7 @@ void sdcCameraSensor::OnUpdate() {
 		for( int i = 0; i < stopSigns.size(); i++ ){
 
 			//check if area of detected stop sign contains any red or not
-		   cv::rectangle(image, stopSigns[i], Scalar(0,0,255),3,LINE_8,0);
+		   cv::rectangle(image, stopSigns[i], Scalar(0,0,255),3,8,0);
 		   avgSize += stopSigns[i].width * stopSigns[i].height;
 		}
 		avgSize = avgSize / stopSigns.size();
