@@ -4,10 +4,12 @@
 namespace gazebo {
     class GAZEBO_VISIBLE sdcHLC {
     public:
-        sdcHLC();
+        sdcHLC(sdcCar *car): car(car) {}
         ~sdcHLC();
 
         void update();
+    private:
+        sdcCar* car;
     };
 }
 #endif

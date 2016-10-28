@@ -80,6 +80,9 @@ namespace gazebo {
         // ================================================
         // 2016 states
         // ================================================
+        friend class sdcLLC;
+        friend class sdcHLC;
+
         enum MetaStates { START, FINISH, ROAD, INTERSECTION, PARKING };
 
         // The different sub-states within the ROAD metastate
