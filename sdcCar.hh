@@ -26,10 +26,13 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 #include "gazebo/util/system.hh"
+
 #include "sdcSensorData.hh"
 #include "sdcAngle.hh"
-#include "sdcWaypoint.hh"
 #include "sdcIntersection.hh"
+#include "sdcLLC.hh"
+#include "sdcHLC.hh"
+#include "sdcWaypoint.hh"
 
 
 namespace gazebo {
@@ -37,6 +40,10 @@ namespace gazebo {
     class GAZEBO_VISIBLE sdcCar : public ModelPlugin {
         // Constructor for sdcCar
         public: sdcCar();
+        ~sdcCar() {
+            delete llc;
+            delete hlc;
+        }
 
         // These methods are called by Gazebo during the loading and initializing
         // stages of world building and populating
@@ -80,9 +87,6 @@ namespace gazebo {
         // ================================================
         // 2016 states
         // ================================================
-        friend class sdcLLC;
-        friend class sdcHLC;
-
         enum MetaStates { START, FINISH, ROAD, INTERSECTION, PARKING };
 
         // The different sub-states within the ROAD metastate
@@ -119,8 +123,10 @@ namespace gazebo {
         ///////////////////////////
 
         // High and low level controllers for the car
+        friend class sdcLLC;
+        friend class sdcHLC;
         sdcHLC *hlc;
-        sdcHLC *llc;
+        sdcLLC *llc;
 
         // The current state of the car
         CarState DEFAULT_STATE;

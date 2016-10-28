@@ -1801,6 +1801,9 @@ void sdcCar::OnUpdate()
  * when the car is updating
  */
 sdcCar::sdcCar(){
+    this->hlc = new sdcHLC(this);
+    this->llc = new sdcLLC(this);
+
     this->joints.resize(4);
 
     // Physics variables
