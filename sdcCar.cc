@@ -108,15 +108,15 @@ void sdcCar::Drive()
     {
         // Final state, car is finished driving
         case stop:
-        this->Stop();
+        this->llc->Stop();
         break;
 
         // Default state; drive straight to target location
         case waypoint:
         // Handle lane driving
 
-        this->Accelerate();
-        // this->Stop();
+        this->llc->Accelerate();
+        // this->llc->Stop();
         //this->WaypointDriving(WAYPOINT_VEC);
         break;
 
@@ -128,7 +128,7 @@ void sdcCar::Drive()
         }else if(this->stoppedAtSign && this->GetSpeed() < 0.5){
             this->stationaryCount++;
         }else if(!this->stoppedAtSign && sdcSensorData::sizeOfStopSign > 6000){
-            this->Stop();
+            this->llc->Stop();
             this->stoppedAtSign = true;
             this->stationaryCount = 0;
         }
@@ -222,7 +222,7 @@ void sdcCar::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
         // Pull the next waypoint and set the car to drive towards it
 
 
-        this->Accelerate();
+        this->llc->Accelerate();
 
         // Check if the car is close enough to the target to move on
         double distance = sqrt(pow(WAYPOINT_VEC[progress].pos.first - this->x,2) + pow(WAYPOINT_VEC[progress].pos.second - this->y,2));
@@ -414,7 +414,7 @@ void sdcCar::Avoidance(){
         // Stop, hard.
         case emergencyStop:
 
-        this->Stop();
+        this->llc->Stop();
         this->SetBrakeRate(10);
         break;
 
@@ -620,8 +620,8 @@ void sdcCar::PerpendicularPark(){
     {
         // Done with perpendicular parking and sets car to stop state
         case donePark:
-        this->StopReverse();
-        this->Stop();
+        this->llc->StopReverse();
+        this->llc->Stop();
         this->SetTurningLimit(10.0);
         this->parkingSpotSet = false;
         this->currentState = stop;
@@ -651,7 +651,7 @@ void sdcCar::PerpendicularPark(){
             this->currentPerpendicularState = backPark;
             break;
         } else {
-            this->StopReverse();
+            this->llc->StopReverse();
             this->SetTargetSpeed(0.5);
             sdcAngle margin = this->GetOrientation().FindMargin(this->targetParkingAngle);
             if(rightFrontSideLidar.size() > 0 && leftFrontSideLidar.size() > 0 && rightBackSideLidar.size() && leftBackSideLidar.size()){
@@ -671,7 +671,7 @@ void sdcCar::PerpendicularPark(){
         // Backs up into parking spot until the space behind the car is good; only runs if the car
         // is aligned with the parking spot
         case straightPark:
-        this->Reverse();
+        this->llc->Reverse();
         this->SetTargetDirection(targetParkingAngle);
         this->SetTargetSpeed(0.5);
         if(backLidar[numBackRays / 2] < 0.5){
@@ -681,7 +681,7 @@ void sdcCar::PerpendicularPark(){
 
         // Temporary stop state for the car while parking to help avoid hitting anything
         case stopPark:
-        this->Stop();
+        this->llc->Stop();
         this->currentPerpendicularState = frontPark;
         break;
 
@@ -728,7 +728,7 @@ void sdcCar::PerpendicularPark(){
             break;
         } else {
             this->SetTargetDirection(2*PI - this->targetParkingAngle);
-            this->Reverse();
+            this->llc->Reverse();
             this->SetTargetSpeed(0.5);
         }
 
@@ -809,7 +809,7 @@ void sdcCar::ParallelPark(){
                 this->currentParallelState = leftBack;
                 break;
             }
-            this->Reverse();
+            this->llc->Reverse();
             this->SetTargetDirection(targetParkingAngle - PI/2);
             this->SetTargetSpeed(0.35);
             break;
@@ -846,7 +846,7 @@ void sdcCar::ParallelPark(){
             }
         }
         this->SetTargetDirection(targetParkingAngle + PI/2);
-        this->Reverse();
+        this->llc->Reverse();
         this->SetTargetSpeed(0.35);
         break;
 
@@ -879,7 +879,7 @@ void sdcCar::ParallelPark(){
                 }
             }
         }
-        this->StopReverse();
+        this->llc->StopReverse();
         this->SetTargetDirection(this->targetParkingAngle - PI/2);
         this->SetTargetSpeed(0.35);
         break;
@@ -900,7 +900,7 @@ void sdcCar::ParallelPark(){
                     break;
                 } else {
                     this->SetTargetDirection(targetParkingAngle);
-                    this->StopReverse();
+                    this->llc->StopReverse();
                     this->SetTargetSpeed(0.35);
                 }
             } else {
@@ -910,7 +910,7 @@ void sdcCar::ParallelPark(){
                     break;
                 } else {
                     this->SetTargetDirection(targetParkingAngle);
-                    this->Reverse();
+                    this->llc->Reverse();
                     this->SetTargetSpeed(0.35);
                 }
             }
@@ -919,8 +919,8 @@ void sdcCar::ParallelPark(){
 
         // Finished parallel parking and sets current state to stop state
         case doneParallel:
-        this->Stop();
-        this->StopReverse();
+        this->llc->Stop();
+        this->llc->StopReverse();
         this->SetTurningLimit(10.0);
         this->currentState = stop;
         break;
@@ -1551,51 +1551,6 @@ bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj){
 ///////////////////////////
 // BEGIN CONTROL METHODS //
 ///////////////////////////
-
-/*
- * Speeds up the car by the given amount (in m/s) at the given rate
- *
- * Default amt: 1.0
- * Default rate: 1.0
- */
-void sdcCar::Accelerate(double amt, double rate){
-    this->SetTargetSpeed(this->GetSpeed() + amt);
-    this->SetAccelRate(rate);
-}
-
-/*
- * Slows down the car by the given amount (in m/s) at the given rate
- *
- * Default amt: 1.0
- * Default rate: 1.0
- */
-void sdcCar::Brake(double amt, double rate){
-    this->SetTargetSpeed(this->GetSpeed() - amt);
-    this->SetBrakeRate(rate);
-}
-
-/*
- * Sets the target speed to 0 m/s
- */
-void sdcCar::Stop(){
-    this->SetTargetSpeed(0);
-}
-
-/*
- * Move the car in reverse. Target speed will now be matched with the car going
- * backwards and target direction should be the direction of velocity desired, NOT
- * the direction the front of the car is facing
- */
-void sdcCar::Reverse(){
-    this->reversing = true;
-}
-
-/*
- * Stop reversing the car.
- */
-void sdcCar::StopReverse(){
-    this->reversing = false;
-}
 
 /*
  * Sets the rate of acceleration for the car. The rate is a scalar for the

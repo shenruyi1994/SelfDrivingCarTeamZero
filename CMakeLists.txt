@@ -59,5 +59,9 @@ target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(sdcIntersection SHARED sdcIntersection.cc)
 target_link_libraries(sdcIntersection ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcCar SHARED sdcCar.cc)
-target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+add_library(sdcLLC STATIC sdcLLC.cc)
+add_library(sdcCar STATIC sdcCar.cc)
+
+target_link_libraries(sdcLLC sdcCar sdcWaypoint sdcHLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(sdcCar sdcLLC sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+

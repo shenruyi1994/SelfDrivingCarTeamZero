@@ -239,13 +239,6 @@ namespace gazebo {
         sdcAngle GetOrientation();
         void GetNSEW();
 
-        // Control methods
-        void Accelerate(double amt = 1, double rate = 1.0);
-        void Brake(double amt = 1, double rate = 1.0);
-        void Stop();
-        void Reverse();
-        void StopReverse();
-
         void SetTargetDirection(sdcAngle direction);
         void SetTargetSteeringAmount(double a);
         void SetTargetSpeed(double s);
