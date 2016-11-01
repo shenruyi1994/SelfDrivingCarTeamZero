@@ -27,13 +27,10 @@ trajectory_t  calculateDubins(Waypoints waypoints){
   this->y;
   this->sdcAngle;
   
-
-    
   return minPath(CSC(inital,final),CCC(initial,final),INFtrajectory, INFtrajectory);
 
 }
 
-RSR, LSR, RSL, LSR
 
 trajectory_t CSC(configuration_t initial, configuration_t final) {
 
