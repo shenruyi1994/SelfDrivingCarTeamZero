@@ -1,15 +1,17 @@
-#include "sdcCar.hh"
-#include "Waypoints.hh"
-
 #ifndef __SDCLLC_HH__
 #define __SDCLLC_HH__
 
+#include "gazebo/physics/physics.hh"
+#include "gazebo/transport/transport.hh"
+
+#include "constants.hh"
+#include "Waypoints.hh"
+
 namespace gazebo {
     class sdcCar;
-    class sdcHLC;
     class GAZEBO_VISIBLE sdcLLC {
     public:
-        sdcLLC(sdcCar *car): car(car) {}
+        sdcLLC(sdcCar* car): car_(car) {}
         ~sdcLLC() {}
 
         void update();
@@ -23,9 +25,8 @@ namespace gazebo {
         void StopReverse();
 
     private:
-        friend class sdcHLC;
-        sdcCar* car;
-        Waypoints waypoints;
+        sdcCar* car_;
+        Waypoints waypoints_;
     };
 }
 #endif

@@ -1,7 +1,11 @@
 #ifndef __CONSTANTS_HH__
 #define __CONSTANTS_HH__
 
-#include
+#include <vector>
+
+#include "sdcAngle.hh"
+#include "sdcIntersection.hh"
+#include "sdcWaypoint.hh"
 
 // SDC-defined constants
 const double PI = 3.14159265359;
@@ -23,17 +27,8 @@ const double CAR_LENGTH = 2.0;
 // being directly in front of the car
 const double FRONT_OBJECT_COLLISION_WIDTH = CAR_WIDTH + 0.5;
 
-const sdcAngle NORTH = sdcAngle(PI/2);
-const sdcAngle SOUTH = sdcAngle(3*PI/2);
-const sdcAngle EAST = sdcAngle(0);
-const sdcAngle WEST = sdcAngle(PI);
+enum Direction { north, south, east, west };
 
 std::vector<sdcWaypoint> WAYPOINT_VEC;
-
-//dijkstra's stuff
-std::vector<int> unvisited;
-std::vector<sdcIntersection> intersections;
-const int size = 5;
-const std::pair<double,double> destination = {0,0};
 
 #endif

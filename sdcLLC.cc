@@ -1,6 +1,11 @@
+#include "sdcLLC.hh"
+
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
+
+#include "constants.hh"
 #include "sdcCar.hh"
+#include "Waypoints.hh"
 
 using namespace gazebo;
 
@@ -11,8 +16,8 @@ using namespace gazebo;
  * Default rate: 1.0
  */
 void sdcLLC::Accelerate(double amt, double rate) {
-    this->car->SetTargetSpeed(this->car->GetSpeed() + amt);
-    this->car->SetAccelRate(rate);
+    this->car_->SetTargetSpeed(this->car_->GetSpeed() + amt);
+    this->car_->SetAccelRate(rate);
 }
 
 /*
@@ -22,15 +27,15 @@ void sdcLLC::Accelerate(double amt, double rate) {
  * Default rate: 1.0
  */
 void sdcLLC::Brake(double amt, double rate) {
-    this->car->SetTargetSpeed(this->car->GetSpeed() - amt);
-    this->car->SetBrakeRate(rate);
+    this->car_->SetTargetSpeed(this->car_->GetSpeed() - amt);
+    this->car_->SetBrakeRate(rate);
 }
 
 /*
  * Sets the target speed to 0 m/s
  */
 void sdcLLC::Stop() {
-    this->car->SetTargetSpeed(0);
+    this->car_->SetTargetSpeed(0);
 }
 
 /*
@@ -39,12 +44,12 @@ void sdcLLC::Stop() {
  * NOT the direction the front of the car is facing
  */
 void sdcLLC::Reverse() {
-    this->car->reversing = true;
+    this->car_->reversing = true;
 }
 
 /*
  * Stop reversing the car.
  */
 void sdcLLC::StopReverse() {
-    this->car->reversing = false;
+    this->car_->reversing = false;
 }

@@ -12,7 +12,7 @@ namespace gazebo {
         void addWaypoint();
         Waypoint* nextWaypoint();
     private:
-        std::vector<Waypoint> waypoints;
+        std::vector<Waypoint> waypoints_;
     };
 }
 #endif

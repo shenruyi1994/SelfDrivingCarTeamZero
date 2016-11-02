@@ -27,31 +27,32 @@
 #include "gazebo/transport/transport.hh"
 #include "gazebo/util/system.hh"
 
-#include "sdcSensorData.hh"
+#include "constants.hh"
+
 #include "sdcAngle.hh"
 #include "sdcIntersection.hh"
-#include "sdcLLC.hh"
-#include "sdcHLC.hh"
+#include "sdcSensorData.hh"
 #include "sdcWaypoint.hh"
 
-
 namespace gazebo {
-
+    class sdcHLC;
     class GAZEBO_VISIBLE sdcCar : public ModelPlugin {
+        friend class sdcLLC;
+        friend class sdcHLC;
+
+    public:
         // Constructor for sdcCar
-        public: sdcCar();
-        ~sdcCar() {
-            delete llc;
-            delete hlc;
-        }
+        sdcCar();
+        ~sdcCar();
 
         // These methods are called by Gazebo during the loading and initializing
         // stages of world building and populating
         virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
         virtual void Init();
 
+    private:
         // Bound to Gazebo's world update, gets called every tick of the simulation
-        private: void OnUpdate();
+        void OnUpdate();
 
         // Holds the bound connection to Gazebo's update, necessary in order to properly
         // receive updates
@@ -84,62 +85,21 @@ namespace gazebo {
         // Begin Non-Gazebo Related Definitions //
         //////////////////////////////////////////
 
-        // ================================================
-        // 2016 states
-        // ================================================
-        enum MetaStates { START, FINISH, ROAD, INTERSECTION, PARKING };
-
-        // The different sub-states within the ROAD metastate
-        enum RoadStates {
-            ENTER, EXIT, FOLLOW, APPROACH, STOP, WAIT, PASS, AVOID, RETURN
-        };
-
-        // ================================================
-        // 2015 states
-        // ================================================
-
-        // The different states the car can be in. The logic and behavior of
-        // the car will change depending on which state it's in, with various
-        // sensor readings affecting the decision to transition states
-        enum CarState { stop, waypoint, intersection, follow, avoidance, parking};
-
-        // The different states the car can be in while performing a back
-        // perpendicular park
-        enum PerpendicularParkingState { stopPark, frontPark, straightPark, backPark, donePark };
-
-        // The different states the car can be in while performing a back
-        // parallel park
-        enum ParallelParkingState { rightBack, leftBack, rightForward, straightForward, doneParallel };
-
-        enum Direction { north, south, east, west };
-
         enum RelativeDirection { forward, aligned, backward, right, left };
-
-        // The different states available when attempting to avoid objects
-        enum AvoidanceState {emergencyStop, emergencySwerve, navigation, notAvoiding};
 
         ///////////////////////////
         // SDC-defined variables //
         ///////////////////////////
 
-        // High and low level controllers for the car
-        friend class sdcLLC;
-        friend class sdcHLC;
-        sdcHLC *hlc;
-        sdcLLC *llc;
-
-        // The current state of the car
-        CarState DEFAULT_STATE;
-        CarState currentState;
-        Direction currentDir;
         RelativeDirection destDir;
         RelativeDirection destDirSide;
-        PerpendicularParkingState currentPerpendicularState;
-        ParallelParkingState currentParallelState;
-        AvoidanceState currentAvoidanceState;
+        Direction currentDir;
 
-        double gas; //variable that accelerates the car
-        double brake; //variable that brakes the car
+        // High and low level controllers for the car
+        sdcHLC* hlc_;
+
+        double gas;   // variable that accelerates the car
+        double brake; // variable that brakes the car
 
         // Scalars for accelrating and braking
         double accelRate;
@@ -198,29 +158,6 @@ namespace gazebo {
         // SDC-defined methods //
         /////////////////////////
 
-         // The 'Brain' Methods
-        void Drive();
-        void MatchTargetDirection();
-        void MatchTargetSpeed();
-        void DetectIntersection();
-
-        //Dijkstra Methods
-        void GenerateWaypoints();
-        void initializeGraph();
-        int getFirstIntersection();
-        void removeStartingEdge(int start);
-        std::vector<int> dijkstras(int start, int dest);
-        void insertWaypointTypes(std::vector<int> path, Direction startDir);
-
-        // Driving algorithms
-        void LanedDriving();
-        void GridTurning(int turn);
-        void WaypointDriving(std::vector<sdcWaypoint> waypoints);
-        void Follow();
-        void Avoidance();
-        void PerpendicularPark();
-        void ParallelPark();
-
         // Helper methods
         void FrontLidarUpdate();
         void UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects);
@@ -235,6 +172,7 @@ namespace gazebo {
 
         bool IsMovingForwards();
         double GetSpeed();
+        double GetDistance(math::Vector2d navWaypoint);
         sdcAngle GetDirection();
         sdcAngle GetOrientation();
         void GetNSEW();
