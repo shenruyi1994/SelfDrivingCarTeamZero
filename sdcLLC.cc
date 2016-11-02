@@ -3,7 +3,7 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 
-#include "constants.hh"
+#include "globals.hh"
 #include "sdcCar.hh"
 #include "Waypoints.hh"
 

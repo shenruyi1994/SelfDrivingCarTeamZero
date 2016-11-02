@@ -7,7 +7,7 @@
 
 #include "sdcAngle.hh"
 #include "sdcWaypoint.hh"
-#include "constants.hh"
+#include "globals.hh"
 
 enum WaypointType {
     WaypointType_DriveStraight,

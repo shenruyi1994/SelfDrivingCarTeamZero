@@ -36,7 +36,7 @@
 #include "gazebo/transport/transport.hh"
 #include "gazebo/util/system.hh"
 
-#include "constants.hh"
+#include "globals.hh"
 
 #include "sdcAngle.hh"
 #include "sdcHLC.hh"

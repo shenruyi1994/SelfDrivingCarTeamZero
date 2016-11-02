@@ -6,7 +6,7 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 
-#include "constants.hh"
+#include "globals.hh"
 #include "sdcIntersection.hh"
 #include "sdcLLC.hh"
 #include "Waypoints.hh"
