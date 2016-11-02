@@ -9,6 +9,22 @@
 
 using namespace gazebo;
 
+sdcLLC::sdcLLC(sdcCar* car): car_(car) {
+    std::pair<double, double> dubins  = calculateDubins(NULL);
+    this->car_->SetTargetSteeringAmount(dubins.first);
+    this->car_->SetTargetSpeed(dubins.first);
+}
+
+std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
+    // this->car_->x;
+    // this->car_->y;
+    // this->car_->sdcAngle;
+    double velocity;
+    double yaw;
+
+    return std::make_pair(velocity, yaw);
+}
+
 /*
  * Speeds up the car by the given amount (in m/s) at the given rate
  *
