@@ -48,8 +48,7 @@ void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 		boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
 
 		// Make sure the parent sensor is valid.
-		if (!this->parentSensor)
-		{
+		if (!this->parentSensor) {
 				gzerr << "Couldn't find a camera\n";
 				return;
 		}

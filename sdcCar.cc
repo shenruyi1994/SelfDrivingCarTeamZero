@@ -414,8 +414,7 @@ void sdcCar::OnUpdate() {
     math::Vector3 axis;
 
     // Physics calculations
-    for (int ix = 0; ix < 4; ++ix)
-    {
+    for (int ix = 0; ix < 4; ++ix) {
         hingePoint = this->joints[ix]->GetAnchor(0);
         bodyPoint = this->joints[ix]->GetAnchor(1);
 
@@ -423,8 +422,7 @@ void sdcCar::OnUpdate() {
         double displacement = (bodyPoint - hingePoint).Dot(axis);
 
         float amt = displacement * this->swayForce;
-        if (displacement > 0)
-        {
+        if (displacement > 0) {
             if (amt > 15)
                 amt = 15;
 

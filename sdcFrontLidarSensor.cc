@@ -26,8 +26,7 @@ void sdcFrontLidarSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sd
     boost::dynamic_pointer_cast<sensors::RaySensor>(_sensor);
 
     // Make sure the parent sensor is valid.
-    if (!this->parentSensor)
-    {
+    if (!this->parentSensor) {
         gzerr << "Couldn't find a laser\n";
         return;
     }

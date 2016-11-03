@@ -61,8 +61,7 @@ void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
     boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
 
     // Make sure the parent sensor is valid.
-    if (!this->parentSensor)
-    {
+    if (!this->parentSensor) {
         gzerr << "Couldn't find a camera\n";
         return;
     }
@@ -195,16 +194,14 @@ void sdcCameraSensor::OnUpdate() {
   cpu_stop_sign.detectMultiScale( image_left, stopSigns_left, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
   cpu_stop_sign.detectMultiScale( image_right, stopSigns_right, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
   sdcSensorData::stopSignInLeftCamera = false;
-  for ( int i = 0; i < stopSigns_left.size(); i++ )
-  {
+  for ( int i = 0; i < stopSigns_left.size(); i++ ) {
      cv::rectangle(image_left, stopSigns_left[i], Scalar(0,0,255),3,LINE_8,0);
      std::cout << "stop sign found in left image" <<std::endl;
      sdcSensorData::stopSignInLeftCamera = true;
   }
 
   sdcSensorData::stopSignInRightCamera = false;
-  for ( int i = 0; i < stopSigns_right.size(); i++ )
-  {
+  for ( int i = 0; i < stopSigns_right.size(); i++ ) {
      cv::rectangle(image_right, stopSigns_right[i], Scalar(0,0,255),3,LINE_8,0);
      std::cout << "stop sign found in right image" <<std::endl;
      sdcSensorData::stopSignInRightCamera = true;
@@ -228,16 +225,14 @@ void sdcCameraSensor::OnUpdate() {
   stopSign->convert(left_gpu_buffer, stopSigns_left);
   stopSign->convert(right_gpu_buffer, stopSigns_right);
 
-  for ( int i = 0; i < stopSigns_left.size(); i++ )
-  {
+  for ( int i = 0; i < stopSigns_left.size(); i++ ) {
      //cv::rectangle(gpu_image_left, stopSigns_left[i], Scalar(255),1,LINE_8,0);
      Point center( stopSigns_left[i].x + stopSigns_left[i].width*0.5, stopSigns_left[i].y + stopSigns_left[i].height*0.5 );
      ellipse( gpu_image_left, center, Size( stopSigns_left[i].width*0.5, stopSigns_left[i].height*0.5), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0 );
      std::cout << "stop sign found in left image" <<std::endl;
   }
 
-  for ( int i = 0; i < stopSigns_right.size(); i++ )
-  {
+  for ( int i = 0; i < stopSigns_right.size(); i++ ) {
      //cv::rectangle(gpu_image_right, stopSigns_right[i], Scalar(255),1,LINE_8,0);
      Point center( stopSigns_right[i].x + stopSigns_right[i].width*0.5, stopSigns_right[i].y + stopSigns_right[i].height*0.5 );
      ellipse( gpu_image_right, center, Size( stopSigns_right[i].width*0.5, stopSigns_right[i].height*0.5), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0 );
