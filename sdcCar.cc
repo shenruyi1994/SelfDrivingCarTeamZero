@@ -59,8 +59,8 @@ const sdcAngle WEST = sdcAngle(PI);
 /*
  * Updates the list of objects in front of the car with the given list of new objects
  */
-void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects){
-    if(this->frontObjects.size() == 0){
+void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
+    if (this->frontObjects.size() == 0) {
         // The car wasn't tracking any objects, so just set the list equal to the new list
         this->frontObjects = newObjects;
         return;
@@ -68,7 +68,7 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects){
 
     std::vector<bool> isOldObjectMissing;
     std::vector<bool> isBrandNewObject;
-    for(int i = 0; i < newObjects.size(); i++){
+    for (int i = 0; i < newObjects.size(); i++) {
         isBrandNewObject.push_back(true);
     }
 
@@ -81,10 +81,10 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects){
 
         for (int j = 0; j < newObjects.size(); j++) {
             // Only match each new object to one old object
-            if(!isBrandNewObject[j]) continue;
+            if (!isBrandNewObject[j]) continue;
             sdcVisibleObject newObj = newObjects[j];
 
-            if(oldObj.IsSameObject(newObj)){
+            if (oldObj.IsSameObject(newObj)) {
                 oldObj.Update(newObj);
                 this->frontObjects[i] = oldObj;
                 isOldObjectMissing[i] = false;
@@ -95,15 +95,15 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects){
     }
 
     // Delete objects that are missing
-    for(int i = isOldObjectMissing.size() - 1; i >= 0; i--){
-        if(isOldObjectMissing[i]){
+    for (int i = isOldObjectMissing.size() - 1; i >= 0; i--) {
+        if (isOldObjectMissing[i]) {
             this->frontObjects.erase(this->frontObjects.begin() + i);
         }
     }
 
     // Add brand new objects
-    for(int i = 0; i < newObjects.size(); i++){
-        if(isBrandNewObject[i]){
+    for (int i = 0; i < newObjects.size(); i++) {
+        if (isBrandNewObject[i]) {
             this->frontObjects.push_back(newObjects[i]);
         }
     }
@@ -113,7 +113,7 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects){
  * Returns true if the current velocity angle matches the direction the car
  * is facing
  */
-bool sdcCar::IsMovingForwards(){
+bool sdcCar::IsMovingForwards() {
     sdcAngle velAngle = GetDirection();
     sdcAngle carAngle = this->GetOrientation();
     return (carAngle - velAngle).IsFrontFacing();
@@ -122,7 +122,7 @@ bool sdcCar::IsMovingForwards(){
 /*
  * Gets the speed of the car
  */
-double sdcCar::GetSpeed(){
+double sdcCar::GetSpeed() {
     return sqrt(pow(this->velocity.x,2) + pow(this->velocity.y,2));
 }
 
@@ -138,7 +138,7 @@ double sdcCar::GetDistance(math::Vector2d navWaypoint) {
 /*
  * Gets the current direction the car is travelling
  */
-sdcAngle sdcCar::GetDirection(){
+sdcAngle sdcCar::GetDirection() {
     math::Vector3 velocity = this->velocity;
     return sdcAngle(atan2(velocity.y, velocity.x));
 }
@@ -146,12 +146,12 @@ sdcAngle sdcCar::GetDirection(){
 /*
  * Gets the current direction the car is travelling in NSEW
  */
-void sdcCar::GetNSEW(){
-    if((this->yaw - WEST).WithinMargin(PI/4)){
+void sdcCar::GetNSEW() {
+    if ((this->yaw - WEST).WithinMargin(PI/4)) {
         this->currentDir = west;
-    } else if((this->yaw - SOUTH).WithinMargin(PI/4)){
+    } else if ((this->yaw - SOUTH).WithinMargin(PI/4)) {
         this->currentDir = south;
-    } else if((this->yaw - EAST).WithinMargin(PI/4)){
+    } else if ((this->yaw - EAST).WithinMargin(PI/4)) {
         this->currentDir = east;
     } else {
         this->currentDir = north;
@@ -161,7 +161,7 @@ void sdcCar::GetNSEW(){
 /*
  * Gets the direction the car is facing
  */
-sdcAngle sdcCar::GetOrientation(){
+sdcAngle sdcCar::GetOrientation() {
     return this->yaw;
 }
 
@@ -179,10 +179,10 @@ sdcAngle sdcCar::AngleToTarget(math::Vector2d target) {
  * continue driving straight ahead
  */
 bool sdcCar::ObjectDirectlyAhead() {
-    if(this->frontObjects.size() == 0) return false;
+    if (this->frontObjects.size() == 0) return false;
 
     for (int i = 0; i < this->frontObjects.size(); i++) {
-        if(this->IsObjectDirectlyAhead(this->frontObjects[i])){
+        if (this->IsObjectDirectlyAhead(this->frontObjects[i])) {
             return true;
         }
     }
@@ -192,21 +192,21 @@ bool sdcCar::ObjectDirectlyAhead() {
 /*
  * Returns true if the given object is directly ahead of us, else false
  */
-bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj){
+bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj) {
     double leftDist = obj.left.GetLateralDist();
     double rightDist = obj.right.GetLateralDist();
-    if(leftDist < 0 && rightDist > 0) return true;
+    if (leftDist < 0 && rightDist > 0) return true;
     return fmin(fabs(leftDist), fabs(rightDist)) < FRONT_OBJECT_COLLISION_WIDTH / 2.;
 }
 
 /*
  * Returns true if there is an object on a potential collision course with our car
  */
-bool sdcCar::ObjectOnCollisionCourse(){
-    if(this->frontObjects.size() == 0) return false;
+bool sdcCar::ObjectOnCollisionCourse() {
+    if (this->frontObjects.size() == 0) return false;
 
     for (int i = 0; i < this->frontObjects.size(); i++) {
-        if(this->IsObjectOnCollisionCourse(this->frontObjects[i])){
+        if (this->IsObjectOnCollisionCourse(this->frontObjects[i])) {
             return true;
         }
     }
@@ -216,7 +216,7 @@ bool sdcCar::ObjectOnCollisionCourse(){
 /*
  * Returns true if the given object is on a potential collision course with our car
  */
-bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj){
+bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj) {
     bool isTooFast = this->IsObjectTooFast(obj);
     bool isTooFurious = this->IsObjectTooFurious(obj);
     return isTooFast || isTooFurious;
@@ -225,7 +225,7 @@ bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj){
 /*
  * Returns true if the given object is projected to run into the car within a short time period from now
  */
-bool sdcCar::IsObjectTooFast(sdcVisibleObject obj){
+bool sdcCar::IsObjectTooFast(sdcVisibleObject obj) {
     math::Vector2d centerpoint = obj.GetCenterPoint();
     bool inLineToCollide = (fabs(obj.lineIntercept) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj.GetEstimatedXSpeed()) < fabs(0.1 * obj.GetEstimatedYSpeed())));
     bool willHitSoon = obj.dist / obj.GetEstimatedSpeed() < 20;
@@ -235,7 +235,7 @@ bool sdcCar::IsObjectTooFast(sdcVisibleObject obj){
 /*
  * Returns true if the given object is very close to the car
  */
-bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj){
+bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj) {
     math::Vector2d centerpoint = obj.GetCenterPoint();
     return (fabs(centerpoint.x) < FRONT_OBJECT_COLLISION_WIDTH / 2. && fabs(centerpoint.y) < 1.5);
 }
@@ -250,7 +250,7 @@ bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj){
  *
  * Default rate: 1.0, can't be negative
  */
-void sdcCar::SetAccelRate(double rate){
+void sdcCar::SetAccelRate(double rate) {
     this->accelRate = fmax(rate, 0.0);
 }
 
@@ -260,21 +260,21 @@ void sdcCar::SetAccelRate(double rate){
  *
  * Default rate: 1.0, can't be negative
  */
-void sdcCar::SetBrakeRate(double rate){
+void sdcCar::SetBrakeRate(double rate) {
     this->brakeRate = fmax(rate, 0.0);
 }
 
 /*
  * Sets a target direction for the car
  */
-void sdcCar::SetTargetDirection(sdcAngle direction){
+void sdcCar::SetTargetDirection(sdcAngle direction) {
     this->targetDirection = direction;
 }
 
 /*
  * Sets a target steering amount for the steering wheel
  */
-void sdcCar::SetTargetSteeringAmount(double a){
+void sdcCar::SetTargetSteeringAmount(double a) {
     this->targetSteeringAmount = a;
 }
 
@@ -283,7 +283,7 @@ void sdcCar::SetTargetSteeringAmount(double a){
  * and accel rates to default. Methods wishing to change those parameters
  * should make sure to do so AFTER a call to this method
  */
-void sdcCar::SetTargetSpeed(double s){
+void sdcCar::SetTargetSpeed(double s) {
     this->targetSpeed = fmax(fmin(s, this->maxCarSpeed), 0);
     this->stopping = (this->targetSpeed == 0);
     this->SetAccelRate();
@@ -294,7 +294,7 @@ void sdcCar::SetTargetSpeed(double s){
  * Sets the amount by which the car turns. A larger number makes the car turn
  * harder.
  */
-void sdcCar::SetTurningLimit(double limit){
+void sdcCar::SetTurningLimit(double limit) {
     this->turningLimit = limit;
 }
 
@@ -360,7 +360,7 @@ void sdcCar::OnUpdate() {
 
     // Check if the front lidars have been updated, and if they have update
     // the car's list
-    if(this->frontLidarLastUpdate != sdcSensorData::GetLidarLastUpdate(FRONT)){
+    if (this->frontLidarLastUpdate != sdcSensorData::GetLidarLastUpdate(FRONT)) {
         std::vector<sdcVisibleObject> v = sdcSensorData::GetObjectsInFront();
         this->UpdateFrontObjects(v);
         this->frontLidarLastUpdate = sdcSensorData::GetLidarLastUpdate(FRONT);
@@ -444,7 +444,7 @@ void sdcCar::OnUpdate() {
  * which will get overwritten in Load or Init and others that will be updated
  * when the car is updating
  */
-sdcCar::sdcCar(){
+sdcCar::sdcCar() {
     this->hlc_ = new sdcHLC(this);
 
     this->joints.resize(4);

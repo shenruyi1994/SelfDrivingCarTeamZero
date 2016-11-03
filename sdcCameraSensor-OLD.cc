@@ -41,13 +41,13 @@ sensors::MultiCameraSensorPtr parentSensor;
 CascadeClassifier cpu_stop_sign;
 String cascade_file_path = "/Users/selfcar/Desktop/Self-Driving-Comps/OpenCV/haarcascade_stop.xml";
 
-void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
+void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/) {
     /*
     //Ensure Gazebo is making use of GPU Acceleration
     cuda::DeviceInfo::DeviceInfo gpuInfo;
     const char* gpuName = gpuInfo.name();
     int isGPULoaded = cuda::getCudaEnabledDeviceCount();
-    if (isGPULoaded == 1){
+    if (isGPULoaded == 1) {
       std::cout << "OpenCV using CUDA-enabled Graphics Card: " << gpuName << std::endl;
     }
     else {
@@ -152,7 +152,7 @@ void sdcCameraSensor::OnUpdate() {
       float rho= (*it_left)[0];   // first element is distance rho
       float theta= (*it_left)[1]; // second element is angle theta
 
-      //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) ){
+      //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) ) {
       if ((theta > 0 && theta < 3.14)) {
           Point pt1(rho/cos(theta),0);
           pt1_x.push_back(rho/cos(theta));
@@ -176,7 +176,7 @@ void sdcCameraSensor::OnUpdate() {
       float rho= (*it_right)[0];   // first element is distance rho
       float theta= (*it_right)[1]; // second element is angle theta
       // point of intersection of the line with first row
-      //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) ){
+      //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) ) {
       //if ( (theta > 0.8 && theta < 1.2) || (theta > 2.2 && theta < 2.4) ) {
           Point pt1(rho/cos(theta),0);
           // point of intersection of the line with last row
@@ -190,12 +190,12 @@ void sdcCameraSensor::OnUpdate() {
 
   //BEGIN HAAR CASCADE OBJECT DETECTION
 /*
-  if(!cpu_stop_sign.load(cascade_file_path)){ printf("--(!)Error loading face cascade\n");};
+  if (!cpu_stop_sign.load(cascade_file_path)) { printf("--(!)Error loading face cascade\n");};
   std::vector<Rect> stopSigns_left, stopSigns_right;
   cpu_stop_sign.detectMultiScale( image_left, stopSigns_left, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
   cpu_stop_sign.detectMultiScale( image_right, stopSigns_right, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
   sdcSensorData::stopSignInLeftCamera = false;
-  for( int i = 0; i < stopSigns_left.size(); i++ )
+  for ( int i = 0; i < stopSigns_left.size(); i++ )
   {
      cv::rectangle(image_left, stopSigns_left[i], Scalar(0,0,255),3,LINE_8,0);
      std::cout << "stop sign found in left image" <<std::endl;
@@ -203,7 +203,7 @@ void sdcCameraSensor::OnUpdate() {
   }
 
   sdcSensorData::stopSignInRightCamera = false;
-  for( int i = 0; i < stopSigns_right.size(); i++ )
+  for ( int i = 0; i < stopSigns_right.size(); i++ )
   {
      cv::rectangle(image_right, stopSigns_right[i], Scalar(0,0,255),3,LINE_8,0);
      std::cout << "stop sign found in right image" <<std::endl;
@@ -228,7 +228,7 @@ void sdcCameraSensor::OnUpdate() {
   stopSign->convert(left_gpu_buffer, stopSigns_left);
   stopSign->convert(right_gpu_buffer, stopSigns_right);
 
-  for( int i = 0; i < stopSigns_left.size(); i++ )
+  for ( int i = 0; i < stopSigns_left.size(); i++ )
   {
      //cv::rectangle(gpu_image_left, stopSigns_left[i], Scalar(255),1,LINE_8,0);
      Point center( stopSigns_left[i].x + stopSigns_left[i].width*0.5, stopSigns_left[i].y + stopSigns_left[i].height*0.5 );
@@ -236,7 +236,7 @@ void sdcCameraSensor::OnUpdate() {
      std::cout << "stop sign found in left image" <<std::endl;
   }
 
-  for( int i = 0; i < stopSigns_right.size(); i++ )
+  for ( int i = 0; i < stopSigns_right.size(); i++ )
   {
      //cv::rectangle(gpu_image_right, stopSigns_right[i], Scalar(255),1,LINE_8,0);
      Point center( stopSigns_right[i].x + stopSigns_right[i].width*0.5, stopSigns_right[i].y + stopSigns_right[i].height*0.5 );

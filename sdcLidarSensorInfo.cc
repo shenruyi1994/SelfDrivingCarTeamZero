@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include "sdcLidarSensorInfo.hh"
 
-sdcLidarSensorInfo::sdcLidarSensorInfo(){}
+sdcLidarSensorInfo::sdcLidarSensorInfo() {}
 
-sdcLidarSensorInfo::sdcLidarSensorInfo(sdcAngle minAngle, double resolution, double maxRange, int numRays){
+sdcLidarSensorInfo::sdcLidarSensorInfo(sdcAngle minAngle, double resolution, double maxRange, int numRays) {
     this->minAngle = minAngle;
     this->resolution = resolution;
     this->maxRange = maxRange;

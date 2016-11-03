@@ -19,7 +19,7 @@ event::ConnectionPtr updateConnection;
 sensors::RaySensorPtr parentSensor;
 
 ////// LIDAR ON SIDE OF CAR
-void sdcSideLidarSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
+void sdcSideLidarSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/) {
     // Get the parent sensor.
     this->parentSensor =
     boost::dynamic_pointer_cast<sensors::RaySensor>(_sensor);
@@ -38,13 +38,13 @@ void sdcSideLidarSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf
     this->parentSensor->SetActive(true);
 
     std::string name = this->parentSensor->GetName();
-    if(name == "side_left_front_laser"){
+    if (name == "side_left_front_laser") {
         this->lidarPos = SIDE_LEFT_FRONT;
-    } else if(name == "side_left_back_laser"){
+    } else if (name == "side_left_back_laser") {
         this->lidarPos = SIDE_LEFT_BACK;
-    } else if(name == "side_right_front_laser"){
+    } else if (name == "side_right_front_laser") {
         this->lidarPos = SIDE_RIGHT_FRONT;
-    } else if(name == "side_right_back_laser"){
+    } else if (name == "side_right_back_laser") {
         this->lidarPos = SIDE_RIGHT_BACK;
     }
 
@@ -52,9 +52,9 @@ void sdcSideLidarSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf
 }
 
 // Called by the world update start event
-void sdcSideLidarSensor::OnUpdate(){
+void sdcSideLidarSensor::OnUpdate() {
     std::vector<double>* rays = new std::vector<double>();
-    for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); ++i){
+    for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); ++i) {
         rays->push_back(this->parentSensor->GetRange(i));
     }
 
