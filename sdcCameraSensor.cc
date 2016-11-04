@@ -143,7 +143,7 @@ void sdcCameraSensor::OnUpdate() {
 	//Make sure stop sign is detected across multiple consecutive frames
 	if (stopSigns.size() > 0) {
 		sdcSensorData::stopSignFrameCount++;
-	}else{
+	} else {
 		sdcSensorData::stopSignFrameCount = 0;
 	}
 
@@ -159,7 +159,7 @@ void sdcCameraSensor::OnUpdate() {
 	}
 	if (stopSigns.size() > 0) {
 		sdcSensorData::sizeOfStopSign = avgSize;
-	}else{
+	} else {
 		sdcSensorData::sizeOfStopSign = 0;
 	}
 // END HAAR CASCADE OBJECT DETECTION

@@ -300,7 +300,7 @@ std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront() {
                 objectList.push_back(sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
                 ignorePrev = true;
             }
-        }else{
+        } else {
             ignorePrev = false;
             objMinAngle = curAngle;
             objMinDist = curDist;

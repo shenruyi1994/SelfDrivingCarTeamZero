@@ -70,7 +70,7 @@ sdcAngle sdcAngle::GetMidAngle(sdcAngle a) {
     // representation of the angles
     if (sum.angle > PI) {
         avg = (sum.angle - 2 * PI) / 2.;
-    }else{
+    } else {
         avg = sum.angle / 2.;
     }
     return sdcAngle(avg);
