@@ -14,16 +14,16 @@
 using namespace gazebo;
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
-    this->llc_ = new sdcLLC(car_);
+    llc_ = new sdcLLC(car_);
     waypoints_ = new Waypoints();
 
     // Initialize state enums
-    this->DEFAULT_STATE = WAYPOINT;
-    this->currentState = DEFAULT_STATE;
+    DEFAULT_STATE = WAYPOINT;
+    currentState_ = DEFAULT_STATE;
 
-    this->currentPerpendicularState_ = backPark;
-    this->currentParallelState_ = rightBack;
-    this->currentAvoidanceState_ = notAvoiding;
+    currentPerpendicularState_ = backPark;
+    currentParallelState_ = rightBack;
+    currentAvoidanceState_ = notAvoiding;
 }
 
 sdcHLC::~sdcHLC() {
@@ -45,82 +45,82 @@ void sdcHLC::Drive() {
 
     // If not in avoidance, check if we should start following the thing
     // in front of us. If following is done, kick out to default state
-    if (this->currentState != INTERSECTION && this->currentState != AVOIDANCE) {
+    if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
         // If there's a stop sign, assume we're at an intersection
-        if (this->car_->ignoreStopSignsCounter == 0 && sdcSensorData::stopSignFrameCount > 5) {
-            this->currentState = INTERSECTION;
+        if (car_->ignoreStopSignsCounter_ == 0 && sdcSensorData::stopSignFrameCount > 5) {
+            currentState_ = INTERSECTION;
         }
 
         // If something is ahead of us, default to trying to follow it
-        if (this->car_->ObjectDirectlyAhead()) {
-            this->currentState = FOLLOW;
-        } else if (this->currentState == FOLLOW && !this->car_->isTrackingObject) {
-            this->currentState = this->DEFAULT_STATE;
+        if (car_->ObjectDirectlyAhead()) {
+            currentState_ = FOLLOW;
+        } else if (currentState_ == FOLLOW && !car_->isTrackingObject_) {
+            currentState_ = DEFAULT_STATE;
         }
 
         // Look for objects in danger of colliding with us, react appropriately
-        if (this->car_->ObjectOnCollisionCourse()) {
-            this->currentState = AVOIDANCE;
+        if (car_->ObjectOnCollisionCourse()) {
+            currentState_ = AVOIDANCE;
         }
     }
 
-    this->car_->ignoreStopSignsCounter = fmax(this->car_->ignoreStopSignsCounter - 1, 0);
+    car_->ignoreStopSignsCounter_ = fmax(car_->ignoreStopSignsCounter_ - 1, 0);
 
 
     // Possible states: stop, waypoint, intersection, follow, avoidance
-    switch(this->currentState) {
+    switch(currentState_) {
         // Final state, car is finished driving
         case STOP:
-            this->llc_->Stop();
+            llc_->Stop();
             break;
 
         // Default state; drive straight to target location
         case  WAYPOINT:
             // Handle lane driving
 
-            this->llc_->Accelerate();
-            // this->llc_->Stop();
-            //this->WaypointDriving(WAYPOINT_VEC);
+            llc_->Accelerate();
+            // llc_->Stop();
+            //WaypointDriving(WAYPOINT_VEC);
             break;
 
         // At a stop sign, performing a turn
         case INTERSECTION:
-            if (this->car_->stoppedAtSign && this->car_->stationaryCount > 2000) {
-                this->currentState = this->DEFAULT_STATE;
-                this->car_->ignoreStopSignsCounter = 3000;
-            } else if (this->car_->stoppedAtSign && this->car_->GetSpeed() < 0.5) {
-                this->car_->stationaryCount++;
-            } else if (!this->car_->stoppedAtSign && sdcSensorData::sizeOfStopSign > 6000) {
-                this->llc_->Stop();
-                this->car_->stoppedAtSign = true;
-                this->car_->stationaryCount = 0;
+            if (car_->stoppedAtSign_ && car_->stationaryCount_ > 2000) {
+                currentState_ = DEFAULT_STATE;
+                car_->ignoreStopSignsCounter_ = 3000;
+            } else if (car_->stoppedAtSign_ && car_->GetSpeed() < 0.5) {
+                car_->stationaryCount_++;
+            } else if (!car_->stoppedAtSign_ && sdcSensorData::sizeOfStopSign > 6000) {
+                llc_->Stop();
+                car_->stoppedAtSign_ = true;
+                car_->stationaryCount_ = 0;
             }
 
         break;
 
         // Follows object that is going in same direction/towards same target
         case FOLLOW:
-            this->Follow();
+            Follow();
             // Handle lane driving
             break;
 
         // Smarter way to avoid objects; stopping, swerving, etc.
         case AVOIDANCE:
             // Cases: stop, swerve, go around
-            this->Avoidance();
+            Avoidance();
             break;
 
         // Parks the car
         case PARKING:
-            this->PerpendicularPark();
-            // this->ParallelPark();
+            PerpendicularPark();
+            // ParallelPark();
             break;
     }
 
     // Attempts to turn towards the target direction
-    this->MatchTargetDirection();
+    MatchTargetDirection();
     // Attempts to match the target speed
-    this->MatchTargetSpeed();
+    MatchTargetSpeed();
 }
 
 /*
@@ -128,30 +128,30 @@ void sdcHLC::Drive() {
  * to turn and by how much, as well as turning the actual wheel
  */
 void sdcHLC::MatchTargetDirection() {
-    sdcAngle directionAngleChange = this->car_->GetDirection() - this->car_->targetDirection;
+    sdcAngle directionAngleChange = car_->GetDirection() - car_->targetDirection_;
     // If the car needs to turn, set the target steering amount
     if (!directionAngleChange.WithinMargin(DIRECTION_MARGIN_OF_ERROR)) {
         // The steering amount scales based on how far we have to turn, with upper and lower limits
         double proposedSteeringAmount =
-            fmax(fmin(-this->car_->turningLimit * tan(directionAngleChange.angle/-2),
-                      this->car_->turningLimit), -this->car_->turningLimit);
+            fmax(fmin(-car_->turningLimit_ * tan(directionAngleChange.angle/-2),
+                      car_->turningLimit_), -car_->turningLimit_);
 
         // When reversing, steering directions are inverted
-        if (!this->car_->reversing) {
-            this->car_->SetTargetSteeringAmount(proposedSteeringAmount);
+        if (!car_->reversing_) {
+            car_->SetTargetSteeringAmount(proposedSteeringAmount);
         } else {
-            this->car_->SetTargetSteeringAmount(-proposedSteeringAmount);
+            car_->SetTargetSteeringAmount(-proposedSteeringAmount);
         }
     }
 
     // Check if the car needs to steer, and apply a small turn in the corresponding direction
-    if (!(std::abs(this->car_->targetSteeringAmount - this->car_->steeringAmount) < STEERING_MARGIN_OF_ERROR)) {
-        if (this->car_->steeringAmount < this->car_->targetSteeringAmount) {
-            this->car_->steeringAmount =
-                this->car_->steeringAmount + STEERING_ADJUSTMENT_RATE;
+    if (!(std::abs(car_->targetSteeringAmount_ - car_->steeringAmount_) < STEERING_MARGIN_OF_ERROR)) {
+        if (car_->steeringAmount_ < car_->targetSteeringAmount_) {
+            car_->steeringAmount_ =
+                car_->steeringAmount_ + STEERING_ADJUSTMENT_RATE;
         } else {
-            this->car_->steeringAmount =
-                this->car_->steeringAmount - STEERING_ADJUSTMENT_RATE;
+            car_->steeringAmount_ =
+                car_->steeringAmount_ - STEERING_ADJUSTMENT_RATE;
         }
     }
 }
@@ -161,23 +161,23 @@ void sdcHLC::MatchTargetDirection() {
  */
 void sdcHLC::MatchTargetSpeed() {
     // Invert all the values if the car should be moving backwards
-    int dirConst = this->car_->reversing ? -1 : 1;
+    int dirConst = car_->reversing_ ? -1 : 1;
 
     // If the car is moving the wrong direction or slower than the target speed, press on the gas
-    if ((this->car_->reversing && this->car_->IsMovingForwards())
-            || (!this->car_->reversing && !this->car_->IsMovingForwards())
-            || (this->car_->GetSpeed() < this->car_->targetSpeed)) {
-        this->car_->gas = 1.0 * dirConst;
-        this->car_->brake = 0.0;
-    } else if (this->car_->GetSpeed() > this->car_->targetSpeed) {
+    if ((car_->reversing_ && car_->IsMovingForwards())
+            || (!car_->reversing_ && !car_->IsMovingForwards())
+            || (car_->GetSpeed() < car_->targetSpeed_)) {
+        car_->gas_ = 1.0 * dirConst;
+        car_->brake_ = 0.0;
+    } else if (car_->GetSpeed() > car_->targetSpeed_) {
         // If the car is moving faster than the target speed, brake to slow down
-        this->car_->gas = 0.0;
-        if (this->car_->reversing != this->car_->IsMovingForwards()) {
-            this->car_->brake = -2.0 * dirConst;
+        car_->gas_ = 0.0;
+        if (car_->reversing_ != car_->IsMovingForwards()) {
+            car_->brake_ = -2.0 * dirConst;
         } else {
             // If the car is drifting in the opposite direction it should be, don't brake
             // as this has the side effect of accelerating the car in the opposite direction
-            this->car_->brake = 0.0;
+            car_->brake_ = 0.0;
         }
     }
 }
@@ -186,33 +186,33 @@ void sdcHLC::MatchTargetSpeed() {
  * Drive from point to point in the given list
  */
 void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
-    int progress = this->car_->waypointProgress;
+    int progress = car_->waypointProgress_;
     if (progress < WAYPOINT_VEC.size()) {
         // Pull the next waypoint and set the car to drive towards it
 
 
-        this->llc_->Accelerate();
+        llc_->Accelerate();
 
         // Check if the car is close enough to the target to move on
-        double distance = sqrt(pow(WAYPOINT_VEC[progress].pos.first - this->car_->x,2) + pow(WAYPOINT_VEC[progress].pos.second - this->car_->y,2));
+        double distance = sqrt(pow(WAYPOINT_VEC[progress].pos.first - car_->x_,2) + pow(WAYPOINT_VEC[progress].pos.second - car_->y_,2));
         if (distance < 7) {
-            this->car_->turning = true;
+            car_->turning_ = true;
         }
-        if (this->car_->turning == true) {
-            this->car_->SetTurningLimit(20);
+        if (car_->turning_ == true) {
+            car_->SetTurningLimit(20);
             GridTurning(WAYPOINT_VEC[progress].waypointType);
         } else {
             math::Vector2d nextTarget = {WAYPOINT_VEC[progress].pos.first,WAYPOINT_VEC[progress].pos.second};
-            sdcAngle targetAngle = this->car_->AngleToTarget(nextTarget);
-            this->car_->SetTargetDirection(targetAngle);
-            // this->LanedDriving();
+            sdcAngle targetAngle = car_->AngleToTarget(nextTarget);
+            car_->SetTargetDirection(targetAngle);
+            // LanedDriving();
         }
-    } else if (this->car_->isFixingParking) {
-        this->car_->isFixingParking = false;
-        this->currentState = PARKING;
-        this->currentPerpendicularState_ = straightPark;
+    } else if (car_->isFixingParking_) {
+        car_->isFixingParking_ = false;
+        currentState_ = PARKING;
+        currentPerpendicularState_ = straightPark;
     } else {
-        this->currentState = STOP;
+        currentState_ = STOP;
     }
 }
 
@@ -222,11 +222,11 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  */
 void sdcHLC::LanedDriving() {
     int lanePos = sdcSensorData::LanePosition();
-    this->car_->SetTurningLimit(sdcSensorData::GetNewSteeringMagnitude());
+    car_->SetTurningLimit(sdcSensorData::GetNewSteeringMagnitude());
     if (!(lanePos > 320 || lanePos < -320)) {
         // It's beautiful don't question it
         sdcAngle laneWeight = sdcAngle(tan(lanePos/(PI*66.19))/10);
-        this->car_->SetTargetDirection(this->car_->GetDirection() + laneWeight);
+        car_->SetTargetDirection(car_->GetDirection() + laneWeight);
     }
 }
 
@@ -235,9 +235,9 @@ void sdcHLC::LanedDriving() {
  */
 void sdcHLC::Follow() {
     // There's nothing in front of the car, so break out of follow
-    if (this->car_->frontObjects.size() == 0) {
-        this->car_->isTrackingObject = false;
-        this->currentState = this->DEFAULT_STATE;
+    if (car_->frontObjects_.size() == 0) {
+        car_->isTrackingObject_ = false;
+        currentState_ = DEFAULT_STATE;
         return;
     }
 
@@ -248,10 +248,10 @@ void sdcHLC::Follow() {
         sdcSensorData::GetLidarMaxRange(FRONT));
 
     // Already tracking an object, find it again
-    if (this->car_->isTrackingObject) {
+    if (car_->isTrackingObject_) {
         bool foundTrackedObject = false;
-        for (int i = 0; i < this->car_->frontObjects.size(); i++) {
-            sdcVisibleObject obj = this->car_->frontObjects[i];
+        for (int i = 0; i < car_->frontObjects_.size(); i++) {
+            sdcVisibleObject obj = car_->frontObjects_[i];
             if (obj.IsTracking()) {
                 tracked = obj;
                 foundTrackedObject = true;
@@ -259,26 +259,26 @@ void sdcHLC::Follow() {
             }
         }
         if (!foundTrackedObject) {
-            this->car_->isTrackingObject = false;
+            car_->isTrackingObject_ = false;
             return;
         }
     } else {
         // Not tracking an object, find one that's in front of the car
         // and start tracking it
-        for (int i = 0; i < this->car_->frontObjects.size(); i++) {
-            sdcVisibleObject obj = this->car_->frontObjects[i];
-            if (this->car_->IsObjectDirectlyAhead(obj)) {
+        for (int i = 0; i < car_->frontObjects_.size(); i++) {
+            sdcVisibleObject obj = car_->frontObjects_[i];
+            if (car_->IsObjectDirectlyAhead(obj)) {
                 tracked = obj;
                 tracked.SetTracking(true);
-                this->car_->isTrackingObject = true;
-                this->car_->frontObjects[i] = tracked;
+                car_->isTrackingObject_ = true;
+                car_->frontObjects_[i] = tracked;
                 break;
             }
         }
     }
 
     // After the above loops, if not following anything just return
-    if (!this->car_->isTrackingObject) return;
+    if (!car_->isTrackingObject_) return;
 
     math::Vector2d objCenter = tracked.GetCenterPoint();
     double objSpeed = tracked.GetEstimatedYSpeed();
@@ -290,31 +290,31 @@ void sdcHLC::Follow() {
 
     // Adjust the target speed based on the speed of the object, our speed,
     // and the above calculated scaled speed
-    double newTargetSpeed = objSpeed + this->car_->GetSpeed() + scaledSpeed;
-    this->car_->SetTargetSpeed(newTargetSpeed);
+    double newTargetSpeed = objSpeed + car_->GetSpeed() + scaledSpeed;
+    car_->SetTargetSpeed(newTargetSpeed);
 
     // If the new target speed is sufficiently low, count the car as stationary
     if (newTargetSpeed < 0.3) {
-        this->car_->stationaryCount++;
+        car_->stationaryCount_++;
     } else {
-        this->car_->stationaryCount = 0;
+        car_->stationaryCount_ = 0;
     }
 
     // If the car has been stationary for sufficiently long, stop following and start
     // trying to navigate around the object in front of it
-    if (this->car_->stationaryCount > 2000) {
-        this->currentState = AVOIDANCE;
-        this->currentAvoidanceState_ = navigation;
+    if (car_->stationaryCount_ > 2000) {
+        currentState_ = AVOIDANCE;
+        currentAvoidanceState_ = navigation;
     }
 
     // Set the direction of the car to be angled at the tracked object
     if (objCenter.x != 0) {
-        this->car_->SetTargetDirection(
-            this->car_->GetOrientation()
+        car_->SetTargetDirection(
+            car_->GetOrientation()
             - sdcAngle(PI / 2.)
             + sdcAngle(atan2(objCenter.y, objCenter.x)));
     } else {
-        this->car_->SetTargetDirection(this->car_->GetOrientation());
+        car_->SetTargetDirection(car_->GetOrientation());
     }
 }
 
@@ -326,22 +326,22 @@ void sdcHLC::Follow() {
 void sdcHLC::Avoidance() {
     // If there's nothing in front of the car and it's not in the middle
     // of a navigation operation, exit the avoidance state
-    if (this->car_->frontObjects.size() == 0 && !this->car_->trackingNavWaypoint) {
-        this->currentState = this->DEFAULT_STATE;
-        this->currentAvoidanceState_ = notAvoiding;
+    if (car_->frontObjects_.size() == 0 && !car_->trackingNavWaypoint_) {
+        currentState_ = DEFAULT_STATE;
+        currentAvoidanceState_ = notAvoiding;
         return;
     }
 
     // Get lists of objects that are moving quickly towards us,
     // and objects that are close to us
     std::vector<sdcVisibleObject> fastObjects, furiousObjects;
-    if (this->car_->frontObjects.size() > 0) {
-        for (int i = 0; i < this->car_->frontObjects.size(); i++) {
-            if (this->car_->IsObjectTooFast(this->car_->frontObjects[i])) {
-                fastObjects.push_back(this->car_->frontObjects[i]);
+    if (car_->frontObjects_.size() > 0) {
+        for (int i = 0; i < car_->frontObjects_.size(); i++) {
+            if (car_->IsObjectTooFast(car_->frontObjects_[i])) {
+                fastObjects.push_back(car_->frontObjects_[i]);
             }
-            if (this->car_->IsObjectTooFurious(this->car_->frontObjects[i])) {
-                furiousObjects.push_back(this->car_->frontObjects[i]);
+            if (car_->IsObjectTooFurious(car_->frontObjects_[i])) {
+                furiousObjects.push_back(car_->frontObjects_[i]);
             }
         }
     }
@@ -359,11 +359,11 @@ void sdcHLC::Avoidance() {
             // try and swerve as there isn't enough time to stop
             double objSpeed = sqrt(
                 pow(fastObjects[i].GetEstimatedXSpeed(), 2)
-                + pow(fastObjects[i].GetEstimatedYSpeed() - this->car_->GetSpeed(), 2));
+                + pow(fastObjects[i].GetEstimatedYSpeed() - car_->GetSpeed(), 2));
 
-            if (objSpeed > this->car_->GetSpeed()
-                    || this->car_->GetSpeed() > objSpeed + 4) {
-                this->currentAvoidanceState_ = emergencySwerve;
+            if (objSpeed > car_->GetSpeed()
+                    || car_->GetSpeed() > objSpeed + 4) {
+                currentAvoidanceState_ = emergencySwerve;
                 if (fastObjects[i].GetCenterPoint().x < 0) {
                   isObjectOnRight = false;
                 }
@@ -375,38 +375,38 @@ void sdcHLC::Avoidance() {
         // If the state hasn't been set to swerve, the car should be able to stop and thus
         // avoid a collision
         if (!setState) {
-            this->currentAvoidanceState_ = emergencyStop;
+            currentAvoidanceState_ = emergencyStop;
         }
     } else if (furiousObjects.size() > 0) {
         // There are objects very close to the car, but not necessarily in danger of running into
         // it. Try and navigate around them
-        this->currentAvoidanceState_ = navigation;
-    } else if (this->currentAvoidanceState_ != navigation
-            && this->currentAvoidanceState_ != emergencyStop) {
+        currentAvoidanceState_ = navigation;
+    } else if (currentAvoidanceState_ != navigation
+            && currentAvoidanceState_ != emergencyStop) {
         // No dangerous objects were found, and the car is not in the middle of navigating around
         // objects in front of it. Exit to default state
-        this->currentAvoidanceState_ = notAvoiding;
-        this->currentState = this->DEFAULT_STATE;
+        currentAvoidanceState_ = notAvoiding;
+        currentState_ = DEFAULT_STATE;
         return;
     }
 
-    switch(this->currentAvoidanceState_) {
+    switch(currentAvoidanceState_) {
         // Stop, hard.
         case emergencyStop:
-            this->llc_->Stop();
-            this->car_->SetBrakeRate(10);
+            llc_->Stop();
+            car_->SetBrakeRate(10);
             break;
 
         // Make an emergency turn and attempt to accelerate past
         // the incoming danger
         case emergencySwerve:
             if (isObjectOnRight) {
-              this->car_->SetTargetDirection(this->car_->GetOrientation() + PI/4);
+              car_->SetTargetDirection(car_->GetOrientation() + PI/4);
             } else {
-              this->car_->SetTargetDirection(this->car_->GetOrientation() - PI/4);
+              car_->SetTargetDirection(car_->GetOrientation() - PI/4);
             }
-            this->car_->SetTargetSpeed(10);
-            this->car_->SetAccelRate(10);
+            car_->SetTargetSpeed(10);
+            car_->SetAccelRate(10);
             break;
 
         // Carefully maneuver around perceived obstacles
@@ -414,20 +414,20 @@ void sdcHLC::Avoidance() {
         {
             // Set the target speed very low, and if the car is moving
             // sufficiently slowly increase the rate we can turn
-            this->car_->SetTargetSpeed(1);
-            if (this->car_->GetSpeed() < 2) {
-                this->car_->SetTurningLimit(30.0);
+            car_->SetTargetSpeed(1);
+            if (car_->GetSpeed() < 2) {
+                car_->SetTurningLimit(30.0);
             }
 
             // The car is currently driving to a custom waypoint that was already determined
             // to be a safe target. Keep moving towards it
-            if (this->car_->trackingNavWaypoint) {
-                sdcAngle targetAngle = this->car_->AngleToTarget(this->car_->navWaypoint);
-                this->car_->SetTargetDirection(targetAngle);
+            if (car_->trackingNavWaypoint_) {
+                sdcAngle targetAngle = car_->AngleToTarget(car_->navWaypoint_);
+                car_->SetTargetDirection(targetAngle);
 
-                if (this->car_->GetDistance(this->car_->navWaypoint) < 1) {
-                    this->car_->trackingNavWaypoint = false;
-                    this->car_->SetTurningLimit(10.0);
+                if (car_->GetDistance(car_->navWaypoint_) < 1) {
+                    car_->trackingNavWaypoint_ = false;
+                    car_->SetTurningLimit(10.0);
                 }
             } else {
                 // At this point, need to find a gap in the objects presented ahead of the car and
@@ -435,23 +435,23 @@ void sdcHLC::Avoidance() {
                 double maxWidth = -1;
                 double dist = 0;
                 double prevDist = 0;
-                sdcAngle targetAngle = this->car_->GetOrientation();
+                sdcAngle targetAngle = car_->GetOrientation();
 
                 // If there isn't an object directly in front of us, we can safely drive forward
-                if (!this->car_->ObjectDirectlyAhead()) {
-                    this->car_->navWaypoint = math::Vector2d(this->car_->x + cos(this->car_->GetOrientation().angle) * 4, this->car_->y + sin(this->car_->GetOrientation().angle) * 4);
-                    this->car_->trackingNavWaypoint = true;
+                if (!car_->ObjectDirectlyAhead()) {
+                    car_->navWaypoint_ = math::Vector2d(car_->x_ + cos(car_->GetOrientation().angle) * 4, car_->y_ + sin(car_->GetOrientation().angle) * 4);
+                    car_->trackingNavWaypoint_ = true;
                     break;
                 }
 
                 // Loop through all objects in front of the car, find the space with the largest width
                 // and store the point between them
-                math::Vector2d prevPoint = math::Vector2d(this->car_->frontObjects[0].right.GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, this->car_->frontObjects[0].right.GetLongitudinalDist());
+                math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0].right.GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0].right.GetLongitudinalDist());
                 // Angle closest to 0 that it's safe to drive through
                 double bestMargin = 2 * PI;
                 math::Vector2d curPoint;
-                for (int i = 0; i < this->car_->frontObjects.size(); i++) {
-                    curPoint = this->car_->frontObjects[i].right.GetAsPoint();
+                for (int i = 0; i < car_->frontObjects_.size(); i++) {
+                    curPoint = car_->frontObjects_[i].right.GetAsPoint();
                     if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH) {
                         // Point is on our left
                         if (curPoint.x < 0) {
@@ -459,7 +459,7 @@ void sdcHLC::Avoidance() {
                             sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
                             if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
                                 bestMargin = newAngle.FindMargin(sdcAngle(0)).angle;
-                                this->car_->navWaypoint = math::Vector2d(this->car_->x + cos((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), this->car_->y + sin((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
+                                car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
                             }
                         }
                         // Point is on our right
@@ -468,29 +468,29 @@ void sdcHLC::Avoidance() {
                             sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
                             if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
                                 bestMargin = newAngle.FindMargin(sdcAngle(0)).angle;
-                                this->car_->navWaypoint = math::Vector2d(this->car_->x + cos((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), this->car_->y + sin((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
+                                car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
                             }
                         }
                     }
-                    prevPoint = this->car_->frontObjects[i].left.GetAsPoint();
+                    prevPoint = car_->frontObjects_[i].left.GetAsPoint();
                 }
                 curPoint = math::Vector2d(prevPoint.x, 0);
                 if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH + 0.2) {
                     math::Vector2d newPoint = math::Vector2d(prevPoint.x - FRONT_OBJECT_COLLISION_WIDTH/2., prevPoint.y);
                     sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
                     if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
-                        this->car_->navWaypoint = math::Vector2d(this->car_->x + cos((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), this->car_->y + sin((newAngle + this->car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
+                        car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
                     }
                 }
 
-                this->car_->trackingNavWaypoint = true;
+                car_->trackingNavWaypoint_ = true;
             }
             break;
         }
 
         case notAvoiding: // fall through
         default:
-            this->currentState = this->DEFAULT_STATE;
+            currentState_ = DEFAULT_STATE;
             break;
     }
 
@@ -500,26 +500,26 @@ void sdcHLC::Avoidance() {
  * Executes a turn at an intersection
  */
 void sdcHLC::GridTurning(int turn) {
-    int progress = this->car_->waypointProgress;
+    int progress = car_->waypointProgress_;
     if (turn == 3) {
-        this->car_->waypointProgress++;
-        this->currentState = STOP;
+        car_->waypointProgress_++;
+        currentState_ = STOP;
         return;
     } else if (turn == 0) {
-        this->car_->waypointProgress++;
-        this->car_->turning = false;
+        car_->waypointProgress_++;
+        car_->turning_ = false;
         return;
     }
     math::Vector2d nextTarget = {
         WAYPOINT_VEC[progress+1].pos.first,
         WAYPOINT_VEC[progress+1].pos.second
     };
-    sdcAngle targetAngle = this->car_->AngleToTarget(nextTarget);
-    this->car_->SetTargetDirection(targetAngle);
-    sdcAngle margin = this->car_->GetOrientation().FindMargin(targetAngle);
+    sdcAngle targetAngle = car_->AngleToTarget(nextTarget);
+    car_->SetTargetDirection(targetAngle);
+    sdcAngle margin = car_->GetOrientation().FindMargin(targetAngle);
     if (margin < .1 && margin > -.1) {
-        this->car_->turning = false;
-        this->car_->waypointProgress++;
+        car_->turning_ = false;
+        car_->waypointProgress_++;
     }
 }
 
@@ -543,7 +543,7 @@ void sdcHLC::PerpendicularPark() {
     bool isSafe = true;
     std::vector<sdcWaypoint> fix;
     math::Vector2d pos = sdcSensorData::GetPosition();
-    this->car_->SetTurningLimit(30.0);
+    car_->SetTurningLimit(30.0);
 
     // Store vector of rays from the back lidar that detect objects behind the car, specifically the middle
     // and far right and left rays
@@ -597,14 +597,14 @@ void sdcHLC::PerpendicularPark() {
     }
 
     // Determines what perpendicular parking state the car should be in based on lidar data
-    switch(this->currentPerpendicularState_) {
+    switch(currentPerpendicularState_) {
         // Done with perpendicular parking and sets car to stop state
         case donePark:
-            this->llc_->StopReverse();
-            this->llc_->Stop();
-            this->car_->SetTurningLimit(10.0);
-            this->car_->parkingSpotSet = false;
-            this->currentState = STOP;
+            llc_->StopReverse();
+            llc_->Stop();
+            car_->SetTurningLimit(10.0);
+            car_->parkingSpotSet_ = false;
+            currentState_ = STOP;
             break;
 
         // Pulls forward if it gets too close to anything in the back
@@ -628,12 +628,12 @@ void sdcHLC::PerpendicularPark() {
             }
 
             if (isSafe) {
-                this->currentPerpendicularState_ = backPark;
+                currentPerpendicularState_ = backPark;
             } else {
-                this->llc_->StopReverse();
-                this->car_->SetTargetSpeed(0.5);
-                sdcAngle margin = this->car_->GetOrientation().FindMargin(
-                    this->car_->targetParkingAngle);
+                llc_->StopReverse();
+                car_->SetTargetSpeed(0.5);
+                sdcAngle margin = car_->GetOrientation().FindMargin(
+                    car_->targetParkingAngle_);
                 if (rightFrontSideLidar.size() > 0
                         && leftFrontSideLidar.size() > 0
                         && rightBackSideLidar.size()
@@ -648,29 +648,29 @@ void sdcHLC::PerpendicularPark() {
                     if (margin < 0.05
                             && rightSideMargins < 0.05
                             && leftSideMargins < 0.05) {
-                        this->car_->parkingAngleSet = false;
-                        this->currentPerpendicularState_ = straightPark;
+                        car_->parkingAngleSet_ = false;
+                        currentPerpendicularState_ = straightPark;
                     }
                 }
-                this->car_->SetTargetDirection(this->car_->targetParkingAngle);
+                car_->SetTargetDirection(car_->targetParkingAngle_);
             }
             break;
 
         // Backs up into parking spot until the space behind the car is good; only runs if the car
         // is aligned with the parking spot
         case straightPark:
-            this->llc_->Reverse();
-            this->car_->SetTargetDirection(this->car_->targetParkingAngle);
-            this->car_->SetTargetSpeed(0.5);
+            llc_->Reverse();
+            car_->SetTargetDirection(car_->targetParkingAngle_);
+            car_->SetTargetSpeed(0.5);
             if (backLidar[numBackRays / 2] < 0.5) {
-                this->currentPerpendicularState_ = donePark;
+                currentPerpendicularState_ = donePark;
             }
             break;
 
         // Temporary stop state for the car while parking to help avoid hitting anything
         case stopPark:
-            this->llc_->Stop();
-            this->currentPerpendicularState_ = frontPark;
+            llc_->Stop();
+            currentPerpendicularState_ = frontPark;
             break;
 
         // Backs into the parking spot
@@ -679,50 +679,50 @@ void sdcHLC::PerpendicularPark() {
             if (backLidar.size() != 0) {
                 for (int i = 0; i < backRightBound.size(); i++) {
                     if (backRightBound[i] < 0.7) {
-                        this->currentPerpendicularState_ = stopPark;
+                        currentPerpendicularState_ = stopPark;
                     }
                 }
                 for (int j = 0; j < backMidBound.size(); j++) {
                     if (backMidBound[j] < 0.5) {
-                        this->currentPerpendicularState_ = stopPark;
+                        currentPerpendicularState_ = stopPark;
                     }
                 }
                 for (int k = 0; k < backLeftBound.size(); k++) {
                     if (backLeftBound[k] < 0.7) {
-                        this->currentPerpendicularState_ = stopPark;
+                        currentPerpendicularState_ = stopPark;
                     }
                 }
             }
             if (leftBackSideLidar.size() != 0) {
                 for (int l = 0; l < backLeftSideBound.size(); l++) {
                     if (leftBackSideLidar[l] < 0.25) {
-                        this->currentPerpendicularState_ = stopPark;
+                        currentPerpendicularState_ = stopPark;
                     }
                 }
             }
             if (rightBackSideLidar.size() != 0) {
                 for (int m = 0; m < backRightSideBound.size(); m++) {
                     if (rightBackSideLidar[m] < 0.25) {
-                        this->currentPerpendicularState_ = stopPark;
+                        currentPerpendicularState_ = stopPark;
                     }
                 }
             }
 
             // Sets a target angle for the car for when it's done parking
-            if (!this->car_->parkingAngleSet) {
-                this->car_->targetParkingAngle = (this->car_->GetOrientation() - (3*PI)/2);
-                this->car_->SetTargetDirection(2*PI - this->car_->targetParkingAngle);
-                this->car_->parkingAngleSet = true;
+            if (!car_->parkingAngleSet_) {
+                car_->targetParkingAngle_ = (car_->GetOrientation() - (3*PI)/2);
+                car_->SetTargetDirection(2*PI - car_->targetParkingAngle_);
+                car_->parkingAngleSet_ = true;
                 break;
             } else {
-                this->car_->SetTargetDirection(2*PI - this->car_->targetParkingAngle);
-                this->llc_->Reverse();
-                this->car_->SetTargetSpeed(0.5);
+                car_->SetTargetDirection(2*PI - car_->targetParkingAngle_);
+                llc_->Reverse();
+                car_->SetTargetSpeed(0.5);
             }
 
             // Check to see if current direction is the same as targetParkingAngle
-            sdcAngle margin = this->car_->GetOrientation().FindMargin(
-                this->car_->targetParkingAngle);
+            sdcAngle margin = car_->GetOrientation().FindMargin(
+                car_->targetParkingAngle_);
 
             if (rightFrontSideLidar.size() > 0
                     && leftFrontSideLidar.size() > 0
@@ -738,8 +738,8 @@ void sdcHLC::PerpendicularPark() {
                 if (margin < 0.05
                         && rightSideMargins < 0.05
                         && leftSideMargins < 0.05) {
-                    this->car_->parkingAngleSet = false;
-                    this->currentPerpendicularState_ = straightPark;
+                    car_->parkingAngleSet_ = false;
+                    currentPerpendicularState_ = straightPark;
                 }
             }
             break;
@@ -759,7 +759,7 @@ void sdcHLC::ParallelPark() {
     std::vector<double> frontRightBound;
     std::vector<double> frontMidBound;
     std::vector<double> frontLeftBound;
-    this->car_->SetTurningLimit(30.0);
+    car_->SetTurningLimit(30.0);
 
     // Store vector of rays from the back lidar that detect objects behind the car, specifically the middle
     // and far right and left rays
@@ -796,34 +796,34 @@ void sdcHLC::ParallelPark() {
     }
 
     // Determines what parallel parking state the car should be in while performing a parallel park
-    switch(this->currentParallelState_) {
+    switch(currentParallelState_) {
         // Drive back while turning right into parking spot
         case rightBack:
-            if (!this->car_->parkingAngleSet) {
-                this->car_->targetParkingAngle = this->car_->GetOrientation();
-                this->car_->parkingAngleSet = true;
+            if (!car_->parkingAngleSet_) {
+                car_->targetParkingAngle_ = car_->GetOrientation();
+                car_->parkingAngleSet_ = true;
             } else {
                 // Turn wheels left after turning 45 degrees
-                if (this->car_->GetOrientation() > this->car_->targetParkingAngle + PI/4) {
-                    this->currentParallelState_ = leftBack;
+                if (car_->GetOrientation() > car_->targetParkingAngle_ + PI/4) {
+                    currentParallelState_ = leftBack;
                     break;
                 }
-                this->llc_->Reverse();
-                this->car_->SetTargetDirection(this->car_->targetParkingAngle - PI/2);
-                this->car_->SetTargetSpeed(0.35);
+                llc_->Reverse();
+                car_->SetTargetDirection(car_->targetParkingAngle_ - PI/2);
+                car_->SetTargetSpeed(0.35);
                 break;
             }
 
         // Drive back while turning left
         case leftBack:
             if (backLidar.size() != 0 && frontLidar.size() != 0) {
-                sdcAngle margin = this->car_->GetOrientation().FindMargin(
-                    this->car_->targetParkingAngle);
+                sdcAngle margin = car_->GetOrientation().FindMargin(
+                    car_->targetParkingAngle_);
                 double spaceMargin = std::abs(
                     backLidar[numBackRays/2] - frontLidar[numFrontRays/2]);
                 // If the car is aligned in the parking spot, begin driving forward
                 if (margin < 0.01 &&  spaceMargin < 0.05) {
-                    this->currentParallelState_ = straightForward;
+                    currentParallelState_ = straightForward;
                     break;
                 }
             }
@@ -832,34 +832,34 @@ void sdcHLC::ParallelPark() {
             if (backLidar.size() != 0) {
                 for (int i = 0; i < backRightBound.size(); i++) {
                     if (backRightBound[i] < 0.5) {
-                        this->currentParallelState_ = rightForward;
+                        currentParallelState_ = rightForward;
                     }
                 }
                 for (int j = 0; j < backMidBound.size(); j++) {
                     if (backMidBound[j] < 0.3) {
-                        this->currentParallelState_ = rightForward;
+                        currentParallelState_ = rightForward;
                     }
                 }
                 for (int k = 0; k < backLeftBound.size(); k++) {
                     if (backLeftBound[k] < 0.5) {
-                        this->currentParallelState_ = rightForward;
+                        currentParallelState_ = rightForward;
                     }
                 }
             }
-            this->car_->SetTargetDirection(this->car_->targetParkingAngle + PI/2);
-            this->llc_->Reverse();
-            this->car_->SetTargetSpeed(0.35);
+            car_->SetTargetDirection(car_->targetParkingAngle_ + PI/2);
+            llc_->Reverse();
+            car_->SetTargetSpeed(0.35);
             break;
 
         // Drive forward while turning right
         case rightForward:
             if (backLidar.size() != 0 && frontLidar.size() != 0) {
-                sdcAngle margin = this->car_->GetOrientation().FindMargin(
-                    this->car_->targetParkingAngle);
+                sdcAngle margin = car_->GetOrientation().FindMargin(
+                    car_->targetParkingAngle_);
                 double spaceMargin = std::abs(
                     backLidar[numBackRays/2] - frontLidar[numFrontRays/2]);
                 if (margin < 0.01 &&  spaceMargin < 0.05) {
-                    this->currentParallelState_ = straightForward;
+                    currentParallelState_ = straightForward;
                     break;
                 }
             }
@@ -868,23 +868,23 @@ void sdcHLC::ParallelPark() {
             if (frontLidar.size() != 0) {
                 for (int i = 0; i < frontRightBound.size(); i++) {
                     if (frontRightBound[i] < 0.9) {
-                        this->currentParallelState_ = leftBack;
+                        currentParallelState_ = leftBack;
                     }
                 }
                 for (int j = 0; j < frontMidBound.size(); j++) {
                     if (frontMidBound[j] < 0.5) {
-                        this->currentParallelState_ = leftBack;
+                        currentParallelState_ = leftBack;
                     }
                 }
                 for (int k = 0; k < frontLeftBound.size(); k++) {
                     if (frontLeftBound[k] < 0.9) {
-                        this->currentParallelState_ = leftBack;
+                        currentParallelState_ = leftBack;
                     }
                 }
             }
-            this->llc_->StopReverse();
-            this->car_->SetTargetDirection(this->car_->targetParkingAngle - PI/2);
-            this->car_->SetTargetSpeed(0.35);
+            llc_->StopReverse();
+            car_->SetTargetDirection(car_->targetParkingAngle_ - PI/2);
+            car_->SetTargetSpeed(0.35);
             break;
 
         // Pull forward while in parking spot, finishes parallel parking if the car is aligned in the spot
@@ -894,27 +894,27 @@ void sdcHLC::ParallelPark() {
             double frontSpace = frontLidar[numFrontRays/2];
             double backSpace = backLidar[numBackRays/2];
             if (frontSpace == backSpace) {
-                this->currentParallelState_ = doneParallel;
+                currentParallelState_ = doneParallel;
                 break;
             } else if (frontSpace > backSpace) {
                 double spaceMargin = std::abs(frontSpace - backSpace);
                 if (spaceMargin < 0.01) {
-                    this->currentParallelState_ = doneParallel;
+                    currentParallelState_ = doneParallel;
                     break;
                 } else {
-                    this->car_->SetTargetDirection(this->car_->targetParkingAngle);
-                    this->llc_->StopReverse();
-                    this->car_->SetTargetSpeed(0.35);
+                    car_->SetTargetDirection(car_->targetParkingAngle_);
+                    llc_->StopReverse();
+                    car_->SetTargetSpeed(0.35);
                 }
             } else {
                 double spaceMargin = std::abs(frontSpace - backSpace);
                 if (spaceMargin < 0.01) {
-                    this->currentParallelState_ = doneParallel;
+                    currentParallelState_ = doneParallel;
                     break;
                 } else {
-                    this->car_->SetTargetDirection(this->car_->targetParkingAngle);
-                    this->llc_->Reverse();
-                    this->car_->SetTargetSpeed(0.35);
+                    car_->SetTargetDirection(car_->targetParkingAngle_);
+                    llc_->Reverse();
+                    car_->SetTargetSpeed(0.35);
                 }
             }
             break;
@@ -922,10 +922,10 @@ void sdcHLC::ParallelPark() {
 
         // Finished parallel parking and sets current state to stop state
         case doneParallel:
-            this->llc_->Stop();
-            this->llc_->StopReverse();
-            this->car_->SetTurningLimit(10.0);
-            this->currentState = STOP;
+            llc_->Stop();
+            llc_->StopReverse();
+            car_->SetTurningLimit(10.0);
+            currentState_ = STOP;
             break;
     }
 }
@@ -936,79 +936,79 @@ void sdcHLC::ParallelPark() {
 
 //Generates a series of waypoints to get to the desired destination
 void sdcHLC::GenerateWaypoints() {
-    this->car_->GetNSEW();
+    car_->GetNSEW();
     initializeGraph();
     const int start = getFirstIntersection();
     int dest;
-    for (int i = 0; i < intersections.size(); ++i) {
-        if (intersections[i].waypoint.pos.first == destination.first
-                && intersections[i].waypoint.pos.second == destination.second) {
+    for (int i = 0; i < intersections_.size(); ++i) {
+        if (intersections_[i].waypoint.pos.first == destination_.first
+                && intersections_[i].waypoint.pos.second == destination_.second) {
             dest = i;
         }
     }
     std::vector<int> path;
     removeStartingEdge(start);
     path = dijkstras(start, dest);
-    insertWaypointTypes(path, this->car_->currentDir);
+    insertWaypointTypes(path, car_->currentDir_);
     for (int i = path.size()-1; i >=0; --i) {
-        WAYPOINT_VEC.push_back(intersections[path[i]].waypoint);
+        WAYPOINT_VEC.push_back(intersections_[path[i]].waypoint);
     }
 }
 
 std::vector<int> sdcHLC::dijkstras(int start, int dest) {
     std::vector<int> path;
     int current;
-    intersections[start].dist = 0;
-    intersections[start].previous = -1;
+    intersections_[start].dist = 0;
+    intersections_[start].previous = -1;
     double distance;
 
-    // initializes the unvisited list by placing all of start's neighbors in it
-    for (int n = 0; n < intersections[start].neighbors_pairs.size(); ++n) {
-        // push back each neighbor of the start into unvisited
-        unvisited.push_back(intersections[start].neighbors_pairs[n].first);
+    // initializes the unvisited_ list by placing all of start's neighbors in it
+    for (int n = 0; n < intersections_[start].neighbors_pairs.size(); ++n) {
+        // push back each neighbor of the start into unvisited_
+        unvisited_.push_back(intersections_[start].neighbors_pairs[n].first);
         // set the distance of each neighbor to the distance of the edge
         // from start to neighbor and make neighbor previous = start
-        intersections[intersections[start].neighbors_pairs[n].first].dist =
-            intersections[start].neighbors_pairs[n].second;
-        intersections[intersections[start].neighbors_pairs[n].first].previous =
-            intersections[start].place;
+        intersections_[intersections_[start].neighbors_pairs[n].first].dist =
+            intersections_[start].neighbors_pairs[n].second;
+        intersections_[intersections_[start].neighbors_pairs[n].first].previous =
+            intersections_[start].place;
     }
 
-    // BFS using the unvisted FI FO vector, if unvisited is 0 then we have
-    // visited all intersections
-    while (unvisited.size() != 0) {
-        current = unvisited[0];
-        for (int n = 0; n < intersections[current].neighbors_pairs.size(); ++n) {
+    // BFS using the unvisted FI FO vector, if unvisited_ is 0 then we have
+    // visited all intersections_
+    while (unvisited_.size() != 0) {
+        current = unvisited_[0];
+        for (int n = 0; n < intersections_[current].neighbors_pairs.size(); ++n) {
             // distance to the neighbor from current intersection
-            distance = intersections[current].neighbors_pairs[n].second;
+            distance = intersections_[current].neighbors_pairs[n].second;
             // if the distance of the current intersection + the distance from
             // the current intersection to neighbor is smaller than the distance
             // to neighbor, update distance and previous
-            if (intersections[intersections[current].neighbors_pairs[n].first].dist >
-                    intersections[current].dist + distance) {
+            if (intersections_[intersections_[current].neighbors_pairs[n].first].dist >
+                    intersections_[current].dist + distance) {
                 // update distance
-                intersections[intersections[current].neighbors_pairs[n].first].dist =
-                    intersections[current].dist + distance;
+                intersections_[intersections_[current].neighbors_pairs[n].first].dist =
+                    intersections_[current].dist + distance;
                 // update previous
-                intersections[intersections[current].neighbors_pairs[n].first]
-                    .previous = intersections[current].place;
+                intersections_[intersections_[current].neighbors_pairs[n].first]
+                    .previous = intersections_[current].place;
             }
-            // if the neighbor has not been visited then push back into unvisited
-            if (intersections[intersections[current].neighbors_pairs[n].first].visited == 0) {
-                // push back neighbor into unvisited
-                unvisited.push_back(intersections[current].neighbors_pairs[n].first);
+            // if the neighbor has not been visited then push back into unvisited_
+            if (intersections_[intersections_[current].neighbors_pairs[n].first].visited == 0) {
+                // push back neighbor into unvisited_
+                unvisited_.push_back(intersections_[current].neighbors_pairs[n].first);
             }
             // mark the current intersection as visited
-            intersections[current].visited = 1;
+            intersections_[current].visited = 1;
         }
         //pop front
-        unvisited.erase(unvisited.begin());
+        unvisited_.erase(unvisited_.begin());
     }
 
     //crawl backwards from dest to start to get the path
-    for (int i = intersections[dest].place; i != -1;) {
+    for (int i = intersections_[dest].place; i != -1;) {
         path.push_back(i);
-        i = intersections[i].previous;
+        i = intersections_[i].previous;
     }
 
     return path;
@@ -1202,16 +1202,16 @@ void sdcHLC::initializeGraph() {
     ee.neighbors_pairs.push_back(std::pair<int, double>(23, 1));
     ee.waypoint = sdcWaypoint(0,std::pair<double,double>(200,200));
 
-    //place the intersections into intersections
-    intersections = { aa, ab, ac, ad, ae,
+    //place the intersections_ into intersections_
+    intersections_ = { aa, ab, ac, ad, ae,
                       ba, bb, bc, bd, be,
                       ca, cb, cc, cd, ce,
                       da, db, dc, dd, de,
                       ea, eb, ec, ed, ee };
-    //make the distance to all intersections infinity
-    for (int i = 0; i < intersections.size(); ++i) {
-        intersections[i].dist = std::numeric_limits<double>::infinity();
-        intersections[i].place = i;
+    //make the distance to all intersections_ infinity
+    for (int i = 0; i < intersections_.size(); ++i) {
+        intersections_[i].dist = std::numeric_limits<double>::infinity();
+        intersections_[i].place = i;
     }
 }
 
@@ -1219,57 +1219,57 @@ int sdcHLC::getFirstIntersection() {
     std::pair<double,double> firstIntr;
     int firstIntersection;
 
-    switch(this->car_->currentDir) {
+    switch(car_->currentDir_) {
 
         case west:
             firstIntr = {-1000,0};
-            for (int i = 0; i < intersections.size();++i) {
-                if (this->car_->y < intersections[i].waypoint.pos.second+5
-                        && this->car_->y > intersections[i].waypoint.pos.second-5
-                        && intersections[i].waypoint.pos.first < this->car_->x - 10
-                        && intersections[i].waypoint.pos.first > firstIntr.first)
-                    firstIntr = intersections[i].waypoint.pos;
+            for (int i = 0; i < intersections_.size();++i) {
+                if (car_->y_ < intersections_[i].waypoint.pos.second+5
+                        && car_->y_ > intersections_[i].waypoint.pos.second-5
+                        && intersections_[i].waypoint.pos.first < car_->x_ - 10
+                        && intersections_[i].waypoint.pos.first > firstIntr.first)
+                    firstIntr = intersections_[i].waypoint.pos;
             }
             break;
 
         case east:
             firstIntr = {1000,0};
-            for (int i = 0; i < intersections.size();++i) {
-                if (this->car_->y < intersections[i].waypoint.pos.second+5
-                        && this->car_->y > intersections[i].waypoint.pos.second-5
-                        && intersections[i].waypoint.pos.first > this->car_->x + 10
-                        && intersections[i].waypoint.pos.first < firstIntr.first) {
-                    firstIntr = intersections[i].waypoint.pos;
+            for (int i = 0; i < intersections_.size();++i) {
+                if (car_->y_ < intersections_[i].waypoint.pos.second+5
+                        && car_->y_ > intersections_[i].waypoint.pos.second-5
+                        && intersections_[i].waypoint.pos.first > car_->x_ + 10
+                        && intersections_[i].waypoint.pos.first < firstIntr.first) {
+                    firstIntr = intersections_[i].waypoint.pos;
                 }
             }
             break;
 
         case north:
             firstIntr = {0,1000};
-            for (int i = 0; i < intersections.size();++i) {
-                if (this->car_->x < intersections[i].waypoint.pos.first+5
-                        && this->car_->x > intersections[i].waypoint.pos.first-5
-                        && intersections[i].waypoint.pos.second > this->car_->y + 10
-                        && intersections[i].waypoint.pos.second < firstIntr.second)
-                    firstIntr = intersections[i].waypoint.pos;
+            for (int i = 0; i < intersections_.size();++i) {
+                if (car_->x_ < intersections_[i].waypoint.pos.first+5
+                        && car_->x_ > intersections_[i].waypoint.pos.first-5
+                        && intersections_[i].waypoint.pos.second > car_->y_ + 10
+                        && intersections_[i].waypoint.pos.second < firstIntr.second)
+                    firstIntr = intersections_[i].waypoint.pos;
             }
             break;
 
         case south:
             firstIntr = {0,-1000};
-            for (int i = 0; i < intersections.size();++i) {
-                if (this->car_->x < intersections[i].waypoint.pos.first+5
-                        && this->car_->x > intersections[i].waypoint.pos.first-5
-                        && intersections[i].waypoint.pos.second < this->car_->y - 10
-                        && intersections[i].waypoint.pos.second > firstIntr.second)
-                    firstIntr = intersections[i].waypoint.pos;
+            for (int i = 0; i < intersections_.size();++i) {
+                if (car_->x_ < intersections_[i].waypoint.pos.first+5
+                        && car_->x_ > intersections_[i].waypoint.pos.first-5
+                        && intersections_[i].waypoint.pos.second < car_->y_ - 10
+                        && intersections_[i].waypoint.pos.second > firstIntr.second)
+                    firstIntr = intersections_[i].waypoint.pos;
             }
             break;
     }
 
-    for (int i = 0; i < intersections.size();i++) {
-        if (firstIntr.first == intersections[i].waypoint.pos.first
-                && firstIntr.second == intersections[i].waypoint.pos.second) {
+    for (int i = 0; i < intersections_.size();i++) {
+        if (firstIntr.first == intersections_[i].waypoint.pos.first
+                && firstIntr.second == intersections_[i].waypoint.pos.second) {
             firstIntersection = i;
             break;
         }
@@ -1301,13 +1301,13 @@ void sdcHLC::insertWaypointTypes(std::vector<int> path, Direction startDir) {
         case north:
             switch (nextDir) {
                 case north:
-                    intersections[current].waypoint.waypointType = WaypointType_DriveStraight;
+                    intersections_[current].waypoint.waypointType = WaypointType_DriveStraight;
                     break;
                 case east:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnRight;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnRight;
                     break;
                 case west:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnLeft;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnLeft;
                 case south:
                     break;
             }
@@ -1315,13 +1315,13 @@ void sdcHLC::insertWaypointTypes(std::vector<int> path, Direction startDir) {
         case south:
             switch (nextDir) {
                 case south:
-                    intersections[current].waypoint.waypointType = WaypointType_DriveStraight;
+                    intersections_[current].waypoint.waypointType = WaypointType_DriveStraight;
                     break;
                 case east:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnLeft;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnLeft;
                     break;
                 case west:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnRight;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnRight;
                 case north:
                     break;
             }
@@ -1329,13 +1329,13 @@ void sdcHLC::insertWaypointTypes(std::vector<int> path, Direction startDir) {
         case east:
             switch (nextDir) {
                 case north:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnLeft;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnLeft;
                     break;
                 case south:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnRight;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnRight;
                     break;
                 case east:
-                    intersections[current].waypoint.waypointType = WaypointType_DriveStraight;
+                    intersections_[current].waypoint.waypointType = WaypointType_DriveStraight;
                 case west:
                     break;
             }
@@ -1343,13 +1343,13 @@ void sdcHLC::insertWaypointTypes(std::vector<int> path, Direction startDir) {
         case west:
             switch (nextDir) {
                 case north:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnRight;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnRight;
                     break;
                 case south:
-                    intersections[current].waypoint.waypointType = WaypointType_TurnLeft;
+                    intersections_[current].waypoint.waypointType = WaypointType_TurnLeft;
                     break;
                 case west:
-                    intersections[current].waypoint.waypointType = WaypointType_DriveStraight;
+                    intersections_[current].waypoint.waypointType = WaypointType_DriveStraight;
                 case east:
                     break;
             }
@@ -1357,40 +1357,40 @@ void sdcHLC::insertWaypointTypes(std::vector<int> path, Direction startDir) {
     }
     curDir = nextDir;
   }
-  intersections[path[0]].waypoint.waypointType = WaypointType_Stop;
+  intersections_[path[0]].waypoint.waypointType = WaypointType_Stop;
 }
 
 void sdcHLC::removeStartingEdge(int start) {
     Direction dir = east;
     switch (dir) {
         case north:
-            for (int n = 0; n < intersections[start].neighbors_pairs.size(); ++n) {
-                if (intersections[start].neighbors_pairs[n].first == start - 1) {
-                    intersections[start].neighbors_pairs[n].second =
+            for (int n = 0; n < intersections_[start].neighbors_pairs.size(); ++n) {
+                if (intersections_[start].neighbors_pairs[n].first == start - 1) {
+                    intersections_[start].neighbors_pairs[n].second =
                         std::numeric_limits<double>::infinity();
                 }
             }
             break;
         case south:
-            for (int n = 0; n < intersections[start].neighbors_pairs.size(); ++n) {
-                if (intersections[start].neighbors_pairs[n].first == start + 1) {
-                    intersections[start].neighbors_pairs[n].second =
+            for (int n = 0; n < intersections_[start].neighbors_pairs.size(); ++n) {
+                if (intersections_[start].neighbors_pairs[n].first == start + 1) {
+                    intersections_[start].neighbors_pairs[n].second =
                         std::numeric_limits<double>::infinity();
                 }
             }
             break;
         case east:
-            for (int n = 0; n < intersections[start].neighbors_pairs.size(); ++n) {
-                if (intersections[start].neighbors_pairs[n].first == start - size) {
-                    intersections[start].neighbors_pairs[n].second =
+            for (int n = 0; n < intersections_[start].neighbors_pairs.size(); ++n) {
+                if (intersections_[start].neighbors_pairs[n].first == start - size) {
+                    intersections_[start].neighbors_pairs[n].second =
                         std::numeric_limits<double>::infinity();
                 }
             }
             break;
         case west:
-            for (int n = 0; n < intersections[start].neighbors_pairs.size(); ++n) {
-                if (intersections[start].neighbors_pairs[n].first == start + size) {
-                    intersections[start].neighbors_pairs[n].second =
+            for (int n = 0; n < intersections_[start].neighbors_pairs.size(); ++n) {
+                if (intersections_[start].neighbors_pairs[n].first == start + size) {
+                    intersections_[start].neighbors_pairs[n].second =
                         std::numeric_limits<double>::infinity();
                 }
             }

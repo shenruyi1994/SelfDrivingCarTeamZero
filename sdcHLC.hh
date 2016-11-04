@@ -95,13 +95,13 @@ namespace gazebo {
 
         // The current state of the car
         CarState DEFAULT_STATE;
-        CarState currentState;
+        CarState currentState_;
 
         //dijkstra's stuff
-        std::vector<int> unvisited;
-        std::vector<sdcIntersection> intersections;
+        std::vector<int> unvisited_;
+        std::vector<sdcIntersection> intersections_;
         const int size = 5;
-        const std::pair<double,double> destination = {0,0};
+        const std::pair<double,double> destination_ = {0,0};
     };
 }
 #endif

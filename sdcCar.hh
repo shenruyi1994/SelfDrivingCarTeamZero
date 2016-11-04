@@ -47,7 +47,7 @@ namespace gazebo {
 
         // These methods are called by Gazebo during the loading and initializing
         // stages of world building and populating
-        virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
+        virtual void Load(physics::ModelPtr _model_, sdf::ElementPtr _sdf);
         virtual void Init();
 
     private:
@@ -56,30 +56,30 @@ namespace gazebo {
 
         // Holds the bound connection to Gazebo's update, necessary in order to properly
         // receive updates
-        std::vector<event::ConnectionPtr> connections;
+        std::vector<event::ConnectionPtr> connections_;
 
-        // The Gazebo model representation of the car
-        physics::ModelPtr model;
-        // Contains the wheel joints that get operated on each tick for movement
-        std::vector<physics::JointPtr> joints;
-        // A link to the chassis of the car, mainly used for access to physics variables
+        // The Gazebo model_ representation of the car
+        physics::ModelPtr model_;
+        // Contains the wheel joints_ that get operated on each tick for movement
+        std::vector<physics::JointPtr> joints_;
+        // A link to the chassis_ of the car, mainly used for access to physics variables
         // related to the car's state
-        physics::LinkPtr chassis;
+        physics::LinkPtr chassis_;
 
-        // The velocity of the car
-        math::Vector3 velocity;
+        // The velocity_ of the car
+        math::Vector3 velocity_;
 
         // These variables are mostly set in the SDF for the car and relate to the
         // physical parameters of the vehicle
-        double frontPower, rearPower;
-        double maxSpeed;
-        double wheelRadius;
+        double frontPower_, rearPower_;
+        double maxSpeed_;
+        double wheelRadius_;
 
-        double steeringRatio;
-        double tireAngleRange;
+        double steeringRatio_;
+        double tireAngleRange_;
 
-        double aeroLoad;
-        double swayForce;
+        double aeroLoad_;
+        double swayForce_;
 
         //////////////////////////////////////////
         // Begin Non-Gazebo Related Definitions //
@@ -91,68 +91,68 @@ namespace gazebo {
         // SDC-defined variables //
         ///////////////////////////
 
-        RelativeDirection destDir;
-        RelativeDirection destDirSide;
-        Direction currentDir;
+        RelativeDirection destDir_;
+        RelativeDirection destDirSide_;
+        Direction currentDir_;
 
         // High and low level controllers for the car
         sdcHLC* hlc_;
 
-        double gas;   // variable that accelerates the car
-        double brake; // variable that brakes the car
+        double gas_;   // variable that accelerates the car
+        double brake_; // variable that brake_s the car
 
         // Scalars for accelrating and braking
-        double accelRate;
-        double brakeRate;
+        double accelRate_;
+        double brakeRate_;
 
         // Position/rotation variables
-        sdcAngle yaw;
+        sdcAngle yaw_;
 
         // Waypoint variables
-        int waypointProgress;
+        int waypointProgress_;
 
         // Intersection variables
-        bool stoppedAtSign;
-        int ignoreStopSignsCounter;
-        int atIntersection;
+        bool stoppedAtSign_;
+        int ignoreStopSignsCounter_;
+        int atIntersection_;
 
         // Car limit variables
-        int maxCarSpeed;
-        double maxCarReverseSpeed;
-        double turningLimit;
+        int maxCarSpeed_;
+        double maxCarReverseSpeed_;
+        double turningLimit_;
 
         // Flags for the car's actions
-        bool turning;
-        bool reversing;
-        bool stopping;
+        bool turning_;
+        bool reversing_;
+        bool stopping_;
 
         // Movement parameters
-        sdcAngle targetDirection;
-        double targetSteeringAmount;
-        double steeringAmount;
-        double targetSpeed;
+        sdcAngle targetDirection_;
+        double targetSteeringAmount_;
+        double steeringAmount_;
+        double targetSpeed_;
 
         // Parking variables
-        sdcAngle targetParkingAngle;
-        bool parkingAngleSet;
-        bool isFixingParking;
-        bool parkingSpotSet;
+        sdcAngle targetParkingAngle_;
+        bool parkingAngleSet_;
+        bool isFixingParking_;
+        bool parkingSpotSet_;
 
         // Follow variables
-        bool isTrackingObject;
-        int stationaryCount;
+        bool isTrackingObject_;
+        int stationaryCount_;
 
         // Avodiance variables
-        math::Vector2d navWaypoint;
-        bool trackingNavWaypoint;
+        math::Vector2d navWaypoint_;
+        bool trackingNavWaypoint_;
 
         // Variables relating to tracking objects in front of the car
-        std::vector<sdcVisibleObject> frontObjects;
-        int frontLidarLastUpdate;
+        std::vector<sdcVisibleObject> frontObjects_;
+        int frontLidarLastUpdate_;
 
         // The x and y position of the car
-        double x;
-        double y;
+        double x_;
+        double y_;
 
         /////////////////////////
         // SDC-defined methods //
@@ -172,7 +172,7 @@ namespace gazebo {
 
         bool IsMovingForwards();
         double GetSpeed();
-        double GetDistance(math::Vector2d navWaypoint);
+        double GetDistance(math::Vector2d navWaypoint_);
         sdcAngle GetDirection();
         sdcAngle GetOrientation();
         void GetNSEW();

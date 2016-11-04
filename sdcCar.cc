@@ -60,9 +60,9 @@ const sdcAngle WEST = sdcAngle(PI);
  * Updates the list of objects in front of the car with the given list of new objects
  */
 void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
-    if (this->frontObjects.size() == 0) {
+    if (frontObjects_.size() == 0) {
         // The car wasn't tracking any objects, so just set the list equal to the new list
-        this->frontObjects = newObjects;
+        frontObjects_ = newObjects;
         return;
     }
 
@@ -75,8 +75,8 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
     // Compare each old object to the new objects, and determine
     // which of them are getting updated, which are missing, as well
     // as if any of the passed in objects are brand new
-    for (int i = 0; i < this->frontObjects.size(); i++) {
-        sdcVisibleObject oldObj = this->frontObjects[i];
+    for (int i = 0; i < frontObjects_.size(); i++) {
+        sdcVisibleObject oldObj = frontObjects_[i];
         isOldObjectMissing.push_back(true);
 
         for (int j = 0; j < newObjects.size(); j++) {
@@ -86,7 +86,7 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
 
             if (oldObj.IsSameObject(newObj)) {
                 oldObj.Update(newObj);
-                this->frontObjects[i] = oldObj;
+                frontObjects_[i] = oldObj;
                 isOldObjectMissing[i] = false;
                 isBrandNewObject[j] = false;
                 break;
@@ -97,14 +97,14 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
     // Delete objects that are missing
     for (int i = isOldObjectMissing.size() - 1; i >= 0; i--) {
         if (isOldObjectMissing[i]) {
-            this->frontObjects.erase(this->frontObjects.begin() + i);
+            frontObjects_.erase(frontObjects_.begin() + i);
         }
     }
 
     // Add brand new objects
     for (int i = 0; i < newObjects.size(); i++) {
         if (isBrandNewObject[i]) {
-            this->frontObjects.push_back(newObjects[i]);
+            frontObjects_.push_back(newObjects[i]);
         }
     }
 }
@@ -115,7 +115,7 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
  */
 bool sdcCar::IsMovingForwards() {
     sdcAngle velAngle = GetDirection();
-    sdcAngle carAngle = this->GetOrientation();
+    sdcAngle carAngle = GetOrientation();
     return (carAngle - velAngle).IsFrontFacing();
 }
 
@@ -123,15 +123,15 @@ bool sdcCar::IsMovingForwards() {
  * Gets the speed of the car
  */
 double sdcCar::GetSpeed() {
-    return sqrt(pow(this->velocity.x,2) + pow(this->velocity.y,2));
+    return sqrt(pow(velocity_.x,2) + pow(velocity_.y,2));
 }
 
 /*
  * Returns the distance to the waypoint
  */
 double sdcCar::GetDistance(math::Vector2d navWaypoint) {
-    double x_dist = this->navWaypoint.x - this->x;
-    double y_dist = this->navWaypoint.y - this->y;
+    double x_dist = navWaypoint_.x - x_;
+    double y_dist = navWaypoint_.y - y_;
     return sqrt(pow(x_dist, 2) + pow(y_dist, 2));
 }
 
@@ -139,7 +139,7 @@ double sdcCar::GetDistance(math::Vector2d navWaypoint) {
  * Gets the current direction the car is travelling
  */
 sdcAngle sdcCar::GetDirection() {
-    math::Vector3 velocity = this->velocity;
+    math::Vector3 velocity = velocity_;
     return sdcAngle(atan2(velocity.y, velocity.x));
 }
 
@@ -147,14 +147,14 @@ sdcAngle sdcCar::GetDirection() {
  * Gets the current direction the car is travelling in NSEW
  */
 void sdcCar::GetNSEW() {
-    if ((this->yaw - WEST).WithinMargin(PI/4)) {
-        this->currentDir = west;
-    } else if ((this->yaw - SOUTH).WithinMargin(PI/4)) {
-        this->currentDir = south;
-    } else if ((this->yaw - EAST).WithinMargin(PI/4)) {
-        this->currentDir = east;
+    if ((yaw_ - WEST).WithinMargin(PI/4)) {
+        currentDir_ = west;
+    } else if ((yaw_ - SOUTH).WithinMargin(PI/4)) {
+        currentDir_ = south;
+    } else if ((yaw_ - EAST).WithinMargin(PI/4)) {
+        currentDir_ = east;
     } else {
-        this->currentDir = north;
+        currentDir_ = north;
     }
 }
 
@@ -162,7 +162,7 @@ void sdcCar::GetNSEW() {
  * Gets the direction the car is facing
  */
 sdcAngle sdcCar::GetOrientation() {
-    return this->yaw;
+    return yaw_;
 }
 
 /*
@@ -179,10 +179,10 @@ sdcAngle sdcCar::AngleToTarget(math::Vector2d target) {
  * continue driving straight ahead
  */
 bool sdcCar::ObjectDirectlyAhead() {
-    if (this->frontObjects.size() == 0) return false;
+    if (frontObjects_.size() == 0) return false;
 
-    for (int i = 0; i < this->frontObjects.size(); i++) {
-        if (this->IsObjectDirectlyAhead(this->frontObjects[i])) {
+    for (int i = 0; i < frontObjects_.size(); i++) {
+        if (IsObjectDirectlyAhead(frontObjects_[i])) {
             return true;
         }
     }
@@ -203,10 +203,10 @@ bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj) {
  * Returns true if there is an object on a potential collision course with our car
  */
 bool sdcCar::ObjectOnCollisionCourse() {
-    if (this->frontObjects.size() == 0) return false;
+    if (frontObjects_.size() == 0) return false;
 
-    for (int i = 0; i < this->frontObjects.size(); i++) {
-        if (this->IsObjectOnCollisionCourse(this->frontObjects[i])) {
+    for (int i = 0; i < frontObjects_.size(); i++) {
+        if (IsObjectOnCollisionCourse(frontObjects_[i])) {
             return true;
         }
     }
@@ -217,8 +217,8 @@ bool sdcCar::ObjectOnCollisionCourse() {
  * Returns true if the given object is on a potential collision course with our car
  */
 bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj) {
-    bool isTooFast = this->IsObjectTooFast(obj);
-    bool isTooFurious = this->IsObjectTooFurious(obj);
+    bool isTooFast = IsObjectTooFast(obj);
+    bool isTooFurious = IsObjectTooFurious(obj);
     return isTooFast || isTooFurious;
 }
 
@@ -251,7 +251,7 @@ bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj) {
  * Default rate: 1.0, can't be negative
  */
 void sdcCar::SetAccelRate(double rate) {
-    this->accelRate = fmax(rate, 0.0);
+    accelRate_ = fmax(rate, 0.0);
 }
 
 /*
@@ -261,21 +261,21 @@ void sdcCar::SetAccelRate(double rate) {
  * Default rate: 1.0, can't be negative
  */
 void sdcCar::SetBrakeRate(double rate) {
-    this->brakeRate = fmax(rate, 0.0);
+    brakeRate_ = fmax(rate, 0.0);
 }
 
 /*
  * Sets a target direction for the car
  */
 void sdcCar::SetTargetDirection(sdcAngle direction) {
-    this->targetDirection = direction;
+    targetDirection_ = direction;
 }
 
 /*
  * Sets a target steering amount for the steering wheel
  */
 void sdcCar::SetTargetSteeringAmount(double a) {
-    this->targetSteeringAmount = a;
+    targetSteeringAmount_ = a;
 }
 
 /*
@@ -284,10 +284,10 @@ void sdcCar::SetTargetSteeringAmount(double a) {
  * should make sure to do so AFTER a call to this method
  */
 void sdcCar::SetTargetSpeed(double s) {
-    this->targetSpeed = fmax(fmin(s, this->maxCarSpeed), 0);
-    this->stopping = (this->targetSpeed == 0);
-    this->SetAccelRate();
-    this->SetBrakeRate();
+    targetSpeed_ = fmax(fmin(s, maxCarSpeed_), 0);
+    stopping_ = (targetSpeed_ == 0);
+    SetAccelRate();
+    SetBrakeRate();
 }
 
 /*
@@ -295,7 +295,7 @@ void sdcCar::SetTargetSpeed(double s) {
  * harder.
  */
 void sdcCar::SetTurningLimit(double limit) {
-    this->turningLimit = limit;
+    turningLimit_ = limit;
 }
 
 //////////////////////////////////////////////////////////////
@@ -308,25 +308,25 @@ void sdcCar::SetTurningLimit(double limit) {
  */
 void sdcCar::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
     // Store the model and chassis of the car for later access
-    this->model = _model;
-    this->chassis = this->model->GetLink(_sdf->Get<std::string>("chassis"));
+    model_ = _model;
+    chassis_ = model_->GetLink(_sdf->Get<std::string>("chassis"));
 
     // Get all the wheel joints
-    this->joints[0] = this->model->GetJoint(_sdf->Get<std::string>("front_left"));
-    this->joints[1] = this->model->GetJoint(_sdf->Get<std::string>("front_right"));
-    this->joints[2] = this->model->GetJoint(_sdf->Get<std::string>("back_left"));
-    this->joints[3] = this->model->GetJoint(_sdf->Get<std::string>("back_right"));
+    joints_[0] = model_->GetJoint(_sdf->Get<std::string>("front_left"));
+    joints_[1] = model_->GetJoint(_sdf->Get<std::string>("front_right"));
+    joints_[2] = model_->GetJoint(_sdf->Get<std::string>("back_left"));
+    joints_[3] = model_->GetJoint(_sdf->Get<std::string>("back_right"));
 
     // Pull some parameters that are defined in the sdf
-    this->maxSpeed = _sdf->Get<double>("max_speed");
-    this->aeroLoad = _sdf->Get<double>("aero_load");
-    this->tireAngleRange = _sdf->Get<double>("tire_angle_range");
-    this->frontPower = _sdf->Get<double>("front_power");
-    this->rearPower = _sdf->Get<double>("rear_power");
-    this->wheelRadius = _sdf->Get<double>("wheel_radius");
+    maxSpeed_ = _sdf->Get<double>("max_speed");
+    aeroLoad_ = _sdf->Get<double>("aero_load");
+    tireAngleRange_ = _sdf->Get<double>("tire_angle_range");
+    frontPower_ = _sdf->Get<double>("front_power");
+    rearPower_ = _sdf->Get<double>("rear_power");
+    wheelRadius_ = _sdf->Get<double>("wheel_radius");
 
     // Tell Gazebo to call OnUpdate whenever the car needs an update
-    this->connections.push_back(event::Events::ConnectWorldUpdateBegin(boost::bind(&sdcCar::OnUpdate, this)));
+    connections_.push_back(event::Events::ConnectWorldUpdateBegin(boost::bind(&sdcCar::OnUpdate, this)));
 }
 
 /*
@@ -334,14 +334,14 @@ void sdcCar::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
  */
 void sdcCar::Init() {
     // Compute the angle ratio between the steering wheel and the tires
-    this->steeringRatio = STEERING_RANGE / this->tireAngleRange;
+    steeringRatio_ = STEERING_RANGE / tireAngleRange_;
 
     // During init, sensors aren't available so pull position and rotation information
     // straight from the car
-    math::Pose pose = this->chassis->GetWorldPose();
-    this->yaw = sdcAngle(pose.rot.GetYaw());
-    this->x = pose.pos.x;
-    this->y = pose.pos.y;
+    math::Pose pose = chassis_->GetWorldPose();
+    yaw_ = sdcAngle(pose.rot.GetYaw());
+    x_ = pose.pos.x;
+    y_ = pose.pos.y;
     // hlc_->GenerateWaypoints();
 }
 
@@ -350,24 +350,24 @@ void sdcCar::Init() {
  */
 void sdcCar::OnUpdate() {
     // Get the current velocity of the car
-    this->velocity = this->chassis->GetWorldLinearVel();
+    velocity_ = chassis_->GetWorldLinearVel();
     // Get the cars current position
     math::Vector2d pose = sdcSensorData::GetPosition();
-    this->x = pose.x;
-    this->y = pose.y;
+    x_ = pose.x;
+    y_ = pose.y;
     // Get the cars current rotation
-    this->yaw = sdcSensorData::GetYaw();
+    yaw_ = sdcSensorData::GetYaw();
 
     // Check if the front lidars have been updated, and if they have update
     // the car's list
-    if (this->frontLidarLastUpdate != sdcSensorData::GetLidarLastUpdate(FRONT)) {
+    if (frontLidarLastUpdate_ != sdcSensorData::GetLidarLastUpdate(FRONT)) {
         std::vector<sdcVisibleObject> v = sdcSensorData::GetObjectsInFront();
-        this->UpdateFrontObjects(v);
-        this->frontLidarLastUpdate = sdcSensorData::GetLidarLastUpdate(FRONT);
+        UpdateFrontObjects(v);
+        frontLidarLastUpdate_ = sdcSensorData::GetLidarLastUpdate(FRONT);
     }
 
     // Call our Drive function, which is the brain for the car
-    this->hlc_->Drive();
+    hlc_->Drive();
 
 
     ////////////////////////////
@@ -375,38 +375,38 @@ void sdcCar::OnUpdate() {
     ////////////////////////////
 
     // Compute the angle of the front wheels.
-    double wheelAngle = this->steeringAmount / this->steeringRatio;
+    double wheelAngle = steeringAmount_ / steeringRatio_;
 
     // Compute the rotational velocity of the wheels
-    double jointVel = (this->gas-this->brake * this->maxSpeed) / this->wheelRadius;
+    double jointVel = (gas_-brake_ * maxSpeed_) / wheelRadius_;
 
     // Set velocity and max force for each wheel
-    this->joints[0]->SetVelocityLimit(1, -jointVel);
-    this->joints[0]->SetForce(1, -(this->gas * this->accelRate + this->brake * this->brakeRate) * this->frontPower);
+    joints_[0]->SetVelocityLimit(1, -jointVel);
+    joints_[0]->SetForce(1, -(gas_ * accelRate_ + brake_ * brakeRate_) * frontPower_);
 
-    this->joints[1]->SetVelocityLimit(1, -jointVel);
-    this->joints[1]->SetForce(1, -(this->gas * this->accelRate + this->brake * this->brakeRate) * this->frontPower);
+    joints_[1]->SetVelocityLimit(1, -jointVel);
+    joints_[1]->SetForce(1, -(gas_ * accelRate_ + brake_ * brakeRate_) * frontPower_);
 
-    this->joints[2]->SetVelocityLimit(1, -jointVel);
-    this->joints[2]->SetForce(1, -(this->gas * this->accelRate + this->brake * this->brakeRate) * this->rearPower);
+    joints_[2]->SetVelocityLimit(1, -jointVel);
+    joints_[2]->SetForce(1, -(gas_ * accelRate_ + brake_ * brakeRate_) * rearPower_);
 
-    this->joints[3]->SetVelocityLimit(1, -jointVel);
-    this->joints[3]->SetForce(1, -(this->gas * this->accelRate + this->brake * this->brakeRate) * this->rearPower);
+    joints_[3]->SetVelocityLimit(1, -jointVel);
+    joints_[3]->SetForce(1, -(gas_ * accelRate_ + brake_ * brakeRate_) * rearPower_);
 
     // Set the front-left wheel angle
-    this->joints[0]->SetLowStop(0, wheelAngle);
-    this->joints[0]->SetHighStop(0, wheelAngle);
-    this->joints[0]->SetLowStop(0, wheelAngle);
-    this->joints[0]->SetHighStop(0, wheelAngle);
+    joints_[0]->SetLowStop(0, wheelAngle);
+    joints_[0]->SetHighStop(0, wheelAngle);
+    joints_[0]->SetLowStop(0, wheelAngle);
+    joints_[0]->SetHighStop(0, wheelAngle);
 
     // Set the front-right wheel angle
-    this->joints[1]->SetHighStop(0, wheelAngle);
-    this->joints[1]->SetLowStop(0, wheelAngle);
-    this->joints[1]->SetHighStop(0, wheelAngle);
-    this->joints[1]->SetLowStop(0, wheelAngle);
+    joints_[1]->SetHighStop(0, wheelAngle);
+    joints_[1]->SetLowStop(0, wheelAngle);
+    joints_[1]->SetHighStop(0, wheelAngle);
+    joints_[1]->SetLowStop(0, wheelAngle);
 
     //  aerodynamics
-    this->chassis->AddForce(math::Vector3(0, 0, this->aeroLoad * this->velocity.GetSquaredLength()));
+    chassis_->AddForce(math::Vector3(0, 0, aeroLoad_ * velocity_.GetSquaredLength()));
 
     // Sway bars
     math::Vector3 bodyPoint;
@@ -415,24 +415,24 @@ void sdcCar::OnUpdate() {
 
     // Physics calculations
     for (int ix = 0; ix < 4; ++ix) {
-        hingePoint = this->joints[ix]->GetAnchor(0);
-        bodyPoint = this->joints[ix]->GetAnchor(1);
+        hingePoint = joints_[ix]->GetAnchor(0);
+        bodyPoint = joints_[ix]->GetAnchor(1);
 
-        axis = this->joints[ix]->GetGlobalAxis(0).Round();
+        axis = joints_[ix]->GetGlobalAxis(0).Round();
         double displacement = (bodyPoint - hingePoint).Dot(axis);
 
-        float amt = displacement * this->swayForce;
+        float amt = displacement * swayForce_;
         if (displacement > 0) {
             if (amt > 15)
                 amt = 15;
 
-            math::Pose p = this->joints[ix]->GetChild()->GetWorldPose();
-            this->joints[ix]->GetChild()->AddForce(axis * -amt);
-            this->chassis->AddForceAtWorldPosition(axis * amt, p.pos);
+            math::Pose p = joints_[ix]->GetChild()->GetWorldPose();
+            joints_[ix]->GetChild()->AddForce(axis * -amt);
+            chassis_->AddForceAtWorldPosition(axis * amt, p.pos);
 
-            p = this->joints[ix^1]->GetChild()->GetWorldPose();
-            this->joints[ix^1]->GetChild()->AddForce(axis * amt);
-            this->chassis->AddForceAtWorldPosition(axis * -amt, p.pos);
+            p = joints_[ix^1]->GetChild()->GetWorldPose();
+            joints_[ix^1]->GetChild()->AddForce(axis * amt);
+            chassis_->AddForceAtWorldPosition(axis * -amt, p.pos);
         }
     }
 }
@@ -443,65 +443,65 @@ void sdcCar::OnUpdate() {
  * when the car is updating
  */
 sdcCar::sdcCar() {
-    this->hlc_ = new sdcHLC(this);
+    hlc_ = new sdcHLC(this);
 
-    this->joints.resize(4);
+    joints_.resize(4);
 
     // Physics variables
-    this->aeroLoad = 0.1;
-    this->swayForce = 10;
+    aeroLoad_ = 0.1;
+    swayForce_ = 10;
 
-    this->maxSpeed = 10;
-    this->frontPower = 50;
-    this->rearPower = 50;
-    this->wheelRadius = 0.3;
-    this->steeringRatio = 1.0;
-    this->tireAngleRange = 1.0;
+    maxSpeed_ = 10;
+    frontPower_ = 50;
+    rearPower_ = 50;
+    wheelRadius_ = 0.3;
+    steeringRatio_ = 1.0;
+    tireAngleRange_ = 1.0;
 
     // Movement parameters
-    this->gas = 0.0;
-    this->brake = 0.0;
-    this->accelRate = 1.0;
-    this->brakeRate = 1.0;
+    gas_ = 0.0;
+    brake_ = 0.0;
+    accelRate_ = 1.0;
+    brakeRate_ = 1.0;
 
     // Limits on the car's speed
-    this->maxCarSpeed = 10;
-    this->maxCarReverseSpeed = -10;
+    maxCarSpeed_ = 10;
+    maxCarReverseSpeed_ = -10;
 
     // Set starting speed parameters
-    this->targetSpeed = 6;
+    targetSpeed_ = 6;
 
     // Set starting turning parameters
-    this->steeringAmount = 0.0;
-    this->targetSteeringAmount = 0.0;
-    this->targetDirection = sdcAngle(0);
-    this->turningLimit = 20.0;
+    steeringAmount_ = 0.0;
+    targetSteeringAmount_ = 0.0;
+    targetDirection_ = sdcAngle(0);
+    turningLimit_ = 20.0;
 
     // Booleans for the car's actions
-    this->turning = false;
-    this->reversing = false;
-    this->stopping = false;
+    turning_ = false;
+    reversing_ = false;
+    stopping_ = false;
 
     // Variables for parking
-    this->targetParkingAngle = sdcAngle(0.0);
-    this->parkingAngleSet = false;
-    this->isFixingParking = false;
-    this->parkingSpotSet = false;
+    targetParkingAngle_ = sdcAngle(0.0);
+    parkingAngleSet_ = false;
+    isFixingParking_ = false;
+    parkingSpotSet_ = false;
 
     // Variables for waypoint driving
-    this->waypointProgress = 0;
+    waypointProgress_ = 0;
 
     // Variables for intersections
-    this->stoppedAtSign = false;
-    this->ignoreStopSignsCounter = 0;
-    this->atIntersection = 0;
+    stoppedAtSign_ = false;
+    ignoreStopSignsCounter_ = 0;
+    atIntersection_ = 0;
 
     // Variables for following
-    this->isTrackingObject = false;
-    this->stationaryCount = 0;
+    isTrackingObject_ = false;
+    stationaryCount_ = 0;
 
     // Variables for avoidance
-    this->trackingNavWaypoint = false;
+    trackingNavWaypoint_ = false;
 }
 
 sdcCar::~sdcCar() {
