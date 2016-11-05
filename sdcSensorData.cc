@@ -49,7 +49,7 @@ double sdcSensorData::newSteerMagnitude = 10;
 /*
  * Initializes the lidar in the given position to store its minimum angle, as well as the resolution
  */
-void sdcSensorData::InitLidar(LidarPos lidar, double minAngle, double angleResolution, double maxRange, int numRays){
+void sdcSensorData::InitLidar(LidarPos lidar, double minAngle, double angleResolution, double maxRange, int numRays) {
     switch (lidar) {
         case TOP:
         case SIDE_LEFT:
@@ -64,7 +64,7 @@ void sdcSensorData::InitLidar(LidarPos lidar, double minAngle, double angleResol
 /*
  * Updates the lidar in the given position to hold the given rays
  */
-void sdcSensorData::UpdateLidar(LidarPos lidar, std::vector<double>* newRays){
+void sdcSensorData::UpdateLidar(LidarPos lidar, std::vector<double>* newRays) {
     lidarInfoMap[lidar].lastUpdate = (lidarInfoMap[lidar].lastUpdate + 1) % 100000000;
     switch (lidar) {
         case FRONT:
@@ -135,42 +135,42 @@ double sdcSensorData::GetNewSteeringMagnitude() {
 /*
  * Get the last update tick for the given lidar
  */
-int sdcSensorData::GetLidarLastUpdate(LidarPos lidar){
+int sdcSensorData::GetLidarLastUpdate(LidarPos lidar) {
     return lidarInfoMap[lidar].lastUpdate;
 }
 
 /*
  * Get the number of rays for the given lidar
  */
-int sdcSensorData::GetLidarNumRays(LidarPos lidar){
+int sdcSensorData::GetLidarNumRays(LidarPos lidar) {
     return lidarInfoMap[lidar].numRays;
 }
 
 /*
  * Get the minimum angle for the given lidar
  */
-sdcAngle sdcSensorData::GetLidarMinAngle(LidarPos lidar){
+sdcAngle sdcSensorData::GetLidarMinAngle(LidarPos lidar) {
     return lidarInfoMap[lidar].minAngle;
 }
 
 /*
  * Get the angle between individual rays for the given lidar
  */
-double sdcSensorData::GetLidarAngleResolution(LidarPos lidar){
+double sdcSensorData::GetLidarAngleResolution(LidarPos lidar) {
     return lidarInfoMap[lidar].resolution;
 }
 
 /*
  * Get the range for the given lidar
  */
-double sdcSensorData::GetLidarMaxRange(LidarPos lidar){
+double sdcSensorData::GetLidarMaxRange(LidarPos lidar) {
     return lidarInfoMap[lidar].maxRange;
 }
 
 /*
  * Retrieve a copy of the rays for the lidar in the given position
  */
-std::vector<double> sdcSensorData::GetLidarRays(LidarPos lidar){
+std::vector<double> sdcSensorData::GetLidarRays(LidarPos lidar) {
     std::vector<double> lidarRaysCopy;
 
     switch (lidar) {
@@ -238,7 +238,7 @@ std::vector<double> sdcSensorData::GetLidarRays(LidarPos lidar){
 /*
  * Return a vector of pairs (ray angle, ray length) which represents objects in view of front lidar
  */
-std::vector<sdcLidarRay> sdcSensorData::GetBlockedFrontRays(){
+std::vector<sdcLidarRay> sdcSensorData::GetBlockedFrontRays() {
     std::vector<sdcLidarRay> objectsInFront;
     for (int i = 0; i < frontLidarRays->size(); i++) {
         if (!std::isinf((*frontLidarRays)[i])) {
@@ -252,7 +252,7 @@ std::vector<sdcLidarRay> sdcSensorData::GetBlockedFrontRays(){
 /*
  * Return a vector of pairs (ray angle, ray length) which represents objects in view of back lidar
  */
-std::vector<sdcLidarRay> sdcSensorData::GetBlockedBackRays(){
+std::vector<sdcLidarRay> sdcSensorData::GetBlockedBackRays() {
     std::vector<sdcLidarRay> objectsInBack;
     for (int i = 0; i < backLidarRays->size(); i++) {
         if (!std::isinf((*backLidarRays)[i])) {
@@ -268,12 +268,12 @@ std::vector<sdcLidarRay> sdcSensorData::GetBlockedBackRays(){
  * left and right bounding lidar ray, as well as the minimum distance to the
  * object
  */
-std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront(){
+std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront() {
     std::vector<sdcVisibleObject> objectList;
 
     // With no blocked rays, there are no objects to record
     std::vector<sdcLidarRay> blockedRays = GetBlockedFrontRays();
-    if(blockedRays.size() == 0) return objectList;
+    if (blockedRays.size() == 0) return objectList;
 
     double distMargin = 1;
     double angleMargin = 0.01;
@@ -291,16 +291,16 @@ std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront(){
         sdcAngle curAngle = blockedRays[i].angle;
         double curDist = blockedRays[i].dist;
 
-        if(!ignorePrev){
+        if (!ignorePrev) {
             objMinDist = curDist < objMinDist ? curDist : objMinDist;
 
             // If either the checked angles or distance fall outside the margins, the rays are looking at a new object
-            if(!((curAngle - prevAngle).WithinMargin(angleMargin) && fabs(curDist - prevDist) < distMargin)){
+            if (!((curAngle - prevAngle).WithinMargin(angleMargin) && fabs(curDist - prevDist) < distMargin)) {
                 // Record the object just found
                 objectList.push_back(sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
                 ignorePrev = true;
             }
-        }else{
+        } else {
             ignorePrev = false;
             objMinAngle = curAngle;
             objMinDist = curDist;
@@ -324,7 +324,7 @@ sdcAngle sdcSensorData::gpsYaw = sdcAngle(0);
 /*
  * Update the gps information
  */
-void sdcSensorData::UpdateGPS(double x, double y, double yaw){
+void sdcSensorData::UpdateGPS(double x, double y, double yaw) {
     gpsX = x;
     gpsY = y;
     gpsYaw = sdcAngle(yaw);
@@ -333,13 +333,13 @@ void sdcSensorData::UpdateGPS(double x, double y, double yaw){
 /*
  * Get the current sensor readings for position
  */
-math::Vector2d sdcSensorData::GetPosition(){
+math::Vector2d sdcSensorData::GetPosition() {
     return math::Vector2d(gpsX, gpsY);
 }
 
 /*
  * Get the current sensor readings for orientation
  */
-sdcAngle sdcSensorData::GetYaw(){
+sdcAngle sdcSensorData::GetYaw() {
     return gpsYaw;
 }

@@ -42,14 +42,13 @@ F<double> delG(const F<double>& x, const F<double>& y) {
 	return dG;
 }
 
-void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
+void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/) {
 		// Get the parent sensor.
 		this->parentSensor =
 		boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
 
 		// Make sure the parent sensor is valid.
-		if (!this->parentSensor)
-		{
+		if (!this->parentSensor) {
 				gzerr << "Couldn't find a camera\n";
 				return;
 		}
@@ -60,7 +59,7 @@ void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 		// Make sure the parent sensor is active.
 		this->parentSensor->SetActive(true);
 		//std::cout << this->parentSensor->GetNoise() << std::endl;
-		if(!cpu_stop_sign.load(cascade_file_path)) {
+		if (!cpu_stop_sign.load(cascade_file_path)) {
 			std::cout << "Unable to load cascade classifier xml file!" << std::endl;
 		}
 }
@@ -142,15 +141,15 @@ void sdcCameraSensor::OnUpdate() {
 	cpu_stop_sign.detectMultiScale( image, stopSigns, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 
 	//Make sure stop sign is detected across multiple consecutive frames
-	if(stopSigns.size() > 0){
+	if (stopSigns.size() > 0) {
 		sdcSensorData::stopSignFrameCount++;
-	}else{
+	} else {
 		sdcSensorData::stopSignFrameCount = 0;
 	}
 
 	double avgSize = 0;
-	if(stopSigns.size() > 0){
-		for( int i = 0; i < stopSigns.size(); i++ ){
+	if (stopSigns.size() > 0) {
+		for ( int i = 0; i < stopSigns.size(); i++ ) {
 
 			//check if area of detected stop sign contains any red or not
 		   cv::rectangle(image, stopSigns[i], Scalar(0,0,255),3,8,0); // was line_8
@@ -158,9 +157,9 @@ void sdcCameraSensor::OnUpdate() {
 		}
 		avgSize = avgSize / stopSigns.size();
 	}
-	if(stopSigns.size() > 0){
+	if (stopSigns.size() > 0) {
 		sdcSensorData::sizeOfStopSign = avgSize;
-	}else{
+	} else {
 		sdcSensorData::sizeOfStopSign = 0;
 	}
 // END HAAR CASCADE OBJECT DETECTION
@@ -254,12 +253,12 @@ void sdcCameraSensor::OnUpdate() {
 	// 		double left_y_top = (a * x) + b - sqrt( c*pow(x,2) + (d * x) + e);
 	// 		double left_y_bot = (a * x) + b + sqrt( c*pow(x,2) + (d * x) + e);
 
-	// 		if(left_y_top >= v) {
+	// 		if (left_y_top >= v) {
 	// 				Point left_curve_point_top = Point(x,left_y_top);
 	// 				left_curve_points_top.push_back(left_curve_point_top);
 	// 		}
 
-	// 		if(left_y_bot >= v) {
+	// 		if (left_y_bot >= v) {
 	// 				Point left_curve_point_bot = Point(x,left_y_bot);
 	// 				left_curve_points_bot.push_back(left_curve_point_bot);
 	// 		}
@@ -268,14 +267,14 @@ void sdcCameraSensor::OnUpdate() {
 	// 	// Not necessarily needed since we examine the bottom half of the LCF
 	// 	// but this is the section that Park et al. 2001 uses for scoring
 
-	// 	// if(left_curve_points_top.size() > 1) {
+	// 	// if (left_curve_points_top.size() > 1) {
 	// 	// 	for (int j = 0; j < left_curve_points_top.size() - 1; j++) {
 	// 	// 		line(image, left_curve_points_top[j], left_curve_points_top[j + 1], Scalar(0,0,255), 1, CV_AA);
 	// 	// 	}
 	// 	// }
 
 	// 	double left_curve_magnitude = 0;
-	// 	if(left_curve_points_bot.size() > 1) {
+	// 	if (left_curve_points_bot.size() > 1) {
 	// 		for (int j = 0; j < left_curve_points_bot.size(); j++) {
 	// 			//This is where we would do LROI calculations
 	// 			//LROI is a triangle, the top point is height of vanishing point.
@@ -313,25 +312,25 @@ void sdcCameraSensor::OnUpdate() {
 	// 	float left_y_top = (a * x) + b - sqrt( c*pow(x,2) + (d * x) + e);
 	// 	float left_y_bot = (a * x) + b + sqrt( c*pow(x,2) + (d * x) + e);
 
-	// 	if(left_y_top >= v) {
+	// 	if (left_y_top >= v) {
 	// 			Point left_curve_point_top = Point(x,left_y_top);
 	// 			left_curve_points_top.push_back(left_curve_point_top);
 	// 	}
 
-	// 	if(left_y_bot >= v) {
+	// 	if (left_y_bot >= v) {
 	// 			Point left_curve_point_bot = Point(x,left_y_bot);
 	// 			left_curve_points_bot.push_back(left_curve_point_bot);
 	// 	}
 	// }
 
-	// if(left_curve_points_top.size() > 1) {
-	// 	for (int i = 0; i < left_curve_points_top.size() - 1; i++){
+	// if (left_curve_points_top.size() > 1) {
+	// 	for (int i = 0; i < left_curve_points_top.size() - 1; i++) {
 	// 		line(image, left_curve_points_top[i], left_curve_points_top[i + 1], Scalar(0,255,0), 3, CV_AA);
 	// 	}
 	// }
 
-	// if(left_curve_points_bot.size() > 1) {
-	// 	for (int i = 0; i < left_curve_points_bot.size(); i++){
+	// if (left_curve_points_bot.size() > 1) {
+	// 	for (int i = 0; i < left_curve_points_bot.size(); i++) {
 	// 		line(image, left_curve_points_bot[i], left_curve_points_bot[i + 1], Scalar(0,255,0), 3, CV_AA);
 	// 	}
 	// }
@@ -372,12 +371,12 @@ void sdcCameraSensor::OnUpdate() {
 	// 		float right_y_top = (a * x) + b - sqrt( c*pow(x,2) + (d * x) + e);
 	// 		float right_y_bot = (a * x) + b + sqrt( c*pow(x,2) + (d * x) + e);
 
-	// 		if(right_y_top >= v) {
+	// 		if (right_y_top >= v) {
 	// 				Point right_curve_point_top = Point(x,right_y_top);
 	// 				right_curve_points_top.push_back(right_curve_point_top);
 	// 		}
 
-	// 		if(right_y_bot >= v) {
+	// 		if (right_y_bot >= v) {
 	// 				Point right_curve_point_bot = Point(x,right_y_bot);
 	// 				right_curve_points_bot.push_back(right_curve_point_bot);
 	// 		}
@@ -386,14 +385,14 @@ void sdcCameraSensor::OnUpdate() {
 	// 	// Not necessarily needed since we examine the bottom half of the LCF
 	// 	// but this is the section that Park et al. 2001 uses for scoring
 
-	// 	// if(right_curve_points_top.size() > 1) {
-	// 	// 	for (int j = 0; j < right_curve_points_top.size() - 1; j++){
+	// 	// if (right_curve_points_top.size() > 1) {
+	// 	// 	for (int j = 0; j < right_curve_points_top.size() - 1; j++) {
 	// 	// 		line(image, right_curve_points_top[j], right_curve_points_top[j + 1], Scalar(0,0,255), 1, CV_AA);
 	// 	// 	}
 	// 	// }
 
 	// 	double right_curve_magnitude = 0;
-	// 	if(right_curve_points_bot.size() > 1) {
+	// 	if (right_curve_points_bot.size() > 1) {
 	// 		for (int j = 0; j < right_curve_points_bot.size(); j++) {
 	// 			//This is where we would do LROI calculations
 	// 			//LROI is a triangle, the top point is height of vanishing point.
@@ -431,25 +430,25 @@ void sdcCameraSensor::OnUpdate() {
 	// 	float right_y_top = (a * x) + b - sqrt( c*pow(x,2) + (d * x) + e);
 	// 	float right_y_bot = (a * x) + b + sqrt( c*pow(x,2) + (d * x) + e);
 
-	// 	if(right_y_top >= v) {
+	// 	if (right_y_top >= v) {
 	// 			Point right_curve_point_top = Point(x,right_y_top);
 	// 			right_curve_points_top.push_back(right_curve_point_top);
 	// 	}
 
-	// 	if(right_y_bot >= v) {
+	// 	if (right_y_bot >= v) {
 	// 			Point right_curve_point_bot = Point(x,right_y_bot);
 	// 			right_curve_points_bot.push_back(right_curve_point_bot);
 	// 	}
 	// }
 
-	// if(right_curve_points_top.size() > 1) {
-	// 	for (int i = 0; i < right_curve_points_top.size() - 1; i++){
+	// if (right_curve_points_top.size() > 1) {
+	// 	for (int i = 0; i < right_curve_points_top.size() - 1; i++) {
 	// 		line(image, right_curve_points_top[i], right_curve_points_top[i + 1], Scalar(0,255,0), 3, CV_AA);
 	// 	}
 	// }
 
-	// if(right_curve_points_bot.size() > 1) {
-	// 	for (int i = 0; i < right_curve_points_bot.size(); i++){
+	// if (right_curve_points_bot.size() > 1) {
+	// 	for (int i = 0; i < right_curve_points_bot.size(); i++) {
 	// 		line(image, right_curve_points_bot[i], right_curve_points_bot[i + 1], Scalar(0,255,0), 3, CV_AA);
 	// 	}
 	// }

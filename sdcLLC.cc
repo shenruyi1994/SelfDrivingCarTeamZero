@@ -16,19 +16,19 @@ using namespace gazebo;
 //typedef CGAL::Point_3<Spherical_k>             Point_3;
 //typedef CGAL:: Sphere_3<Spherical_k>           Sphere_3;
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-    std::pair<double, double> dubins  = calculateDubins(NULL);
-    this->car_->SetTargetSteeringAmount(dubins.first);
-    this->car_->SetTargetSpeed(dubins.first);
+  std::pair<double, double> dubins  = calculateDubins(NULL);
+  car_->SetTargetSteeringAmount(dubins.first);
+  car_->SetTargetSpeed(dubins.first);
 }
 
 std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
-    // this->car_->x;
-    // this->car_->y;
-    // this->car_->sdcAngle;
-    double velocity;
-    double yaw;
+  // car_->x_;
+  // car_->y_;
+  // car_->sdcAngle;
+  double velocity;
+  double yaw;
 
-    return std::make_pair(velocity, yaw);
+  return std::make_pair(velocity, yaw);
 }
 
 /*
@@ -38,8 +38,8 @@ std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
  * Default rate: 1.0
  */
 void sdcLLC::Accelerate(double amt, double rate) {
-    this->car_->SetTargetSpeed(this->car_->GetSpeed() + amt);
-    this->car_->SetAccelRate(rate);
+  car_->SetTargetSpeed(car_->GetSpeed() + amt);
+  car_->SetAccelRate(rate);
 }
 
 /*
@@ -49,15 +49,15 @@ void sdcLLC::Accelerate(double amt, double rate) {
  * Default rate: 1.0
  */
 void sdcLLC::Brake(double amt, double rate) {
-    this->car_->SetTargetSpeed(this->car_->GetSpeed() - amt);
-    this->car_->SetBrakeRate(rate);
+  car_->SetTargetSpeed(car_->GetSpeed() - amt);
+  car_->SetBrakeRate(rate);
 }
 
 /*
  * Sets the target speed to 0 m/s
  */
 void sdcLLC::Stop() {
-    this->car_->SetTargetSpeed(0);
+  car_->SetTargetSpeed(0);
 }
 
 /*
@@ -66,12 +66,12 @@ void sdcLLC::Stop() {
  * NOT the direction the front of the car is facing
  */
 void sdcLLC::Reverse() {
-    this->car_->reversing = true;
+  car_->reversing_ = true;
 }
 
 /*
  * Stop reversing the car.
  */
 void sdcLLC::StopReverse() {
-    this->car_->reversing = false;
+  car_->reversing_ = false;
 }

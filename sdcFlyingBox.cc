@@ -8,8 +8,7 @@ namespace gazebo
 {
   class ModelPush : public ModelPlugin
   {
-    public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
-    {
+    public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/) {
       // Store the pointer to the model
       this->model = _parent;
 
@@ -22,8 +21,7 @@ namespace gazebo
     }
 
     // Called by the world update start event
-    public: void OnUpdate(const common::UpdateInfo & /*_info*/)
-    {
+    public: void OnUpdate(const common::UpdateInfo & /*_info*/) {
       // Apply a small linear velocity to the model.
       //this->model->SetLinearVel(math::Vector3(3, 0, 5));
     }

@@ -14,13 +14,13 @@ using namespace gazebo;
 // Register this plugin with the simulator
 GZ_REGISTER_MODEL_PLUGIN(sdcGpsSensor);
 
-void sdcGpsSensor::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
+void sdcGpsSensor::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
     this->gpsLink = _model->GetLink(_sdf->Get<std::string>("gps"));
     this->connections.push_back(event::Events::ConnectWorldUpdateBegin(boost::bind(&sdcGpsSensor::OnUpdate, this)));
 }
 
 // Called by the world update start event
-void sdcGpsSensor::OnUpdate(){
+void sdcGpsSensor::OnUpdate() {
     math::Pose pose = this->gpsLink->GetWorldPose();
     sdcSensorData::UpdateGPS(pose.pos.x, pose.pos.y, pose.rot.GetYaw());
 }
