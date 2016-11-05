@@ -10,19 +10,19 @@
 using namespace gazebo;
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-    std::pair<double, double> dubins  = calculateDubins(NULL);
-    car_->SetTargetSteeringAmount(dubins.first);
-    car_->SetTargetSpeed(dubins.first);
+  std::pair<double, double> dubins  = calculateDubins(NULL);
+  car_->SetTargetSteeringAmount(dubins.first);
+  car_->SetTargetSpeed(dubins.first);
 }
 
 std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
-    // car_->x_;
-    // car_->y_;
-    // car_->sdcAngle;
-    double velocity;
-    double yaw;
+  // car_->x_;
+  // car_->y_;
+  // car_->sdcAngle;
+  double velocity;
+  double yaw;
 
-    return std::make_pair(velocity, yaw);
+  return std::make_pair(velocity, yaw);
 }
 
 /*
@@ -32,8 +32,8 @@ std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
  * Default rate: 1.0
  */
 void sdcLLC::Accelerate(double amt, double rate) {
-    car_->SetTargetSpeed(car_->GetSpeed() + amt);
-    car_->SetAccelRate(rate);
+  car_->SetTargetSpeed(car_->GetSpeed() + amt);
+  car_->SetAccelRate(rate);
 }
 
 /*
@@ -43,15 +43,15 @@ void sdcLLC::Accelerate(double amt, double rate) {
  * Default rate: 1.0
  */
 void sdcLLC::Brake(double amt, double rate) {
-    car_->SetTargetSpeed(car_->GetSpeed() - amt);
-    car_->SetBrakeRate(rate);
+  car_->SetTargetSpeed(car_->GetSpeed() - amt);
+  car_->SetBrakeRate(rate);
 }
 
 /*
  * Sets the target speed to 0 m/s
  */
 void sdcLLC::Stop() {
-    car_->SetTargetSpeed(0);
+  car_->SetTargetSpeed(0);
 }
 
 /*
@@ -60,12 +60,12 @@ void sdcLLC::Stop() {
  * NOT the direction the front of the car is facing
  */
 void sdcLLC::Reverse() {
-    car_->reversing_ = true;
+  car_->reversing_ = true;
 }
 
 /*
  * Stop reversing the car.
  */
 void sdcLLC::StopReverse() {
-    car_->reversing_ = false;
+  car_->reversing_ = false;
 }
