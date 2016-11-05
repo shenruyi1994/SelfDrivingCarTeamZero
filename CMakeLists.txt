@@ -65,5 +65,10 @@ add_library(sdcHLC STATIC sdcHLC.cc)
 
 target_link_libraries(sdcCar sdcHLC sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(sdcLLC sdcCar sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(sdcHLC sdcCar sdcWaypoint sdcLLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(sdcHLC sdcCar sdcWaypoint sdcLLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${})
+
+find_package(CGAL REQUIRED COMPONENTS Core GMP RS3 MPFI )
+include_directories(${CGAL_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${CGAL_LIBRARIES})
+
 

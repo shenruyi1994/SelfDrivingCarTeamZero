@@ -1,7 +1,10 @@
 #include "sdcLLC.hh"
-
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
+
+//#include <CGAL/Exact_spherical_kernel_3.h>
+//#include <CGAL/Random.h>
+
 
 #include "globals.hh"
 #include "sdcCar.hh"
@@ -9,6 +12,9 @@
 
 using namespace gazebo;
 
+//typedef CGAL::Exact_spherical_kernel_3         Spherical_k;
+//typedef CGAL::Point_3<Spherical_k>             Point_3;
+//typedef CGAL:: Sphere_3<Spherical_k>           Sphere_3;
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
     std::pair<double, double> dubins  = calculateDubins(NULL);
     this->car_->SetTargetSteeringAmount(dubins.first);
