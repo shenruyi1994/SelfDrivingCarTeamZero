@@ -2,33 +2,45 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 
-//#include <CGAL/Exact_spherical_kernel_3.h>
-//#include <CGAL/Random.h>
-
 
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "Waypoints.hh"
 
+#include <CGAL/Exact_circular_kernel_2.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Segment_2.h>
+
+
 using namespace gazebo;
 
-//typedef CGAL::Exact_spherical_kernel_3         Spherical_k;
-//typedef CGAL::Point_3<Spherical_k>             Point_3;
-//typedef CGAL:: Sphere_3<Spherical_k>           Sphere_3;
+typedef CGAL::Exact_circular_kernel_2             Circular_k;
+typedef CGAL::Point_2<Circular_k>                 Point_2;
+typedef CGAL::Circle_2<Circular_k>                Circle_2;
+typedef CGAL::Segment_2<Circular_k>               Segment_2; 
+typedef CGAL::Circular_arc_2<Circular_k>          Circular_arc_2;
+//placeholders for now
+
+
+void sdcLLC::update() {
+  std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
+  car_->SetTargetSteeringAmount(0);
+  car_->SetTargetSpeed(10);
+  std::cout << "Can we output to gazebo?" << std::endl;
+
+  }
+
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-  std::pair<double, double> dubins  = calculateDubins(NULL);
-  car_->SetTargetSteeringAmount(dubins.first);
-  car_->SetTargetSpeed(dubins.first);
+
 }
 
-std::pair<double, double> sdcLLC::calculateDubins(Waypoints* waypoints) {
-  // car_->x_;
-  // car_->y_;
-  // car_->sdcAngle;
-  double velocity;
-  double yaw;
+std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints) {
 
-  return std::make_pair(velocity, yaw);
+  Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
+  Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
+  Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
+
+  
 }
 
 /*

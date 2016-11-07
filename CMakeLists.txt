@@ -33,6 +33,7 @@ add_library(sdcVisibleObject SHARED sdcVisibleObject.cc)
 target_link_libraries(sdcVisibleObject sdcAngle sdcLidarRay ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcSensorData SHARED sdcSensorData.cc)
+
 target_link_libraries(sdcSensorData sdcVisibleObject sdcLidarRay sdcLidarSensorInfo sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcFrontLidarSensor SHARED sdcFrontLidarSensor.cc)
@@ -65,10 +66,13 @@ add_library(sdcHLC STATIC sdcHLC.cc)
 
 target_link_libraries(sdcCar sdcHLC sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(sdcLLC sdcCar sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(sdcHLC sdcCar sdcWaypoint sdcLLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${})
+target_link_libraries(sdcHLC sdcCar sdcWaypoint sdcLLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES})
 
 find_package(CGAL REQUIRED COMPONENTS Core GMP RS3 MPFI )
 include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+set(LIBS ${LIBS} $${PROTOBUF_LIBRARIES})

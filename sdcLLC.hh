@@ -7,6 +7,15 @@
 #include "globals.hh"
 #include "Waypoints.hh"
 
+//placeholder structs for now
+typedef struct {
+  int angle;
+} SteeringAngle;
+
+typedef struct {
+  int timeStep;
+} TimeStep;
+
 namespace gazebo {
   class sdcCar;
   class GAZEBO_VISIBLE sdcLLC {
@@ -16,7 +25,7 @@ namespace gazebo {
 
     void update();
     void setWaypoints(Waypoints* waypoints);
-    std::pair<double, double> calculateDubins(Waypoints* waypoints);
+    std::pair<SteeringAngle, TimeStep> calculateDubins(Waypoints* waypoints);
 
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);

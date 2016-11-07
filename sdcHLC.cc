@@ -13,6 +13,7 @@
 
 using namespace gazebo;
 
+
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
   waypoints_ = new Waypoints();
@@ -1396,4 +1397,9 @@ void sdcHLC::removeStartingEdge(int start) {
       }
       break;
   }
+}
+
+
+void sdcHLC::update() {
+  llc_->update();
 }
