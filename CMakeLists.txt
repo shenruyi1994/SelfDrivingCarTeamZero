@@ -7,7 +7,6 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(FADBAD++)
 
-set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/../")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(${OpenCV_LIBS}) Spits out error messages, and also doesn't seem necessary to work
@@ -59,11 +58,6 @@ target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(sdcIntersection SHARED sdcIntersection.cc)
 target_link_libraries(sdcIntersection ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcCar STATIC sdcCar.cc)
-add_library(sdcLLC STATIC sdcLLC.cc)
-add_library(sdcHLC STATIC sdcHLC.cc)
-
-target_link_libraries(sdcCar sdcHLC sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(sdcLLC sdcCar sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(sdcHLC sdcCar sdcWaypoint sdcLLC ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
+target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 

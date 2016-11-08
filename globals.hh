@@ -29,6 +29,4 @@ const double FRONT_OBJECT_COLLISION_WIDTH = CAR_WIDTH + 0.5;
 
 enum Direction { north, south, east, west };
 
-std::vector<sdcWaypoint> WAYPOINT_VEC;
-
 #endif
