@@ -19,7 +19,7 @@ typedef CGAL::Point_2<Circular_k>                 Point_2;
 typedef CGAL::Circle_2<Circular_k>                Circle_2;
 typedef CGAL::Segment_2<Circular_k>               Segment_2; 
 typedef CGAL::Circular_arc_2<Circular_k>          Circular_arc_2;
-//placeholders for now
+
 
 
 void sdcLLC::update() {
@@ -40,7 +40,20 @@ std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints)
   Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
   Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
 
-  
+  Circle_2 LSCircle;
+  Circle_2 RSCircle;
+  Circle_2 LECircle;
+  Circle_2 RECIrcle;
+
+  Segment_2 LLSeg;
+  Segment_2 LRSeg;
+  Segment_2 RLSeg;
+  Segment_2 RRSeg;
+
+  Circular_arc_2 LSArc;
+  Circular_arc_2 RSArc;
+  Circular_arc_2 LEArc;
+  circular_arc_2 REArc;
 }
 
 /*
