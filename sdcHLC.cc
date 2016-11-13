@@ -8,7 +8,7 @@
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "sdcIntersection.hh"
-#include "sdcCarUtils.hh"
+#include "sdcUtils.hh"
 #include "sdcLLC.hh"
 #include "Waypoints.hh"
 
