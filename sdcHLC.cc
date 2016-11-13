@@ -8,11 +8,13 @@
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "sdcIntersection.hh"
+#include "sdcCarUtils.hh"
 #include "sdcLLC.hh"
 #include "Waypoints.hh"
 
 using namespace gazebo;
 
+std::vector<sdcWaypoint> WAYPOINT_VEC;
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);

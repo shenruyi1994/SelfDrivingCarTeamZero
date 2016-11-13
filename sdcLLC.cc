@@ -53,7 +53,7 @@ std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints)
   Circular_arc_2 LSArc;
   Circular_arc_2 RSArc;
   Circular_arc_2 LEArc;
-  circular_arc_2 REArc;
+  Circular_arc_2 REArc;
 }
 
 /*
