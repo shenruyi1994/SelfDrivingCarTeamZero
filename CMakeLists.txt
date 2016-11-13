@@ -8,6 +8,12 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(FADBAD++)
 
 find_package(OpenCV REQUIRED)
+
+find_package(CGAL REQUIRED COMPONENTS core)
+include( ${CGAL_USE_FILE} )
+
+
+
 include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(${OpenCV_LIBS}) Spits out error messages, and also doesn't seem necessary to work
 
@@ -64,8 +70,8 @@ include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-set(LIBS ${LIBS} $${PROTOBUF_LIBRARIES})
+set(LIBS ${LIBS} ${PROTOBUF_LIBRARIES})

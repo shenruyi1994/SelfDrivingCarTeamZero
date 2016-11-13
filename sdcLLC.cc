@@ -36,9 +36,9 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
 
 std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints) {
 
-  Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
-  Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
-  Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
+  // Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
+  //Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
+  //Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
 
   Circle_2 LSCircle;
   Circle_2 RSCircle;

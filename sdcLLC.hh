@@ -16,6 +16,12 @@ typedef struct {
   int timeStep;
 } TimeStep;
 
+
+typedef struct {
+  std::pair<SteeringAngle, TimeStep> control;
+} Control;
+
+
 namespace gazebo {
   class sdcCar;
   class GAZEBO_VISIBLE sdcLLC {
