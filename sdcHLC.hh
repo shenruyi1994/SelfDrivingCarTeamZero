@@ -53,6 +53,8 @@ namespace gazebo {
     bool DoAccurateVehicleShapesCollideAtTime(sdcVisibleObject* obj);
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(sdcVisibleObject* obj);
     math::Vector2d GetPositionAtTime(double time);
+    sdcAngle GetCollisionAngleAtTime(sdcVisibleObject* obj, double time);
+
 
   private:
     sdcCar* car_;

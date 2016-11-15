@@ -525,7 +525,7 @@ bool sdcHLC::IsObjectOnCollisionCourse(sdcVisibleObject* obj) {
  *
  */
 bool sdcHLC::DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj
-                                 double time) {
+                                           double time) {
   return false;
 }
 
@@ -547,7 +547,7 @@ bool sdcHLC::DoMaximumRadiiCollide(sdcVisibleObject* obj) {
  * (max_radius_car + max_radius_obj) at the given time
  */
 bool sdcHLC::DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj
-                               double time) {
+                                         double time) {
   return false;
 }
 
@@ -569,7 +569,7 @@ bool sdcHLC::DoAccurateVehicleShapesCollide(sdcVisibleObject* obj) {
  * intersect at the given time
  */
 bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(sdcVisibleObject* obj,
-                                                 double time) {
+                                                  double time) {
   return false;
 }
 
@@ -589,6 +589,14 @@ math::Vector2d GetPositionAtTime(double time) {
 std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
     sdcVisibleObject* obj, math::Vector2d collision) {
   return NULL;
+}
+
+/*
+ * Returns the angle between the car and the vehicle at the time of collision,
+ * allowing for improved avoidance decisionmaking.
+ */
+sdcAngle sdcHLC::GetCollisionAngleAtTime(sdcVisibleObject* obj, double time) {
+  return sdcAngle();
 }
 
 ///////////////////////////////////////////////
