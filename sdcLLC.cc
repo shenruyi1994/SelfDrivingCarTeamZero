@@ -1,3 +1,4 @@
+//sdcLLC.hh containsCGAL typedefs and includes - may restructure location
 #include "sdcLLC.hh"
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
@@ -6,28 +7,19 @@
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "Waypoints.hh"
+#include "arr_print.h"
 
-#include <CGAL/Exact_circular_kernel_2.h>
-#include <CGAL/point_generators_2.h>
-#include <CGAL/Segment_2.h>
-
+#include <CGAl/Arrangement_2.h>
 
 using namespace gazebo;
-
-typedef CGAL::Exact_circular_kernel_2             Circular_k;
-typedef CGAL::Point_2<Circular_k>                 Point_2;
-typedef CGAL::Circle_2<Circular_k>                Circle_2;
-typedef CGAL::Segment_2<Circular_k>               Segment_2; 
-typedef CGAL::Circular_arc_2<Circular_k>          Circular_arc_2;
-
 
 
 void sdcLLC::update() {
   std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
   car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
-  std::cout << "Can we output to gazebo?" << std::endl;
-
+  Waypoints waypoints;
+  calculateDubins(&waypoints);
   }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
@@ -35,25 +27,51 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
 }
 
 std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints) {
+  
 
   // Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
   //Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
   //Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
 
-  Circle_2 LSCircle;
-  Circle_2 RSCircle;
-  Circle_2 LECircle;
-  Circle_2 RECIrcle;
+  //Circle_2 LSCircle;
+  //Circle_2 RSCircle;
+  //Circle_2 LECircle;
+  //Circle_2 RECIrcle;
 
-  Segment_2 LLSeg;
-  Segment_2 LRSeg;
-  Segment_2 RLSeg;
-  Segment_2 RRSeg;
+  //Segment_2 LLSeg;
+  //Segment_2 LRSeg;
+  //Segment_2 RLSeg;
+  // Segment_2 RRSeg;
 
-  Circular_arc_2 LSArc;
-  Circular_arc_2 RSArc;
-  Circular_arc_2 LEArc;
-  Circular_arc_2 REArc;
+  //Circular_arc_2 LSArc;
+  //Circular_arc_2 RSArc;
+  //Circular_arc_2 LEArc;
+  //Circular_arc_2 REArc;
+
+  //list holding our linesegments, circles, and segment arcs
+  std::list<Curve> curves;
+
+  //creates a circle centered at oridin with squaired raidus of 2
+  
+  Circle c1 = Circle(Rational_point(0,0), Number_type(2));
+  curves.push_back(Curve(c1));
+  
+
+  //creates a line segment (x = y) 
+  Segment s1 = Segment(Rational_point(-2, -2), Rational_point(2, 2)); 
+
+  curves.push_back(Curve(s1));
+
+  //Creates circular arc defined by 3 non-colinear points
+  Rational_point p1 = Rational_point(0,5);
+  Rational_point p2 = Rational_point(3,4);
+  Rational_point p3 = Rational_point(2,3);
+  curves.push_back(Curve(p1, p2, p3));
+
+  Arrangement arr;
+  insert(arr, curves.begin(), curves.end());
+  print_arrangement(arr);
+  
 }
 
 /*
