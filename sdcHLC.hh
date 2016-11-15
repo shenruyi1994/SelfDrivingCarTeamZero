@@ -43,6 +43,17 @@ namespace gazebo {
     void PerpendicularPark();
     void ParallelPark();
 
+    // Collision detection/avoidance functions
+    sdcVisibleObject* CheckNearbyObjectsForCollision();
+    bool IsObjectOnCollisionCourse(sdcVisibleObject* obj);
+    bool DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj);
+    bool DoMaximumRadiiCollide(sdcVisibleObject* obj);
+    bool DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj);
+    bool DoAccurateVehicleShapesCollide(sdcVisibleObject* obj);
+    bool DoAccurateVehicleShapesCollideAtTime(sdcVisibleObject* obj);
+    std::vector<sdcWaypoint*>* ComputeAvoidancePath(sdcVisibleObject* obj);
+    math::Vector2d GetPositionAtTime(double time);
+
   private:
     sdcCar* car_;
     sdcLLC* llc_;

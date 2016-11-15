@@ -496,8 +496,106 @@ void sdcHLC::Avoidance() {
       currentState_ = DEFAULT_STATE;
       break;
   }
-
 }
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+//  BEGIN COLLISION DETECTION FUNCTIONS //
+//////////////////////////////////////////
+//////////////////////////////////////////
+
+/*
+ * Returns the first object encountered that is on a collision course with
+ * the car, or NULL if no such object exists.
+ */
+sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() {
+  return NULL;
+}
+
+/*
+ * Checks if the object is on a collision course with the car.
+ */
+bool sdcHLC::IsObjectOnCollisionCourse(sdcVisibleObject* obj) {
+  return DoMaximumBoundingBoxesCollide(obj)
+      && DoMaximumRadiiCollide(obj)
+      && DoAccurateVehicleShapeCollide(obj);
+}
+
+/*
+ *
+ */
+bool sdcHLC::DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj
+                                 double time) {
+  return false;
+}
+
+/*
+ * Returns true if the distance between the car and the dangerous object is
+ * ever within (max_radius_car + max_radius_obj) along their projected paths.
+ */
+bool sdcHLC::DoMaximumRadiiCollide(sdcVisibleObject* obj) {
+  for (int i = 0; i < MAX_SAFE_TIME * 100; i++) {
+    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/*
+ * Returns true if the distance between the car and obj at is within
+ * (max_radius_car + max_radius_obj) at the given time
+ */
+bool sdcHLC::DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj
+                               double time) {
+  return false;
+}
+
+/*
+ * Returns true if accurate shape depictions of the car and the object
+ * ever intersect along their projected paths.
+ */
+bool sdcHLC::DoAccurateVehicleShapesCollide(sdcVisibleObject* obj) {
+  for (int i = 0; i < MAX_SAFE_TIME * 100; i++) {
+    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/*
+ * Returns true if accurate shape depictions of the car and the object
+ * intersect at the given time
+ */
+bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(sdcVisibleObject* obj,
+                                                 double time) {
+  return false;
+}
+
+/*
+ * TODO: figure out how this will work. For now it is a placeholder, but will
+ * eventually be based on the dubins path created by the LLC.
+ */
+math::Vector2d GetPositionAtTime(double time) {
+  return math::Vector2d(0, 0);
+}
+
+/*
+ * Generates a new path for the car, given an object and a collision location
+ * on a previous path
+ * TODO: integrate this with the dubins path algorithms
+ */
+std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
+    sdcVisibleObject* obj, math::Vector2d collision) {
+  return NULL;
+}
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+// BEGIN OTHER STATEFUL ALGORITHMS FROM 2015 //
+///////////////////////////////////////////////
+///////////////////////////////////////////////
 
 /*
  * Executes a turn at an intersection

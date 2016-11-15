@@ -1,5 +1,5 @@
 /*
- * This class provides a wrapper for objects we see, created by two lidar rays and 
+ * This class provides a wrapper for objects we see, created by two lidar rays and
  * a distance. This class provides methods that return information about these
  * objects, including estimates about future position based upon past data.
  */
@@ -87,13 +87,17 @@ math::Vector2d sdcVisibleObject::EstimateUpdate() {
 
 /*
  * Method to calculate the projected position some numSteps into the future.
- * 
+ *
  * Currently unused.
  */
 math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
     double newX = this->centerpoint.x + this->estimatedXSpeed * numSteps;
     double newY = this->centerpoint.y + this->estimatedYSpeed * numSteps;
     return math::Vector2d(newX, newY);
+}
+
+math::Vector2d sdcVisibleObject::GetProjectedPositionAtTime(double time) {
+    double newX = this->centerpoint.x + this->estimate
 }
 
 /*
@@ -149,7 +153,7 @@ void sdcVisibleObject::Update(sdcLidarRay newLeft, sdcLidarRay newRight, double 
 /*
  * This method takes in a vector of multiple points and attemps to fit a line to these points.
  * This allows us to project its path and determine whether or not there is a chance for
- * the object to hit us. Method returns the predicted slope and Y-intercept based upon the 
+ * the object to hit us. Method returns the predicted slope and Y-intercept based upon the
  * vector of points.
  */
 math::Vector2d sdcVisibleObject::FitLineToPoints(std::vector<math::Vector2d> points, math::Vector2d newPoint) {

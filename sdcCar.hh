@@ -176,6 +176,7 @@ namespace gazebo {
     sdcAngle GetDirection();
     sdcAngle GetOrientation();
     void GetNSEW();
+    double GetMaxSafeTime();
 
     void SetTargetDirection(sdcAngle direction);
     void SetTargetSteeringAmount(double a);
