@@ -159,6 +159,15 @@ void sdcCar::GetNSEW() {
 }
 
 /*
+ * Returns the maximum amount of time we have to be worried about when
+ * determining what to avoid in the future. Changes based on velocity of the
+ * car.
+ */
+double sdcCar::GetMaxSafeTime() {
+  return 1;
+}
+
+/*
  * Gets the direction the car is facing
  */
 sdcAngle sdcCar::GetOrientation() {

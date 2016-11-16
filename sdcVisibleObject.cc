@@ -96,8 +96,11 @@ math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
     return math::Vector2d(newX, newY);
 }
 
+/*
+ * TODO: implement this, figure out what time means
+ */
 math::Vector2d sdcVisibleObject::GetProjectedPositionAtTime(double time) {
-    double newX = this->centerpoint.x + this->estimate
+    return math::Vector2d(0, 0);
 }
 
 /*

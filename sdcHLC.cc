@@ -1,5 +1,6 @@
 #include "sdcHLC.hh"
 
+#include <math.h>
 #include <vector>
 
 #include "gazebo/physics/physics.hh"
@@ -10,6 +11,7 @@
 #include "sdcIntersection.hh"
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
+#include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
 using namespace gazebo;
@@ -518,14 +520,13 @@ sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() {
 bool sdcHLC::IsObjectOnCollisionCourse(sdcVisibleObject* obj) {
   return DoMaximumBoundingBoxesCollide(obj)
       && DoMaximumRadiiCollide(obj)
-      && DoAccurateVehicleShapeCollide(obj);
+      && DoAccurateVehicleShapesCollide(obj);
 }
 
 /*
  *
  */
-bool sdcHLC::DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj
-                                           double time) {
+bool sdcHLC::DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj) {
   return false;
 }
 
@@ -534,8 +535,8 @@ bool sdcHLC::DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj
  * ever within (max_radius_car + max_radius_obj) along their projected paths.
  */
 bool sdcHLC::DoMaximumRadiiCollide(sdcVisibleObject* obj) {
-  for (int i = 0; i < MAX_SAFE_TIME * 100; i++) {
-    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100) {
+  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
+    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100)) {
       return true;
     }
   }
@@ -546,7 +547,7 @@ bool sdcHLC::DoMaximumRadiiCollide(sdcVisibleObject* obj) {
  * Returns true if the distance between the car and obj at is within
  * (max_radius_car + max_radius_obj) at the given time
  */
-bool sdcHLC::DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj
+bool sdcHLC::DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj,
                                          double time) {
   return false;
 }
@@ -556,8 +557,8 @@ bool sdcHLC::DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj
  * ever intersect along their projected paths.
  */
 bool sdcHLC::DoAccurateVehicleShapesCollide(sdcVisibleObject* obj) {
-  for (int i = 0; i < MAX_SAFE_TIME * 100; i++) {
-    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100) {
+  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
+    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100)) {
       return true;
     }
   }
