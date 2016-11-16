@@ -202,8 +202,8 @@ bool sdcCar::ObjectDirectlyAhead() {
  * Returns true if the given object is directly ahead of us, else false
  */
 bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj) {
-  double leftDist = obj.left.GetLateralDist();
-  double rightDist = obj.right.GetLateralDist();
+  double leftDist = obj.left_.GetLateralDist();
+  double rightDist = obj.right_.GetLateralDist();
   if (leftDist < 0 && rightDist > 0) return true;
   return fmin(fabs(leftDist), fabs(rightDist)) < FRONT_OBJECT_COLLISION_WIDTH / 2.;
 }
@@ -226,9 +226,7 @@ bool sdcCar::ObjectOnCollisionCourse() {
  * Returns true if the given object is on a potential collision course with our car
  */
 bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj) {
-  bool isTooFast = IsObjectTooFast(obj);
-  bool isTooFurious = IsObjectTooFurious(obj);
-  return isTooFast || isTooFurious;
+  return IsObjectTooFast(obj) || IsObjectTooFurious(obj);
 }
 
 /*
@@ -236,8 +234,8 @@ bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj) {
  */
 bool sdcCar::IsObjectTooFast(sdcVisibleObject obj) {
   math::Vector2d centerpoint = obj.GetCenterPoint();
-  bool inLineToCollide = (fabs(obj.lineIntercept) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj.GetEstimatedXSpeed()) < fabs(0.1 * obj.GetEstimatedYSpeed())));
-  bool willHitSoon = obj.dist / obj.GetEstimatedSpeed() < 20;
+  bool inLineToCollide = fabs(obj.lineIntercept_) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj.GetEstimatedXSpeed()) < fabs(0.1 * obj.GetEstimatedYSpeed()));
+  bool willHitSoon = obj.dist_ / obj.GetEstimatedSpeed() < 20;
   return inLineToCollide && willHitSoon;
 }
 

@@ -451,12 +451,12 @@ void sdcHLC::Avoidance() {
 
         // Loop through all objects in front of the car, find the space with the largest width
         // and store the point between them
-        math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0].right.GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0].right.GetLongitudinalDist());
+        math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0].right_.GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0].right_.GetLongitudinalDist());
         // Angle closest to 0 that it's safe to drive through
         double bestMargin = 2 * PI;
         math::Vector2d curPoint;
         for (int i = 0; i < car_->frontObjects_.size(); i++) {
-          curPoint = car_->frontObjects_[i].right.GetAsPoint();
+          curPoint = car_->frontObjects_[i].right_.GetAsPoint();
           if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH) {
             // Point is on our left
             if (curPoint.x < 0) {
@@ -477,7 +477,7 @@ void sdcHLC::Avoidance() {
               }
             }
           }
-          prevPoint = car_->frontObjects_[i].left.GetAsPoint();
+          prevPoint = car_->frontObjects_[i].left_.GetAsPoint();
         }
         curPoint = math::Vector2d(prevPoint.x, 0);
         if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH + 0.2) {
