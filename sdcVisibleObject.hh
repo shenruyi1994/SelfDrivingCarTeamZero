@@ -5,50 +5,58 @@
 #include "sdcAngle.hh"
 #include "sdcLidarRay.hh"
 
-namespace gazebo
-{
-    class sdcVisibleObject {
-    public:
-        sdcLidarRay left;
-        sdcLidarRay right;
-        double dist;
-        double lineSlope;
-        double lineIntercept;
+namespace gazebo {
+  class sdcVisibleObject {
+  public:
+    sdcVisibleObject();
+    sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist);
 
-        sdcVisibleObject();
-        sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist);
+    bool IsSameObject(sdcVisibleObject* other) const;
+    math::Vector2d EstimateUpdate() const;
+    math::Vector2d GetProjectedPosition(int numSteps) const;
+    math::Vector2d GetProjectedPositionAtTime(double time) const; // TODO: implement
+    void Update(sdcLidarRay newLeft, sdcLidarRay newRight, double newDist);
+    void Update(sdcVisibleObject* newObject);
 
-        bool IsSameObject(sdcVisibleObject other);
-        math::Vector2d EstimateUpdate();
-        math::Vector2d GetProjectedPosition(int numSteps);
-        void Update(sdcLidarRay newLeft, sdcLidarRay newRight, double newDist);
-        void Update(sdcVisibleObject newObject);
+    void SetTracking(bool isTracking);
+    bool IsTracking() const;
+    math::Vector2d GetCenterPoint() const;
+    double GetEstimatedSpeed() const;
+    double GetEstimatedYSpeed() const;
+    double GetEstimatedXSpeed() const;
 
-        void SetTracking(bool isTracking);
-        bool IsTracking();
-        math::Vector2d GetCenterPoint();
-        double GetEstimatedSpeed();
-        double GetEstimatedYSpeed();
-        double GetEstimatedXSpeed();
+    sdcLidarRay Left() const { return left_; };
+    sdcLidarRay Right() const { return right_; };
+    double Dist() const { return dist_; };
+    double LineSlope() const { return lineSlope_; };
+    double LineIntercept() const { return lineIntercept_; };
 
-        math::Vector2d FitLineToPoints(std::vector<math::Vector2d> points, math::Vector2d newPoint);
+    math::Vector2d FitLineToPoints(std::vector<math::Vector2d> points,
+                                   math::Vector2d newPoint) const;
 
-    private:
-        static const double UNCERTAINTY_RATIO;
+  private:
+    sdcLidarRay left_;
+    sdcLidarRay right_;
+    double dist_;
+    double lineSlope_;
+    double lineIntercept_;
 
-        math::Vector2d centerpoint;
+    static const double UNCERTAINTY_RATIO;
 
-        std::vector<math::Vector2d> prevPoints;
+    math::Vector2d centerpoint_;
 
-        double estimatedXSpeed;
-        double estimatedYSpeed;
+    std::vector<math::Vector2d> prevPoints_;
 
-        double confidence;
+    double estimatedXSpeed_;
+    double estimatedYSpeed_;
 
-        bool tracking;
-        bool brandSpankinNew;
+    double confidence_;
 
-        math::Vector2d GetCenterPoint(sdcLidarRay left, sdcLidarRay right, double dist);
-    };
+    bool tracking_;
+    bool brandSpankinNew_;
+
+    math::Vector2d GetCenterPoint(sdcLidarRay left, sdcLidarRay right,
+                                  double dist) const;
+  };
 }
 #endif

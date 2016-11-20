@@ -12,8 +12,6 @@ find_package(OpenCV REQUIRED)
 find_package(CGAL REQUIRED COMPONENTS core)
 include( ${CGAL_USE_FILE} )
 
-
-
 include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(${OpenCV_LIBS}) Spits out error messages, and also doesn't seem necessary to work
 
@@ -75,7 +73,6 @@ target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensor
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${PROTOBUF_LIBRARIES})
-
 
 add_library(LidarInfo SHARED LidarInfo.cc)
 target_link_libraries(LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})

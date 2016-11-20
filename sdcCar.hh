@@ -147,7 +147,7 @@ namespace gazebo {
     bool trackingNavWaypoint_;
 
     // Variables relating to tracking objects in front of the car
-    std::vector<sdcVisibleObject> frontObjects_;
+    std::vector<sdcVisibleObject*> frontObjects_;
     int frontLidarLastUpdate_;
 
     // The x and y position of the car
@@ -160,22 +160,23 @@ namespace gazebo {
 
     // Helper methods
     void FrontLidarUpdate();
-    void UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects);
+    void UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects);
 
-    sdcAngle AngleToTarget(math::Vector2d target);
-    bool ObjectDirectlyAhead();
-    bool IsObjectDirectlyAhead(sdcVisibleObject obj);
-    bool ObjectOnCollisionCourse();
-    bool IsObjectOnCollisionCourse(sdcVisibleObject obj);
-    bool IsObjectTooFast(sdcVisibleObject obj);
-    bool IsObjectTooFurious(sdcVisibleObject obj);
+    sdcAngle AngleToTarget(math::Vector2d target) const;
+    bool ObjectDirectlyAhead() const;
+    bool IsObjectDirectlyAhead(const sdcVisibleObject* obj) const;
+    bool ObjectOnCollisionCourse() const;
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
+    bool IsObjectTooFast(const sdcVisibleObject* obj) const;
+    bool IsObjectTooFurious(const sdcVisibleObject* obj) const;
 
-    bool IsMovingForwards();
-    double GetSpeed();
-    double GetDistance(math::Vector2d navWaypoint_);
-    sdcAngle GetDirection();
-    sdcAngle GetOrientation();
+    bool IsMovingForwards() const;
+    double GetSpeed() const;
+    double GetDistance(math::Vector2d navWaypoint_) const;
+    sdcAngle GetDirection() const;
+    sdcAngle GetOrientation() const;
     void GetNSEW();
+    double GetMaxSafeTime() const;
 
     void SetTargetDirection(sdcAngle direction);
     void SetTargetSteeringAmount(double a);

@@ -1,10 +1,15 @@
 /*
- * This class provides a wrapper for objects we see, created by two lidar rays and 
+ * This class provides a wrapper for objects we see, created by two lidar rays and
  * a distance. This class provides methods that return information about these
  * objects, including estimates about future position based upon past data.
  */
 
 #include "sdcVisibleObject.hh"
+
+#include <gazebo/common/common.hh>
+#include "sdcAngle.hh"
+#include "sdcLidarRay.hh"
+#include "sdcUtils.hh"
 
 using namespace gazebo;
 
@@ -23,36 +28,37 @@ sdcVisibleObject::sdcVisibleObject() {}
  * across multiple sensor readings.
  */
 sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist) {
-    this->left = left;
-    this->right = right;
-    this->dist = dist;
+  left_ = left;
+  right_ = right;
+  dist_ = dist;
 
-    this->centerpoint = this->GetCenterPoint();
-    this->prevPoints.push_back(this->centerpoint);
+  centerpoint_ = GetCenterPoint();
+  prevPoints_.push_back(centerpoint_);
 
-    this->estimatedXSpeed = 0;
-    this->estimatedYSpeed = 0;
-    this->confidence = 0.01;
+  estimatedXSpeed_ = 0;
+  estimatedYSpeed_ = 0;
+  confidence_ = 0.01;
 
-    this->tracking = false;
-    this->brandSpankinNew = true;
+  tracking_ = false;
+  brandSpankinNew_ = true;
 }
 
 /*
  * Returns true if the given object is a possible new position of this object
  */
-bool sdcVisibleObject::IsSameObject(sdcVisibleObject other) {
-    math::Vector2d estPos = this->EstimateUpdate();
-    double uncertainty = sqrt(pow(estPos.x - other.centerpoint.x, 2) + pow(estPos.y - other.centerpoint.y, 2));
+bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
+  math::Vector2d estPos = EstimateUpdate();
+  double uncertainty = pythag_thm(estPos.x - other->centerpoint_.x,
+                                  estPos.y - other->centerpoint_.y);
 
-    return uncertainty * confidence < UNCERTAINTY_RATIO;
+  return uncertainty * confidence_ < UNCERTAINTY_RATIO;
 }
 
 /*
  * Returns the estimated total speed of this object relative to the car's speed
  */
-double sdcVisibleObject::GetEstimatedSpeed() {
-    return sqrt(pow(this->estimatedXSpeed, 2) + pow(this->estimatedYSpeed, 2));
+double sdcVisibleObject::GetEstimatedSpeed() const {
+  return pythag_thm(estimatedXSpeed_, estimatedYSpeed_);
 }
 
 /*
@@ -61,8 +67,8 @@ double sdcVisibleObject::GetEstimatedSpeed() {
  *
  * Negative speeds are moving towards the car, positive away
  */
-double sdcVisibleObject::GetEstimatedYSpeed() {
-    return this->estimatedYSpeed;
+double sdcVisibleObject::GetEstimatedYSpeed() const {
+  return estimatedYSpeed_;
 }
 
 /*
@@ -71,29 +77,36 @@ double sdcVisibleObject::GetEstimatedYSpeed() {
  *
  * Negative speeds are moving left, positive right
  */
-double sdcVisibleObject::GetEstimatedXSpeed() {
-    return this->estimatedXSpeed;
+double sdcVisibleObject::GetEstimatedXSpeed() const {
+  return estimatedXSpeed_;
 }
 
 /*
  * Calculates an estimated new position this object would be at with it's given estimated
  * speed and direction
  */
-math::Vector2d sdcVisibleObject::EstimateUpdate() {
-    double newX = this->centerpoint.x + this->estimatedXSpeed;
-    double newY = this->centerpoint.y + this->estimatedYSpeed;
-    return math::Vector2d(newX, newY);
+math::Vector2d sdcVisibleObject::EstimateUpdate() const {
+  double newX = centerpoint_.x + estimatedXSpeed_;
+  double newY = centerpoint_.y + estimatedYSpeed_;
+  return math::Vector2d(newX, newY);
 }
 
 /*
  * Method to calculate the projected position some numSteps into the future.
- * 
+ *
  * Currently unused.
  */
-math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
-    double newX = this->centerpoint.x + this->estimatedXSpeed * numSteps;
-    double newY = this->centerpoint.y + this->estimatedYSpeed * numSteps;
-    return math::Vector2d(newX, newY);
+math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) const {
+  double newX = centerpoint_.x + estimatedXSpeed_ * numSteps;
+  double newY = centerpoint_.y + estimatedYSpeed_ * numSteps;
+  return math::Vector2d(newX, newY);
+}
+
+/*
+ * TODO: implement this, figure out what time means
+ */
+math::Vector2d sdcVisibleObject::GetProjectedPositionAtTime(double time) const {
+  return math::Vector2d(0, 0);
 }
 
 /*
@@ -101,125 +114,128 @@ math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
  * to learn it's projected speed and direction
  */
 void sdcVisibleObject::Update(sdcLidarRay newLeft, sdcLidarRay newRight, double newDist) {
-    this->confidence = fmin(1.0, this->confidence + 0.01);
+  confidence_ = fmin(1.0, confidence_ + 0.01);
 
-    // Get the centerpoint of the new information
-    math::Vector2d newCenterpoint = this->GetCenterPoint(newLeft, newRight, newDist);
+  // Get the centerpoint of the new information
+  math::Vector2d newCenterpoint = GetCenterPoint(newLeft, newRight, newDist);
 
-    // Calculate the speed moving from the current point to the new point
-    double newEstimatedXSpeed = (newCenterpoint.x - this->centerpoint.x);
-    double newEstimatedYSpeed = (newCenterpoint.y - this->centerpoint.y);
+  // Calculate the speed moving from the current point to the new point
+  double newEstimatedXSpeed = (newCenterpoint.x - centerpoint_.x);
+  double newEstimatedYSpeed = (newCenterpoint.y - centerpoint_.y);
 
-    // If this object has already been updated at least once, try to learn the speed
-    // over time
-    if (!this->brandSpankinNew) {
-        double alpha = fmax((newDist * .005), (.1 - newDist * .005));
-        newEstimatedXSpeed = (alpha * newEstimatedXSpeed) + ((1 - alpha) * this->estimatedXSpeed);
-        newEstimatedYSpeed = (alpha * newEstimatedYSpeed) + ((1 - alpha) * this->estimatedYSpeed);
-    }
+  // If this object has already been updated at least once, try to learn the speed
+  // over time
+  if (!brandSpankinNew_) {
+    double alpha = fmax((newDist * .005), (.1 - newDist * .005));
+    newEstimatedXSpeed = (alpha * newEstimatedXSpeed) + ((1 - alpha) * estimatedXSpeed_);
+    newEstimatedYSpeed = (alpha * newEstimatedYSpeed) + ((1 - alpha) * estimatedYSpeed_);
+  }
 
-    // Update the estimates for this object's speed
-    this->estimatedXSpeed = newEstimatedXSpeed;
-    this->estimatedYSpeed = newEstimatedYSpeed;
+  // Update the estimates for this object's speed
+  estimatedXSpeed_ = newEstimatedXSpeed;
+  estimatedYSpeed_ = newEstimatedYSpeed;
 
-    // Fit a line to the points this object has been at, and store that line's information
-    if (this->prevPoints.size() > 0) {
-        math::Vector2d newLineCoefficients = this->FitLineToPoints(this->prevPoints, newCenterpoint);
-        this->lineSlope = newLineCoefficients.x;
-        this->lineIntercept = newLineCoefficients.y;
-    }
+  // Fit a line to the points this object has been at, and store that line's information
+  if (prevPoints_.size() > 0) {
+    math::Vector2d newLineCoefficients = FitLineToPoints(prevPoints_, newCenterpoint);
+    lineSlope_ = newLineCoefficients.x;
+    lineIntercept_ = newLineCoefficients.y;
+  }
 
-    // Maintain prevPoints to never be larger than 16 to help ensure accurate information
-    if (this->prevPoints.size() > 15) {
-        this->prevPoints.erase(this->prevPoints.begin());
-    }
-    this->prevPoints.push_back(newCenterpoint);
+  // Maintain prevPoints to never be larger than 16 to help ensure accurate information
+  if (prevPoints_.size() > 15) {
+    prevPoints_.erase(prevPoints_.begin());
+  }
+  prevPoints_.push_back(newCenterpoint);
 
-    // Update the object's information
-    this->centerpoint = newCenterpoint;
+  // Update the object's information
+  centerpoint_ = newCenterpoint;
 
-    this->left = newLeft;
-    this->right = newRight;
-    this->dist = newDist;
+  left_ = newLeft;
+  right_ = newRight;
+  dist_ = newDist;
 
-    // This object has now been updated, so set this flag accordingly
-    this->brandSpankinNew = false;
+  // This object has now been updated, so set this flag accordingly
+  brandSpankinNew_ = false;
 }
 
 /*
  * This method takes in a vector of multiple points and attemps to fit a line to these points.
  * This allows us to project its path and determine whether or not there is a chance for
- * the object to hit us. Method returns the predicted slope and Y-intercept based upon the 
+ * the object to hit us. Method returns the predicted slope and Y-intercept based upon the
  * vector of points.
  */
-math::Vector2d sdcVisibleObject::FitLineToPoints(std::vector<math::Vector2d> points, math::Vector2d newPoint) {
-    int numPoints = points.size();
+math::Vector2d sdcVisibleObject::FitLineToPoints(
+    std::vector<math::Vector2d> points, math::Vector2d newPoint) const {
+  int numPoints = points.size();
 
-    // Calculate several necessary sums over all points
-    double sumX=0, sumY=0, sumXY=0, sumX2=0;
-    for (int i=0; i<numPoints; i++) {
-        sumX += points[i].x;
-        sumY += points[i].y;
-        sumXY += points[i].x * points[i].y;
-        sumX2 += points[i].x * points[i].x;
-    }
+  // Calculate several necessary sums over all points
+  double sumX=0, sumY=0, sumXY=0, sumX2=0;
+  for (int i=0; i<numPoints; i++) {
+    sumX += points[i].x;
+    sumY += points[i].y;
+    sumXY += points[i].x * points[i].y;
+    sumX2 += points[i].x * points[i].x;
+  }
 
-    sumX += newPoint.x;
-    sumY += newPoint.y;
-    sumXY += newPoint.x * newPoint.y;
-    sumX2 += newPoint.x * newPoint.x;
+  sumX += newPoint.x;
+  sumY += newPoint.y;
+  sumXY += newPoint.x * newPoint.y;
+  sumX2 += newPoint.x * newPoint.x;
 
-    // Get the averages for x and y
-    double xMean = sumX / (numPoints + 1);
-    double yMean = sumY / (numPoints + 1);
+  // Get the averages for x and y
+  double xMean = sumX / (numPoints + 1);
+  double yMean = sumY / (numPoints + 1);
 
-    // Calculate the denominator for the slope calculation
-    double denom = sumX2 - sumX * xMean;
+  // Calculate the denominator for the slope calculation
+  double denom = sumX2 - sumX * xMean;
 
-    // Calculate the slope and intercept of the line
-    double slope = (sumXY - sumX * yMean) / denom;
-    double yInt = yMean - slope * xMean;
+  // Calculate the slope and intercept of the line
+  double slope = (sumXY - sumX * yMean) / denom;
+  double yInt = yMean - slope * xMean;
 
-    return math::Vector2d(slope, yInt);
+  return math::Vector2d(slope, yInt);
 }
 
 /*
  * Update this object with the given object's parameters
  */
-void sdcVisibleObject::Update(sdcVisibleObject newObject) {
-    this->Update(newObject.left, newObject.right, newObject.dist);
+void sdcVisibleObject::Update(sdcVisibleObject* newObject) {
+  Update(newObject->left_, newObject->right_, newObject->dist_);
 }
 
 /*
  * Set whether we are tracking this object
  */
 void sdcVisibleObject::SetTracking(bool isTracking) {
-    this->tracking = isTracking;
+  tracking_ = isTracking;
 }
 
 /*
  * Get whetehr this object is being tracked
  */
-bool sdcVisibleObject::IsTracking() {
-    return this->tracking;
+bool sdcVisibleObject::IsTracking() const {
+  return tracking_;
 }
 
 /*
  * Gets the centerpoint of this object based on the left and right rays
  */
-math::Vector2d sdcVisibleObject::GetCenterPoint() {
-    return this->GetCenterPoint(this->left, this->right, this->dist);
+math::Vector2d sdcVisibleObject::GetCenterPoint() const {
+  return GetCenterPoint(left_, right_, dist_);
 }
 
 /*
  * Gets the centerpoint of the two given rays in (x,y) coordinates
  */
-math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left, sdcLidarRay right, double dist) {
-    sdcLidarRay midRay = sdcLidarRay(left.angle.GetMidAngle(right.angle), dist);
-    double x = midRay.GetLateralDist();
-    double y = midRay.GetLongitudinalDist();
+math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left,
+                                                sdcLidarRay right,
+                                                double dist) const {
+  sdcLidarRay midRay = sdcLidarRay(left.angle.GetMidAngle(right.angle), dist);
+  double x = midRay.GetLateralDist();
+  double y = midRay.GetLongitudinalDist();
 
-    // double x = (left.GetLateralDist() + right.GetLateralDist()) / 2.;
-    // double y = (left.GetLongitudinalDist() + right.GetLongitudinalDist()) / 2.;
-    return math::Vector2d(x, y);
+  // double x = (left.GetLateralDist() + right.GetLateralDist()) / 2.;
+  // double y = (left.GetLongitudinalDist() + right.GetLongitudinalDist()) / 2.;
+  return math::Vector2d(x, y);
 }

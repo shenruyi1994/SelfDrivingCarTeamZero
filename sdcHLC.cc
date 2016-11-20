@@ -1,5 +1,6 @@
 #include "sdcHLC.hh"
 
+#include <math.h>
 #include <vector>
 
 #include "gazebo/physics/physics.hh"
@@ -10,6 +11,7 @@
 #include "sdcIntersection.hh"
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
+#include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
 using namespace gazebo;
@@ -245,7 +247,7 @@ void sdcHLC::Follow() {
   }
 
   // The default object to follow is directly in front of the car, the max range away
-  sdcVisibleObject tracked = sdcVisibleObject(
+  sdcVisibleObject* tracked = new sdcVisibleObject(
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
     sdcSensorData::GetLidarMaxRange(FRONT));
@@ -254,8 +256,8 @@ void sdcHLC::Follow() {
   if (car_->isTrackingObject_) {
     bool foundTrackedObject = false;
     for (int i = 0; i < car_->frontObjects_.size(); i++) {
-      sdcVisibleObject obj = car_->frontObjects_[i];
-      if (obj.IsTracking()) {
+      sdcVisibleObject* obj = car_->frontObjects_[i];
+      if (obj->IsTracking()) {
         tracked = obj;
         foundTrackedObject = true;
         break;
@@ -269,10 +271,10 @@ void sdcHLC::Follow() {
     // Not tracking an object, find one that's in front of the car
     // and start tracking it
     for (int i = 0; i < car_->frontObjects_.size(); i++) {
-      sdcVisibleObject obj = car_->frontObjects_[i];
+      sdcVisibleObject* obj = car_->frontObjects_[i];
       if (car_->IsObjectDirectlyAhead(obj)) {
         tracked = obj;
-        tracked.SetTracking(true);
+        tracked->SetTracking(true);
         car_->isTrackingObject_ = true;
         car_->frontObjects_[i] = tracked;
         break;
@@ -283,8 +285,8 @@ void sdcHLC::Follow() {
   // After the above loops, if not following anything just return
   if (!car_->isTrackingObject_) return;
 
-  math::Vector2d objCenter = tracked.GetCenterPoint();
-  double objSpeed = tracked.GetEstimatedYSpeed();
+  math::Vector2d objCenter = tracked->GetCenterPoint();
+  double objSpeed = tracked->GetEstimatedYSpeed();
 
   // Scale our speed based on how far away the tracked object is
   // The equation is 'scaledSpeed = (objY - 10)^3 / 2000.' which
@@ -337,7 +339,7 @@ void sdcHLC::Avoidance() {
 
   // Get lists of objects that are moving quickly towards us,
   // and objects that are close to us
-  std::vector<sdcVisibleObject> fastObjects, furiousObjects;
+  std::vector<sdcVisibleObject*> fastObjects, furiousObjects;
   if (car_->frontObjects_.size() > 0) {
     for (int i = 0; i < car_->frontObjects_.size(); i++) {
       if (car_->IsObjectTooFast(car_->frontObjects_[i])) {
@@ -361,13 +363,13 @@ void sdcHLC::Avoidance() {
       // If the object is moving faster than the car is, or the car is moving significantly faster than the object,
       // try and swerve as there isn't enough time to stop
       double objSpeed = sqrt(
-        pow(fastObjects[i].GetEstimatedXSpeed(), 2)
-        + pow(fastObjects[i].GetEstimatedYSpeed() - car_->GetSpeed(), 2));
+        pow(fastObjects[i]->GetEstimatedXSpeed(), 2)
+        + pow(fastObjects[i]->GetEstimatedYSpeed() - car_->GetSpeed(), 2));
 
       if (objSpeed > car_->GetSpeed()
           || car_->GetSpeed() > objSpeed + 4) {
         currentAvoidanceState_ = emergencySwerve;
-        if (fastObjects[i].GetCenterPoint().x < 0) {
+        if (fastObjects[i]->GetCenterPoint().x < 0) {
           isObjectOnRight = false;
         }
         setState = true;
@@ -449,12 +451,12 @@ void sdcHLC::Avoidance() {
 
         // Loop through all objects in front of the car, find the space with the largest width
         // and store the point between them
-        math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0].right.GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0].right.GetLongitudinalDist());
+        math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0]->Right().GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0]->Right().GetLongitudinalDist());
         // Angle closest to 0 that it's safe to drive through
         double bestMargin = 2 * PI;
         math::Vector2d curPoint;
         for (int i = 0; i < car_->frontObjects_.size(); i++) {
-          curPoint = car_->frontObjects_[i].right.GetAsPoint();
+          curPoint = car_->frontObjects_[i]->Right().GetAsPoint();
           if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH) {
             // Point is on our left
             if (curPoint.x < 0) {
@@ -475,7 +477,7 @@ void sdcHLC::Avoidance() {
               }
             }
           }
-          prevPoint = car_->frontObjects_[i].left.GetAsPoint();
+          prevPoint = car_->frontObjects_[i]->Left().GetAsPoint();
         }
         curPoint = math::Vector2d(prevPoint.x, 0);
         if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH + 0.2) {
@@ -496,8 +498,114 @@ void sdcHLC::Avoidance() {
       currentState_ = DEFAULT_STATE;
       break;
   }
-
 }
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+//  BEGIN COLLISION DETECTION FUNCTIONS //
+//////////////////////////////////////////
+//////////////////////////////////////////
+
+/*
+ * Returns the first object encountered that is on a collision course with
+ * the car, or NULL if no such object exists.
+ */
+sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() const {
+  return NULL;
+}
+
+/*
+ * Checks if the object is on a collision course with the car.
+ */
+bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
+  return DoMaximumBoundingBoxesCollide(obj)
+      && DoMaximumRadiiCollide(obj)
+      && DoAccurateVehicleShapesCollide(obj);
+}
+
+/*
+ *
+ */
+bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
+  return false;
+}
+
+/*
+ * Returns true if the distance between the car and the dangerous object is
+ * ever within (max_radius_car + max_radius_obj) along their projected paths.
+ */
+bool sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
+  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
+    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/*
+ * Returns true if the distance between the car and obj at is within
+ * (max_radius_car + max_radius_obj) at the given time
+ */
+bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
+                                         double time) const {
+  return false;
+}
+
+/*
+ * Returns true if accurate shape depictions of the car and the object
+ * ever intersect along their projected paths.
+ */
+bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const {
+  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
+    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/*
+ * Returns true if accurate shape depictions of the car and the object
+ * intersect at the given time
+ */
+bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
+                                                  double time) const {
+  return false;
+}
+
+/*
+ * TODO: figure out how this will work. For now it is a placeholder, but will
+ * eventually be based on the dubins path created by the LLC.
+ */
+math::Vector2d sdcHLC::GetPositionAtTime(double time) const {
+  return math::Vector2d(0, 0);
+}
+
+/*
+ * Generates a new path for the car, given an object and a collision location
+ * on a previous path
+ * TODO: integrate this with the dubins path algorithms
+ */
+std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
+    sdcVisibleObject* obj, math::Vector2d collision) {
+  return NULL;
+}
+
+/*
+ * Returns the angle between the car and the vehicle at the time of collision,
+ * allowing for improved avoidance decisionmaking.
+ */
+sdcAngle sdcHLC::GetCollisionAngleAtTime(const sdcVisibleObject* obj,
+                                         double time) const {
+  return sdcAngle();
+}
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+// BEGIN OTHER STATEFUL ALGORITHMS FROM 2015 //
+///////////////////////////////////////////////
+///////////////////////////////////////////////
 
 /*
  * Executes a turn at an intersection

@@ -59,7 +59,7 @@ const sdcAngle WEST = sdcAngle(PI);
 /*
  * Updates the list of objects in front of the car with the given list of new objects
  */
-void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
+void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects) {
   if (frontObjects_.size() == 0) {
     // The car wasn't tracking any objects, so just set the list equal to the new list
     frontObjects_ = newObjects;
@@ -76,16 +76,16 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
   // which of them are getting updated, which are missing, as well
   // as if any of the passed in objects are brand new
   for (int i = 0; i < frontObjects_.size(); i++) {
-    sdcVisibleObject oldObj = frontObjects_[i];
+    sdcVisibleObject* oldObj = frontObjects_[i];
     isOldObjectMissing.push_back(true);
 
     for (int j = 0; j < newObjects.size(); j++) {
       // Only match each new object to one old object
       if (!isBrandNewObject[j]) continue;
-      sdcVisibleObject newObj = newObjects[j];
+      sdcVisibleObject* newObj = newObjects[j];
 
-      if (oldObj.IsSameObject(newObj)) {
-        oldObj.Update(newObj);
+      if (oldObj->IsSameObject(newObj)) {
+        oldObj->Update(newObj);
         frontObjects_[i] = oldObj;
         isOldObjectMissing[i] = false;
         isBrandNewObject[j] = false;
@@ -113,7 +113,7 @@ void sdcCar::UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects) {
  * Returns true if the current velocity angle matches the direction the car
  * is facing
  */
-bool sdcCar::IsMovingForwards() {
+bool sdcCar::IsMovingForwards() const {
   sdcAngle velAngle = GetDirection();
   sdcAngle carAngle = GetOrientation();
   return (carAngle - velAngle).IsFrontFacing();
@@ -122,14 +122,14 @@ bool sdcCar::IsMovingForwards() {
 /*
  * Gets the speed of the car
  */
-double sdcCar::GetSpeed() {
+double sdcCar::GetSpeed() const {
   return sqrt(pow(velocity_.x,2) + pow(velocity_.y,2));
 }
 
 /*
  * Returns the distance to the waypoint
  */
-double sdcCar::GetDistance(math::Vector2d navWaypoint) {
+double sdcCar::GetDistance(math::Vector2d navWaypoint) const {
   double x_dist = navWaypoint_.x - x_;
   double y_dist = navWaypoint_.y - y_;
   return sqrt(pow(x_dist, 2) + pow(y_dist, 2));
@@ -138,7 +138,7 @@ double sdcCar::GetDistance(math::Vector2d navWaypoint) {
 /*
  * Gets the current direction the car is travelling
  */
-sdcAngle sdcCar::GetDirection() {
+sdcAngle sdcCar::GetDirection() const {
   math::Vector3 velocity = velocity_;
   return sdcAngle(atan2(velocity.y, velocity.x));
 }
@@ -159,16 +159,25 @@ void sdcCar::GetNSEW() {
 }
 
 /*
+ * Returns the maximum amount of time we have to be worried about when
+ * determining what to avoid in the future. Changes based on velocity of the
+ * car.
+ */
+double sdcCar::GetMaxSafeTime() const {
+  return 1;
+}
+
+/*
  * Gets the direction the car is facing
  */
-sdcAngle sdcCar::GetOrientation() {
+sdcAngle sdcCar::GetOrientation() const {
   return yaw_;
 }
 
 /*
  * Returns the angle from the car's current position to a target position
  */
-sdcAngle sdcCar::AngleToTarget(math::Vector2d target) {
+sdcAngle sdcCar::AngleToTarget(math::Vector2d target) const {
   math::Vector2d position = sdcSensorData::GetPosition();
   math::Vector2d targetVector = math::Vector2d(target.x - position.x, target.y - position.y);
   return sdcAngle(atan2(targetVector.y, targetVector.x));
@@ -178,7 +187,7 @@ sdcAngle sdcCar::AngleToTarget(math::Vector2d target) {
  * Returns true if there is an object ahead of the car that might collide with us if we
  * continue driving straight ahead
  */
-bool sdcCar::ObjectDirectlyAhead() {
+bool sdcCar::ObjectDirectlyAhead() const {
   if (frontObjects_.size() == 0) return false;
 
   for (int i = 0; i < frontObjects_.size(); i++) {
@@ -192,9 +201,9 @@ bool sdcCar::ObjectDirectlyAhead() {
 /*
  * Returns true if the given object is directly ahead of us, else false
  */
-bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj) {
-  double leftDist = obj.left.GetLateralDist();
-  double rightDist = obj.right.GetLateralDist();
+bool sdcCar::IsObjectDirectlyAhead(const sdcVisibleObject* obj) const {
+  double leftDist = obj->Left().GetLateralDist();
+  double rightDist = obj->Right().GetLateralDist();
   if (leftDist < 0 && rightDist > 0) return true;
   return fmin(fabs(leftDist), fabs(rightDist)) < FRONT_OBJECT_COLLISION_WIDTH / 2.;
 }
@@ -202,7 +211,7 @@ bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject obj) {
 /*
  * Returns true if there is an object on a potential collision course with our car
  */
-bool sdcCar::ObjectOnCollisionCourse() {
+bool sdcCar::ObjectOnCollisionCourse() const {
   if (frontObjects_.size() == 0) return false;
 
   for (int i = 0; i < frontObjects_.size(); i++) {
@@ -216,27 +225,25 @@ bool sdcCar::ObjectOnCollisionCourse() {
 /*
  * Returns true if the given object is on a potential collision course with our car
  */
-bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject obj) {
-  bool isTooFast = IsObjectTooFast(obj);
-  bool isTooFurious = IsObjectTooFurious(obj);
-  return isTooFast || isTooFurious;
+bool sdcCar::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
+  return IsObjectTooFast(obj) || IsObjectTooFurious(obj);
 }
 
 /*
  * Returns true if the given object is projected to run into the car within a short time period from now
  */
-bool sdcCar::IsObjectTooFast(sdcVisibleObject obj) {
-  math::Vector2d centerpoint = obj.GetCenterPoint();
-  bool inLineToCollide = (fabs(obj.lineIntercept) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj.GetEstimatedXSpeed()) < fabs(0.1 * obj.GetEstimatedYSpeed())));
-  bool willHitSoon = obj.dist / obj.GetEstimatedSpeed() < 20;
+bool sdcCar::IsObjectTooFast(const sdcVisibleObject* obj) const {
+  math::Vector2d centerpoint = obj->GetCenterPoint();
+  bool inLineToCollide = fabs(obj->LineIntercept()) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj->GetEstimatedXSpeed()) < fabs(0.1 * obj->GetEstimatedYSpeed()));
+  bool willHitSoon = obj->Dist() / obj->GetEstimatedSpeed() < 20;
   return inLineToCollide && willHitSoon;
 }
 
 /*
  * Returns true if the given object is very close to the car
  */
-bool sdcCar::IsObjectTooFurious(sdcVisibleObject obj) {
-  math::Vector2d centerpoint = obj.GetCenterPoint();
+bool sdcCar::IsObjectTooFurious(const sdcVisibleObject* obj) const {
+  math::Vector2d centerpoint = obj->GetCenterPoint();
   return (fabs(centerpoint.x) < FRONT_OBJECT_COLLISION_WIDTH / 2. && fabs(centerpoint.y) < 1.5);
 }
 
@@ -361,7 +368,7 @@ void sdcCar::OnUpdate() {
   // Check if the front lidars have been updated, and if they have update
   // the car's list
   if (frontLidarLastUpdate_ != sdcSensorData::GetLidarLastUpdate(FRONT)) {
-    std::vector<sdcVisibleObject> v = sdcSensorData::GetObjectsInFront();
+    std::vector<sdcVisibleObject*> v = sdcSensorData::GetObjectsInFront();
     UpdateFrontObjects(v);
     frontLidarLastUpdate_ = sdcSensorData::GetLidarLastUpdate(FRONT);
   }

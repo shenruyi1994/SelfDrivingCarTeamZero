@@ -266,8 +266,8 @@ std::vector<sdcLidarRay> sdcSensorData::GetBlockedBackRays() {
  * left and right bounding lidar ray, as well as the minimum distance to the
  * object
  */
-std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront() {
-    std::vector<sdcVisibleObject> objectList;
+std::vector<sdcVisibleObject*> sdcSensorData::GetObjectsInFront() {
+    std::vector<sdcVisibleObject*> objectList;
 
     // With no blocked rays, there are no objects to record
     std::vector<sdcLidarRay> blockedRays = GetBlockedFrontRays();
@@ -295,7 +295,7 @@ std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront() {
             // If either the checked angles or distance fall outside the margins, the rays are looking at a new object
             if (!((curAngle - prevAngle).WithinMargin(angleMargin) && fabs(curDist - prevDist) < distMargin)) {
                 // Record the object just found
-                objectList.push_back(sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
+                objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
                 ignorePrev = true;
             }
         } else {
@@ -310,7 +310,7 @@ std::vector<sdcVisibleObject> sdcSensorData::GetObjectsInFront() {
     }
 
     // Since objects are recorded on the trailing end of the loop, this will make sure the last object is properly added
-    objectList.push_back(sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
+    objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
     return objectList;
 }
 

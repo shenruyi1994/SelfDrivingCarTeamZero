@@ -1,6 +1,7 @@
 #ifndef __SDCHLC_HH__
 #define __SDCHLC_HH__
 
+#include <math.h>
 #include <vector>
 
 #include "gazebo/physics/physics.hh"
@@ -9,10 +10,18 @@
 #include "globals.hh"
 #include "sdcIntersection.hh"
 #include "sdcLLC.hh"
+#include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
 namespace gazebo {
+  typedef struct {
+    double time;
+    math::Vector2d worldLocation;
+    math::Vector2d carLocation;
+  } CollisionEvent;
+
   class sdcCar;
+
   class GAZEBO_VISIBLE sdcHLC {
   public:
     sdcHLC(sdcCar* car);
@@ -42,6 +51,23 @@ namespace gazebo {
     void Avoidance();
     void PerpendicularPark();
     void ParallelPark();
+
+    // Collision detection/avoidance functions
+    sdcVisibleObject* CheckNearbyObjectsForCollision() const;
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
+    bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const;
+    bool DoMaximumRadiiCollide(const sdcVisibleObject* obj) const;
+    bool DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
+                                     double time) const;
+    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const;
+    bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
+                                              double time) const;
+    std::vector<sdcWaypoint*>* ComputeAvoidancePath(
+      sdcVisibleObject* obj, math::Vector2d collision);
+    math::Vector2d GetPositionAtTime(double time) const;
+    sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
+                                     double time) const;
+
 
   private:
     sdcCar* car_;
