@@ -17,12 +17,12 @@ namespace gazebo {
     sdcVisibleObject();
     sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist);
 
-    bool IsSameObject(sdcVisibleObject other);
+    bool IsSameObject(sdcVisibleObject* other);
     math::Vector2d EstimateUpdate();
     math::Vector2d GetProjectedPosition(int numSteps);
     math::Vector2d GetProjectedPositionAtTime(double time); // TODO: implement
     void Update(sdcLidarRay newLeft, sdcLidarRay newRight, double newDist);
-    void Update(sdcVisibleObject newObject);
+    void Update(sdcVisibleObject* newObject);
 
     void SetTracking(bool isTracking);
     bool IsTracking();

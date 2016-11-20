@@ -46,9 +46,10 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
 /*
  * Returns true if the given object is a possible new position of this object
  */
-bool sdcVisibleObject::IsSameObject(sdcVisibleObject other) {
+bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) {
   math::Vector2d estPos = EstimateUpdate();
-  double uncertainty = sqrt(pow(estPos.x - other.centerpoint_.x, 2) + pow(estPos.y - other.centerpoint_.y, 2));
+  double uncertainty = pythag_thm(estPos.x - other->centerpoint_.x,
+                                  estPos.y - other->centerpoint_.y);
 
   return uncertainty * confidence_ < UNCERTAINTY_RATIO;
 }
@@ -198,8 +199,8 @@ math::Vector2d sdcVisibleObject::FitLineToPoints(std::vector<math::Vector2d> poi
 /*
  * Update this object with the given object's parameters
  */
-void sdcVisibleObject::Update(sdcVisibleObject newObject) {
-  Update(newObject.left_, newObject.right_, newObject.dist_);
+void sdcVisibleObject::Update(sdcVisibleObject* newObject) {
+  Update(newObject->left_, newObject->right_, newObject->dist_);
 }
 
 /*

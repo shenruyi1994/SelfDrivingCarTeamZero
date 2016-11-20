@@ -147,7 +147,7 @@ namespace gazebo {
     bool trackingNavWaypoint_;
 
     // Variables relating to tracking objects in front of the car
-    std::vector<sdcVisibleObject> frontObjects_;
+    std::vector<sdcVisibleObject*> frontObjects_;
     int frontLidarLastUpdate_;
 
     // The x and y position of the car
@@ -160,15 +160,15 @@ namespace gazebo {
 
     // Helper methods
     void FrontLidarUpdate();
-    void UpdateFrontObjects(std::vector<sdcVisibleObject> newObjects);
+    void UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects);
 
     sdcAngle AngleToTarget(math::Vector2d target);
     bool ObjectDirectlyAhead();
-    bool IsObjectDirectlyAhead(sdcVisibleObject obj);
+    bool IsObjectDirectlyAhead(sdcVisibleObject* obj);
     bool ObjectOnCollisionCourse();
-    bool IsObjectOnCollisionCourse(sdcVisibleObject obj);
-    bool IsObjectTooFast(sdcVisibleObject obj);
-    bool IsObjectTooFurious(sdcVisibleObject obj);
+    bool IsObjectOnCollisionCourse(sdcVisibleObject* obj);
+    bool IsObjectTooFast(sdcVisibleObject* obj);
+    bool IsObjectTooFurious(sdcVisibleObject* obj);
 
     bool IsMovingForwards();
     double GetSpeed();
