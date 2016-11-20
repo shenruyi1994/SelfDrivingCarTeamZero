@@ -53,17 +53,20 @@ namespace gazebo {
     void ParallelPark();
 
     // Collision detection/avoidance functions
-    sdcVisibleObject* CheckNearbyObjectsForCollision();
-    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj);
-    bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj);
-    bool DoMaximumRadiiCollide(const sdcVisibleObject* obj);
-    bool DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj, double time);
-    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj);
-    bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj, double time);
+    sdcVisibleObject* CheckNearbyObjectsForCollision() const;
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
+    bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const;
+    bool DoMaximumRadiiCollide(const sdcVisibleObject* obj) const;
+    bool DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
+                                     double time) const;
+    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const;
+    bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
+                                              double time) const;
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(
       sdcVisibleObject* obj, math::Vector2d collision);
-    math::Vector2d GetPositionAtTime(double time);
-    sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj, double time);
+    math::Vector2d GetPositionAtTime(double time) const;
+    sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
+                                     double time) const;
 
 
   private:

@@ -510,14 +510,14 @@ void sdcHLC::Avoidance() {
  * Returns the first object encountered that is on a collision course with
  * the car, or NULL if no such object exists.
  */
-sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() {
+sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() const {
   return NULL;
 }
 
 /*
  * Checks if the object is on a collision course with the car.
  */
-bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) {
+bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
   return DoMaximumBoundingBoxesCollide(obj)
       && DoMaximumRadiiCollide(obj)
       && DoAccurateVehicleShapesCollide(obj);
@@ -526,7 +526,7 @@ bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) {
 /*
  *
  */
-bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) {
+bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
   return false;
 }
 
@@ -534,7 +534,7 @@ bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) {
  * Returns true if the distance between the car and the dangerous object is
  * ever within (max_radius_car + max_radius_obj) along their projected paths.
  */
-bool sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) {
+bool sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
   for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
     if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100)) {
       return true;
@@ -548,7 +548,7 @@ bool sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) {
  * (max_radius_car + max_radius_obj) at the given time
  */
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
-                                         double time) {
+                                         double time) const {
   return false;
 }
 
@@ -556,7 +556,7 @@ bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
  * Returns true if accurate shape depictions of the car and the object
  * ever intersect along their projected paths.
  */
-bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) {
+bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const {
   for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
     if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100)) {
       return true;
@@ -570,7 +570,7 @@ bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) {
  * intersect at the given time
  */
 bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
-                                                  double time) {
+                                                  double time) const {
   return false;
 }
 
@@ -578,7 +578,7 @@ bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
  * TODO: figure out how this will work. For now it is a placeholder, but will
  * eventually be based on the dubins path created by the LLC.
  */
-math::Vector2d GetPositionAtTime(double time) {
+math::Vector2d sdcHLC::GetPositionAtTime(double time) const {
   return math::Vector2d(0, 0);
 }
 
@@ -596,7 +596,8 @@ std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
  * Returns the angle between the car and the vehicle at the time of collision,
  * allowing for improved avoidance decisionmaking.
  */
-sdcAngle sdcHLC::GetCollisionAngleAtTime(const sdcVisibleObject* obj, double time) {
+sdcAngle sdcHLC::GetCollisionAngleAtTime(const sdcVisibleObject* obj,
+                                         double time) const {
   return sdcAngle();
 }
 
