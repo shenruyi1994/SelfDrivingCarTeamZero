@@ -70,8 +70,21 @@ include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES})
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${PROTOBUF_LIBRARIES})
+
+
+add_library(LidarInfo SHARED LidarInfo.cc)
+target_link_libraries(LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(data SHARED dataProcessing.cc)
+target_link_libraries(data LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(lidar SHARED LidarPlugin.cc)
+target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(camera SHARED CameraPlugin.cc)
+target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})

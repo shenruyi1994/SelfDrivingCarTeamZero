@@ -7,19 +7,30 @@
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "Waypoints.hh"
+#include <opencv2/opencv.hpp>
+#include "dataProcessing.hh"
 #include "arr_print.h"
-
 #include <CGAl/Arrangement_2.h>
+
+#include <opencv2/opencv.hpp>
+
 
 using namespace gazebo;
 
 
 void sdcLLC::update() {
-  std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
+  // std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
   car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
-  Waypoints waypoints;
-  calculateDubins(&waypoints);
+  std::vector<cv::Point> waypoints;
+  waypoints = dataProcessing::getWaypoints();
+  sdcAngle angle;
+  angle = car_->GetDirection();
+  std::cout << angle << std::endl;
+  
+
+
+  //  calculateDubins(&waypoints);
   }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
