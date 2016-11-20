@@ -162,21 +162,21 @@ namespace gazebo {
     void FrontLidarUpdate();
     void UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects);
 
-    sdcAngle AngleToTarget(math::Vector2d target);
-    bool ObjectDirectlyAhead();
-    bool IsObjectDirectlyAhead(const sdcVisibleObject* obj);
-    bool ObjectOnCollisionCourse();
-    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj);
-    bool IsObjectTooFast(const sdcVisibleObject* obj);
-    bool IsObjectTooFurious(const sdcVisibleObject* obj);
+    sdcAngle AngleToTarget(math::Vector2d target) const;
+    bool ObjectDirectlyAhead() const;
+    bool IsObjectDirectlyAhead(const sdcVisibleObject* obj) const;
+    bool ObjectOnCollisionCourse() const;
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
+    bool IsObjectTooFast(const sdcVisibleObject* obj) const;
+    bool IsObjectTooFurious(const sdcVisibleObject* obj) const;
 
-    bool IsMovingForwards();
-    double GetSpeed();
-    double GetDistance(math::Vector2d navWaypoint_);
-    sdcAngle GetDirection();
-    sdcAngle GetOrientation();
+    bool IsMovingForwards() const;
+    double GetSpeed() const;
+    double GetDistance(math::Vector2d navWaypoint_) const;
+    sdcAngle GetDirection() const;
+    sdcAngle GetOrientation() const;
     void GetNSEW();
-    double GetMaxSafeTime();
+    double GetMaxSafeTime() const;
 
     void SetTargetDirection(sdcAngle direction);
     void SetTargetSteeringAmount(double a);
