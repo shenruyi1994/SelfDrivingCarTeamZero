@@ -8,9 +8,6 @@
 #include <CGAL/Arr_circle_segment_traits_2.h>
 #include <CGAL/Arrangement_2.h>
 
-
-
-
 #include "globals.hh"
 #include "Waypoints.hh"
 

@@ -1,22 +1,19 @@
 //sdcLLC.hh containsCGAL typedefs and includes - may restructure location
 #include "sdcLLC.hh"
+
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
+#include <CGAl/Arrangement_2.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 
-
+#include "arr_print.h"
+#include "dataProcessing.hh"
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "Waypoints.hh"
-#include <opencv2/opencv.hpp>
-#include "dataProcessing.hh"
-#include "arr_print.h"
-#include <CGAl/Arrangement_2.h>
-
-#include <opencv2/opencv.hpp>
-
 
 using namespace gazebo;
-
 
 void sdcLLC::update() {
   // std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
@@ -27,18 +24,13 @@ void sdcLLC::update() {
   sdcAngle angle;
   angle = car_->GetDirection();
   std::cout << angle << std::endl;
-  
-
 
   //  calculateDubins(&waypoints);
   }
 
-sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-
-}
+sdcLLC::sdcLLC(sdcCar* car): car_(car) {}
 
 std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints) {
-  
 
   // Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
   //Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
@@ -63,13 +55,12 @@ std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints)
   std::list<Curve> curves;
 
   //creates a circle centered at oridin with squaired raidus of 2
-  
+
   Circle c1 = Circle(Rational_point(0,0), Number_type(2));
   curves.push_back(Curve(c1));
-  
 
-  //creates a line segment (x = y) 
-  Segment s1 = Segment(Rational_point(-2, -2), Rational_point(2, 2)); 
+  //creates a line segment (x = y)
+  Segment s1 = Segment(Rational_point(-2, -2), Rational_point(2, 2));
 
   curves.push_back(Curve(s1));
 
@@ -82,7 +73,6 @@ std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints)
   Arrangement arr;
   insert(arr, curves.begin(), curves.end());
   print_arrangement(arr);
-  
 }
 
 /*
