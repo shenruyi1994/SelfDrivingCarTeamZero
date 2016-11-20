@@ -8,6 +8,10 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(FADBAD++)
 
 find_package(OpenCV REQUIRED)
+
+find_package(CGAL REQUIRED COMPONENTS core)
+include( ${CGAL_USE_FILE} )
+
 include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(${OpenCV_LIBS}) Spits out error messages, and also doesn't seem necessary to work
 
@@ -32,6 +36,7 @@ add_library(sdcVisibleObject SHARED sdcVisibleObject.cc)
 target_link_libraries(sdcVisibleObject sdcAngle sdcLidarRay ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcSensorData SHARED sdcSensorData.cc)
+
 target_link_libraries(sdcSensorData sdcVisibleObject sdcLidarRay sdcLidarSensorInfo sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcFrontLidarSensor SHARED sdcFrontLidarSensor.cc)
@@ -58,6 +63,25 @@ target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(sdcIntersection SHARED sdcIntersection.cc)
 target_link_libraries(sdcIntersection ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar sdcWaypoint sdcIntersection sdcVisibleObject sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+find_package(CGAL REQUIRED COMPONENTS Core GMP RS3 MPFI )
+include_directories(${CGAL_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
+add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${PROTOBUF_LIBRARIES})
+
+add_library(LidarInfo SHARED LidarInfo.cc)
+target_link_libraries(LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(data SHARED dataProcessing.cc)
+target_link_libraries(data LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(lidar SHARED LidarPlugin.cc)
+target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(camera SHARED CameraPlugin.cc)
+target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})

@@ -1508,3 +1508,8 @@ void sdcHLC::removeStartingEdge(int start) {
       break;
   }
 }
+
+
+void sdcHLC::update() {
+  llc_->update();
+}

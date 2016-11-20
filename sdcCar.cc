@@ -375,7 +375,7 @@ void sdcCar::OnUpdate() {
 
   // Call our Drive function, which is the brain for the car
   hlc_->Drive();
-
+  hlc_->update();
 
   ////////////////////////////
   // GAZEBO PHYSICS METHODS //

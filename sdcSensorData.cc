@@ -36,9 +36,7 @@ std::vector<double>* sdcSensorData::topBackwardLidarRays = new std::vector<doubl
 std::vector<double>* sdcSensorData::sideLeftFrontLidarRays = new std::vector<double>();
 std::vector<double>* sdcSensorData::sideLeftBackLidarRays = new std::vector<double>();
 std::vector<double>* sdcSensorData::sideRightFrontLidarRays = new std::vector<double>();
-std::vector<double>* sdcSensorData::sideRightBackLidarRays = new std::vector<double>();
-
-// Camera variables
+std::vector<double>* sdcSensorData::sideRightBackLidarRays = new std::vector<double>();// Camera variables
 int sdcSensorData::stopSignFrameCount = 0;
 double sdcSensorData::sizeOfStopSign = 0;
 bool sdcSensorData::stopSignInLeftCamera = false;
