@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libsdcHLC.a  CMakeFiles/sdcHLC.dir/sdcHLC.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libsdcHLC.a
