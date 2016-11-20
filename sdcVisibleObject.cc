@@ -46,7 +46,7 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
 /*
  * Returns true if the given object is a possible new position of this object
  */
-bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) {
+bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
   math::Vector2d estPos = EstimateUpdate();
   double uncertainty = pythag_thm(estPos.x - other->centerpoint_.x,
                                   estPos.y - other->centerpoint_.y);
@@ -57,7 +57,7 @@ bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) {
 /*
  * Returns the estimated total speed of this object relative to the car's speed
  */
-double sdcVisibleObject::GetEstimatedSpeed() {
+double sdcVisibleObject::GetEstimatedSpeed() const {
   return pythag_thm(estimatedXSpeed_, estimatedYSpeed_);
 }
 
@@ -67,7 +67,7 @@ double sdcVisibleObject::GetEstimatedSpeed() {
  *
  * Negative speeds are moving towards the car, positive away
  */
-double sdcVisibleObject::GetEstimatedYSpeed() {
+double sdcVisibleObject::GetEstimatedYSpeed() const {
   return estimatedYSpeed_;
 }
 
@@ -77,7 +77,7 @@ double sdcVisibleObject::GetEstimatedYSpeed() {
  *
  * Negative speeds are moving left, positive right
  */
-double sdcVisibleObject::GetEstimatedXSpeed() {
+double sdcVisibleObject::GetEstimatedXSpeed() const {
   return estimatedXSpeed_;
 }
 
@@ -85,7 +85,7 @@ double sdcVisibleObject::GetEstimatedXSpeed() {
  * Calculates an estimated new position this object would be at with it's given estimated
  * speed and direction
  */
-math::Vector2d sdcVisibleObject::EstimateUpdate() {
+math::Vector2d sdcVisibleObject::EstimateUpdate() const {
   double newX = centerpoint_.x + estimatedXSpeed_;
   double newY = centerpoint_.y + estimatedYSpeed_;
   return math::Vector2d(newX, newY);
@@ -96,7 +96,7 @@ math::Vector2d sdcVisibleObject::EstimateUpdate() {
  *
  * Currently unused.
  */
-math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
+math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) const {
   double newX = centerpoint_.x + estimatedXSpeed_ * numSteps;
   double newY = centerpoint_.y + estimatedYSpeed_ * numSteps;
   return math::Vector2d(newX, newY);
@@ -105,7 +105,7 @@ math::Vector2d sdcVisibleObject::GetProjectedPosition(int numSteps) {
 /*
  * TODO: implement this, figure out what time means
  */
-math::Vector2d sdcVisibleObject::GetProjectedPositionAtTime(double time) {
+math::Vector2d sdcVisibleObject::GetProjectedPositionAtTime(double time) const {
   return math::Vector2d(0, 0);
 }
 
@@ -165,7 +165,8 @@ void sdcVisibleObject::Update(sdcLidarRay newLeft, sdcLidarRay newRight, double 
  * the object to hit us. Method returns the predicted slope and Y-intercept based upon the
  * vector of points.
  */
-math::Vector2d sdcVisibleObject::FitLineToPoints(std::vector<math::Vector2d> points, math::Vector2d newPoint) {
+math::Vector2d sdcVisibleObject::FitLineToPoints(
+    std::vector<math::Vector2d> points, math::Vector2d newPoint) const {
   int numPoints = points.size();
 
   // Calculate several necessary sums over all points
@@ -213,21 +214,23 @@ void sdcVisibleObject::SetTracking(bool isTracking) {
 /*
  * Get whetehr this object is being tracked
  */
-bool sdcVisibleObject::IsTracking() {
+bool sdcVisibleObject::IsTracking() const {
   return tracking_;
 }
 
 /*
  * Gets the centerpoint of this object based on the left and right rays
  */
-math::Vector2d sdcVisibleObject::GetCenterPoint() {
+math::Vector2d sdcVisibleObject::GetCenterPoint() const {
   return GetCenterPoint(left_, right_, dist_);
 }
 
 /*
  * Gets the centerpoint of the two given rays in (x,y) coordinates
  */
-math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left, sdcLidarRay right, double dist) {
+math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left,
+                                                sdcLidarRay right,
+                                                double dist) const {
   sdcLidarRay midRay = sdcLidarRay(left.angle.GetMidAngle(right.angle), dist);
   double x = midRay.GetLateralDist();
   double y = midRay.GetLongitudinalDist();

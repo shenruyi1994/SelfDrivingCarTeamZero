@@ -164,11 +164,11 @@ namespace gazebo {
 
     sdcAngle AngleToTarget(math::Vector2d target);
     bool ObjectDirectlyAhead();
-    bool IsObjectDirectlyAhead(sdcVisibleObject* obj);
+    bool IsObjectDirectlyAhead(const sdcVisibleObject* obj);
     bool ObjectOnCollisionCourse();
-    bool IsObjectOnCollisionCourse(sdcVisibleObject* obj);
-    bool IsObjectTooFast(sdcVisibleObject* obj);
-    bool IsObjectTooFurious(sdcVisibleObject* obj);
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj);
+    bool IsObjectTooFast(const sdcVisibleObject* obj);
+    bool IsObjectTooFurious(const sdcVisibleObject* obj);
 
     bool IsMovingForwards();
     double GetSpeed();

@@ -201,9 +201,9 @@ bool sdcCar::ObjectDirectlyAhead() {
 /*
  * Returns true if the given object is directly ahead of us, else false
  */
-bool sdcCar::IsObjectDirectlyAhead(sdcVisibleObject* obj) {
-  double leftDist = obj->left_.GetLateralDist();
-  double rightDist = obj->right_.GetLateralDist();
+bool sdcCar::IsObjectDirectlyAhead(const sdcVisibleObject* obj) {
+  double leftDist = obj->Left().GetLateralDist();
+  double rightDist = obj->Right().GetLateralDist();
   if (leftDist < 0 && rightDist > 0) return true;
   return fmin(fabs(leftDist), fabs(rightDist)) < FRONT_OBJECT_COLLISION_WIDTH / 2.;
 }
@@ -225,24 +225,24 @@ bool sdcCar::ObjectOnCollisionCourse() {
 /*
  * Returns true if the given object is on a potential collision course with our car
  */
-bool sdcCar::IsObjectOnCollisionCourse(sdcVisibleObject* obj) {
+bool sdcCar::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) {
   return IsObjectTooFast(obj) || IsObjectTooFurious(obj);
 }
 
 /*
  * Returns true if the given object is projected to run into the car within a short time period from now
  */
-bool sdcCar::IsObjectTooFast(sdcVisibleObject* obj) {
+bool sdcCar::IsObjectTooFast(const sdcVisibleObject* obj) {
   math::Vector2d centerpoint = obj->GetCenterPoint();
-  bool inLineToCollide = fabs(obj->lineIntercept_) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj->GetEstimatedXSpeed()) < fabs(0.1 * obj->GetEstimatedYSpeed()));
-  bool willHitSoon = obj->dist_ / obj->GetEstimatedSpeed() < 20;
+  bool inLineToCollide = fabs(obj->LineIntercept()) < 1.5 || (fabs(centerpoint.x) < 1.5 && fabs(obj->GetEstimatedXSpeed()) < fabs(0.1 * obj->GetEstimatedYSpeed()));
+  bool willHitSoon = obj->Dist() / obj->GetEstimatedSpeed() < 20;
   return inLineToCollide && willHitSoon;
 }
 
 /*
  * Returns true if the given object is very close to the car
  */
-bool sdcCar::IsObjectTooFurious(sdcVisibleObject* obj) {
+bool sdcCar::IsObjectTooFurious(const sdcVisibleObject* obj) {
   math::Vector2d centerpoint = obj->GetCenterPoint();
   return (fabs(centerpoint.x) < FRONT_OBJECT_COLLISION_WIDTH / 2. && fabs(centerpoint.y) < 1.5);
 }

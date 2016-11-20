@@ -54,16 +54,16 @@ namespace gazebo {
 
     // Collision detection/avoidance functions
     sdcVisibleObject* CheckNearbyObjectsForCollision();
-    bool IsObjectOnCollisionCourse(sdcVisibleObject* obj);
-    bool DoMaximumBoundingBoxesCollide(sdcVisibleObject* obj);
-    bool DoMaximumRadiiCollide(sdcVisibleObject* obj);
-    bool DoMaximumRadiiCollideAtTime(sdcVisibleObject* obj, double time);
-    bool DoAccurateVehicleShapesCollide(sdcVisibleObject* obj);
-    bool DoAccurateVehicleShapesCollideAtTime(sdcVisibleObject* obj, double time);
+    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj);
+    bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj);
+    bool DoMaximumRadiiCollide(const sdcVisibleObject* obj);
+    bool DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj, double time);
+    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj);
+    bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj, double time);
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(
       sdcVisibleObject* obj, math::Vector2d collision);
     math::Vector2d GetPositionAtTime(double time);
-    sdcAngle GetCollisionAngleAtTime(sdcVisibleObject* obj, double time);
+    sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj, double time);
 
 
   private:
