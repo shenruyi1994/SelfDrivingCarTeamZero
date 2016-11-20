@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/awr/Desktop/SelfDrivingCarTeamZero/sdcAngle.cc
+stdio.h
+-
+sdcAngle.hh
+/Users/awr/Desktop/SelfDrivingCarTeamZero/sdcAngle.hh
+
+/Users/awr/Desktop/SelfDrivingCarTeamZero/sdcAngle.hh
+math.h
+-
+iostream
+-
+

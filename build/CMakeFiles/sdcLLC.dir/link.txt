@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libsdcLLC.a  CMakeFiles/sdcLLC.dir/sdcLLC.cc.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libsdcLLC.a

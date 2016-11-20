@@ -46,7 +46,7 @@ void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 		// Get the parent sensor.
 		this->parentSensor =
 		boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
-
+		
 		// Make sure the parent sensor is valid.
 		if (!this->parentSensor) {
 				gzerr << "Couldn't find a camera\n";
@@ -67,13 +67,14 @@ void sdcCameraSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 // Called by the world update start event
 void sdcCameraSensor::OnUpdate() {
 
+  
 	// Pull raw data from camera sensor object as an unsigned character array with 3 channels.
 	const unsigned char* img = this->parentSensor->GetImageData(0);
 	Mat image = Mat(this->parentSensor->GetImageHeight(0), this->parentSensor->GetImageWidth(0), CV_8UC3, const_cast<unsigned char*>(img));
 
 	//Select Region of Interest (ROI) for lane detection - currently this is the bottom half of the image.
 	//set area for ROI as a rectangle
-
+       
 	Rect ROI = cv::Rect(0, image.rows/2, image.cols, image.rows/2);
 	Mat imageROI = image(ROI);
 
