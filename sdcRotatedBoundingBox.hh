@@ -21,9 +21,8 @@ namespace gazebo {
     double angle;
 
     sdcRotatedBoundingBox(double left, double top, double height, double width,
-                          double angle) {
+                          double angle): angle(angle) {
       center = cv::Point2d(left + height / 2, top - height / 2);
-      angle = angle;
       ur = cv::Point2d(left + width, top);
       ul = cv::Point2d(left, top);
       ll = cv::Point2d(left, top - height);
@@ -31,9 +30,7 @@ namespace gazebo {
     }
 
     sdcRotatedBoundingBox(cv::Point2d center, double width, double height,
-                          double angle) {
-      center = center;
-      angle = angle;
+                          double angle): center(center), angle(angle) {
       ur = cv::Point2d(center.x + width / 2, center.y + height / 2);
       ul = cv::Point2d(center.x - width / 2, center.y + height / 2);
       ll = cv::Point2d(center.x - width / 2, center.y - height / 2);
