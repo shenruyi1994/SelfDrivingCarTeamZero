@@ -17,7 +17,6 @@ namespace gazebo {
       centerpoint_(center), radius(radius) {}
 
     bool DoesIntersect(const sdcBoundingCircle& box) const;
-    bool DoesIntersect(const sdcBoundingBox& box) const;
 
     cv::Point2d center;
     double radius;
