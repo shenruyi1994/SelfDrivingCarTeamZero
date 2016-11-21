@@ -242,7 +242,7 @@ void CameraPlugin::OnUpdate()
 		std::cout << "Window dimensions: " << width << ", " << height << std::endl;
 
 		float roiMinCutoff = height/2; // bounds roi to bottom half of image
-		float roiMaxCutoff = height - (height/3); // bounds roi on bottom 
+		float roiMaxCutoff = height - (height/3); // bounds roi on bottom
 		float increment = (roiMaxCutoff - roiMinCutoff)/numChunks;
 		float rightWeightScale = 0.05;
 		for (int i = 0; i < numChunks; i++) {
@@ -285,9 +285,13 @@ void CameraPlugin::OnUpdate()
 			line( contoursInv, waypointPoints[i], waypointPoints[i+1], Scalar( 200, 100, 0 ), thickness, lineType );
 		}
 
+		// updating the way points
+		cv::Point waypoint1 = waypointPoints[0];
+		cv::Point waypoint2 = waypointPoints[1];
+		cv::Point waypoint3 = waypointPoints[2];
+		dataProcessing::updateWaypoints(waypoint1,waypoint2,waypoint3);
+
 		circle( contoursInv, waypointPoints[waypointPoints.size() - 1], pointRadius, Scalar( 0, 0, 255 ), pointThickness, lineType );
-
-
 
 		//-- Show detected keypoints
 		imshow("Keypoints 1", contoursInv );

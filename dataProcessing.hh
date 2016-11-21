@@ -25,7 +25,8 @@ namespace gazebo
 			static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
 			static void GetLanePosition();
 			static std::vector<double>* GetLidarData(LidarPosition pos);
-	  static std::vector<cv::Point> getWaypoints();
+	  	static std::vector<cv::Point> getWaypoints();
+			static void updateWaypoints(cv::Point p1, cv::Point p2, cv::Point p3);
 			static void UpdateCarPosition(double x, double y, double z);
 		private:
 			static double carX;

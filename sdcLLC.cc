@@ -19,8 +19,7 @@ void sdcLLC::update() {
   // std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
   car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
-  std::vector<cv::Point> waypoints;
-  waypoints = dataProcessing::getWaypoints();
+  std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
   sdcAngle angle;
   angle = car_->GetDirection();
   std::cout << angle << std::endl;

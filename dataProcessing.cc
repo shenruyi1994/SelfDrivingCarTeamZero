@@ -20,6 +20,10 @@ double dataProcessing::lanePositionY = 0;
 std::vector<double>* dataProcessing::frontLidarData = new std::vector<double>();
 std::vector<double>* dataProcessing::backLidarData = new std::vector<double>();
 std::map<LidarPosition, LidarInfo> dataProcessing::lidarInfo = std::map<LidarPosition, LidarInfo>();
+cv::Point waypoint1;
+cv::Point waypoint2;
+cv::Point waypoint3;
+
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
@@ -63,7 +67,7 @@ void dataProcessing::GetLanePosition() {
 
 // Retrieve lidar data
 std::vector<double>* dataProcessing::GetLidarData(LidarPosition pos) {
-	std::cout << "Get lidar data\n";	
+	std::cout << "Get lidar data\n";
 	switch (pos) {
 		case NEWFRONT:
 			return frontLidarData;
@@ -79,14 +83,17 @@ std::vector<double>* dataProcessing::GetLidarData(LidarPosition pos) {
 	return NULL;
 }
 
+void dataProcessing::updateWaypoints(cv::Point p1, cv::Point p2, cv::Point p3) {
+	waypoint1 = p1;
+	waypoint2 = p2;
+	waypoint3 = p3;
+}
 
 std::vector<cv::Point> dataProcessing::getWaypoints() {
-  std::vector<cv::Point> points;
-  
+	std::vector<cv::Point> waypoints;
 
-  points.push_back(cv::Point(5, 10));
-  points.push_back(cv::Point(10,15));
-  points.push_back(cv::Point(100,150));
-  return points;
-
+  waypoints.push_back(waypoint1);
+  waypoints.push_back(waypoint2);
+  waypoints.push_back(waypoint3);
+  return waypoints;
 }
