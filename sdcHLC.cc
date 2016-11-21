@@ -571,7 +571,18 @@ bool sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
  */
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
-  return false;
+  sdcBoundingCircle selfCircle = sdcBoundingCircle(
+    mathVecToPoint(GetPositionAtTime(time)),
+    pythag_thm(car_->width_, car_->length_)
+  );
+
+  // TODO: figure out how to estimate size of an object
+  sdcBoundingCircle objCircle = sdcBoundingCircle(
+    mathVecToPoint(obj->GetProjectedPositionAtTime(time)),
+    1 // placeholder for above TODO
+  );
+
+  return selfCircle.DoesIntersect(objCircle);
 }
 
 /*

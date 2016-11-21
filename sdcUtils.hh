@@ -103,3 +103,10 @@ cv::Vec<T, 2> normalized(cv::Vec<T, 2> vec) {
   vec.y = vec.y / length;
   return vec;
 }
+
+/*
+ * Converts a math::Vector2d to a cv::Point2d
+ */
+cv::Point2d mathVecToPoint(const gazebo::math::Vector2d& vec) {
+  return cv::Point2d(vec.x, vec.y);
+}
