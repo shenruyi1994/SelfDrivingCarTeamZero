@@ -46,7 +46,7 @@ namespace gazebo {
 
     void update();
     void setWaypoints(Waypoints* waypoints);
-    std::pair<SteeringAngle, TimeStep> calculateDubins(Waypoints* waypoints);
+    Control calculateDubins(Waypoints* waypoints);
 
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
