@@ -7,6 +7,7 @@
 #include "gazebo/transport/transport.hh"
 
 #include "globals.hh"
+#include "sdcBoundingBox.hh"
 #include "sdcCar.hh"
 #include "sdcIntersection.hh"
 #include "sdcUtils.hh"
@@ -511,6 +512,11 @@ void sdcHLC::Avoidance() {
  * the car, or NULL if no such object exists.
  */
 sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() const {
+  for (sdcVisibleObject* obj : car_->frontObjects_) {
+    if (IsObjectOnCollisionCourse(obj)) {
+      return obj;
+    }
+  }
   return NULL;
 }
 
@@ -524,10 +530,25 @@ bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
 }
 
 /*
- *
+ * Checks if the most pessimistic bounding boxes collide; that
  */
 bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
-  return false;
+  double maxTime = car_->GetMaxSafeTime();
+  math::Vector2d futureCarPos = GetPositionAtTime(maxTime);
+  math::Vector2d futureObjPos = obj->GetProjectedPositionAtTime(maxTime);
+
+  sdcBoundingBox carRect = sdcBoundingBox(
+    fmin(car_->x_, futureCarPos.x),
+    fmin(car_->y_, futureCarPos.y),
+    fmax(car_->x_, futureCarPos.x),
+    fmax(car_->y_, futureCarPos.y));
+  sdcBoundingBox objRect = sdcBoundingBox(
+    fmin(obj->GetCenterPoint().x, futureObjPos.x),
+    fmin(obj->GetCenterPoint().y, futureObjPos.y),
+    fmax(obj->GetCenterPoint().x, futureObjPos.x),
+    fmax(obj->GetCenterPoint().y, futureObjPos.y));
+
+  return carRect.DoesIntersect(&objRect);
 }
 
 /*
