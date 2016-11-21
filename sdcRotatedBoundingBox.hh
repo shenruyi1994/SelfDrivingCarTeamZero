@@ -37,8 +37,20 @@ namespace gazebo {
       lr = cv::Point2d(center.x + width / 2, center.y - height / 2);
     }
 
+    /*
+     * Creates a set of 4 axes, each linearly independent and parallel to
+     * a side of one of the rectangles. These axes can then be used to
+     * determine if the two boxes intersect.
+     * Returns whether the given bounding box intersects with this one.
+     */
     bool DoesIntersect(const sdcRotatedBoundingBox& box) const;
     bool DoesIntersect(const sdcBoundingBox& box) const;
+
+    /*
+     * Projects each corner of the two rotated bounding boxes onto the axis. If
+     * the range described by the projections from one rectangle onto the other
+     * do not overlap the other one, then the boxes do not intersect.
+     */
     bool DoProjectionsOntoLineIntersect(const cv::Point2d& axis,
                                         const sdcRotatedBoundingBox& box) const;
   };
