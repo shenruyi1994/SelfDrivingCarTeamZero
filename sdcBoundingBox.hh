@@ -12,11 +12,9 @@ namespace gazebo {
   class sdcBoundingBox: public sdcBoundingShape, public Rect {
   public:
     sdcBoundingBox(double left, double top, double height, double width):
-        Rect(left, top, height, width) {
-      centerpoint_ = cv::Point2d(x + width / 2, y - height / 2);
-    }
+        Rect(left, top, height, width) {}
 
-    bool DoesIntersect(const sdcBoundingBox* box) const;
+    bool DoesIntersect(const sdcBoundingBox& box) const;
   };
 }
 
