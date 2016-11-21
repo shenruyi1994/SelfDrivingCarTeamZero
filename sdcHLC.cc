@@ -12,6 +12,7 @@
 #include "sdcIntersection.hh"
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
+#include "sdcRotatedBoundingBox.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
@@ -548,7 +549,7 @@ bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
     fmax(obj->GetCenterPoint().x, futureObjPos.x),
     fmax(obj->GetCenterPoint().y, futureObjPos.y));
 
-  return carRect.DoesIntersect(&objRect);
+  return carRect.DoesIntersect(objRect);
 }
 
 /*
