@@ -72,6 +72,9 @@ set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
 target_link_libraries(sdcBoundingBox ${OpenCV_LIBS})
 
+add_library(sdcRotatedBoundingBox SHARED sdcRotatedBoundingBox.cc)
+target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${OpenCV_LIBS})
+
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${PROTOBUF_LIBRARIES})
@@ -89,4 +92,4 @@ add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
