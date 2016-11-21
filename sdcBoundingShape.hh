@@ -1,10 +1,14 @@
 #ifndef _sdcBoundingShape_hh
 #define _sdcBoundingShape_hh
 
+#include <opencv2/opencv.hpp>
+
 namespace gazebo {
   class sdcBoundingShape {
   public:
-    virtual bool Intersects(const sdcBoundingShape* shape) const = 0;
+    cv::Point2d Centerpoint() { return centerpoint_; }
+  protected:
+    cv::Point2d centerpoint_;
   };
 }
 
