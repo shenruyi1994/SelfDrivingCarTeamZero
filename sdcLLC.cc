@@ -5,7 +5,6 @@
 #include "gazebo/transport/transport.hh"
 #include <CGAl/Arrangement_2.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/opencv.hpp>
 
 #include "arr_print.h"
 #include "dataProcessing.hh"
@@ -21,9 +20,21 @@ void sdcLLC::update() {
   car_->SetTargetSpeed(10);
   std::vector<cv::Point> waypoints;
   waypoints = dataProcessing::getWaypoints();
-  sdcAngle angle;
-  angle = car_->GetDirection();
-  std::cout << angle << std::endl;
+
+  sdcAngle direction;
+  sdcAngle orientation;
+  sdcAngle angleToTarget;
+
+  math::Vector2d target(waypoints.front().x, waypoints.front().y);
+
+  direction = car_->sdcCar::GetDirection();
+  orientation = car_->sdcCar::GetOrientation();
+  angleToTarget = car_->sdcCar::AngleToTarget(target);
+  
+
+  std::cout << "The car is moving in the direction:"  << direction << std::endl;
+  std::cout << "The car is facing the direction:" << orientation << std::endl;
+  std::cout << "Angle between coords of car and target" << angleToTarget << std::endl;
 
   //  calculateDubins(&waypoints);
   }

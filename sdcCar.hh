@@ -33,6 +33,8 @@
 #include "sdcIntersection.hh"
 #include "sdcSensorData.hh"
 #include "sdcWaypoint.hh"
+#include <opencv2/opencv.hpp>
+
 
 namespace gazebo {
   class sdcHLC;
