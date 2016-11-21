@@ -65,6 +65,7 @@ namespace gazebo {
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(
       sdcVisibleObject* obj, math::Vector2d collision);
     math::Vector2d GetPositionAtTime(double time) const;
+    sdcAngle GetAngleAtTime(double time) const;
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
 

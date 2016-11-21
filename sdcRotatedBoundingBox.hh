@@ -50,6 +50,7 @@ namespace gazebo {
      * Projects each corner of the two rotated bounding boxes onto the axis. If
      * the range described by the projections from one rectangle onto the other
      * do not overlap the other one, then the boxes do not intersect.
+     * Returns whether the ranges overlap.
      */
     bool DoProjectionsOntoLineIntersect(const cv::Point2d& axis,
                                         const sdcRotatedBoundingBox& box) const;

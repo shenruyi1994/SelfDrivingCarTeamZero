@@ -593,6 +593,14 @@ bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const {
  */
 bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
                                                   double time) const {
+  math::Vector2d selfPos = GetPositionAtTime(time);
+  sdcRotatedBoundingBox selfBox = sdcRotatedBoundingBox(
+    selfPos.x - car_->width_ / 2, selfPos.y + car_->height_ / 2,
+    car_->width_, car_->height_,
+    GetAngleAtTime(time)
+  );
+
+  // TODO: figure out a way to estimate the shape of an sdcVisibleObject
   return false;
 }
 
@@ -602,6 +610,14 @@ bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
  */
 math::Vector2d sdcHLC::GetPositionAtTime(double time) const {
   return math::Vector2d(0, 0);
+}
+
+/*
+ * TODO: figure out how this will work. For now it is a placeholder, but will
+ * eventually be based on the dubins path created by the LLC.
+ */
+sdcAngle sdcHLC::GetAngleAtTime(double time) const {
+  return sdcAngle(0, 0);
 }
 
 /*
