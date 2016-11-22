@@ -94,6 +94,9 @@ target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
+add_library(sdcSpline SHARED sdcSpline.cc)
+target_link_libraries(sdcSpline sdcAngle ${OpenCV_LIBS})
+
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
 target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
