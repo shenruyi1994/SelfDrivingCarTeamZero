@@ -56,10 +56,11 @@ namespace gazebo {
     sdcVisibleObject* CheckNearbyObjectsForCollision() const;
     bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
     bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const;
-    bool DoMaximumRadiiCollide(const sdcVisibleObject* obj) const;
+    double DoMaximumRadiiCollide(const sdcVisibleObject* obj) const;
     bool DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                      double time) const;
-    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj) const;
+    bool DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj,
+                                        double time) const;
     bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
                                               double time) const;
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(
