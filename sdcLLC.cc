@@ -19,33 +19,35 @@ void sdcLLC::update() {
   // std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
   car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
-  std::vector<cv::Point> waypoints;
-  waypoints = dataProcessing::getWaypoints();
-
+ 
   sdcAngle direction;
   sdcAngle orientation;
   sdcAngle angleToTarget;
 
+  std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
   math::Vector2d target(waypoints.front().x, waypoints.front().y);
+
+
 
   //direction = car_->sdcCar::GetDirection();
   //orientation = car_->sdcCar::GetOrientation();
   
   angleToTarget = car_->sdcCar::AngleToTarget(target);
-  car_->sdcCar::SetTargetDirection(angleToTarget);
+
+  // car_->sdcCar::SetTargetDirection(angleToTarget);
   //sdcHLC will call Match Target Direction on this target angle
   //should probably move MatchTargetDirection into sdcLLC
   //std::cout << "The car is moving in the direction:"  << direction << std::endl;
   //std::cout << "The car is facing the direction:" << orientation << std::endl;
   std::cout << "Angle between coords of car and target" << angleToTarget << std::endl;
 
+
   //  calculateDubins(&waypoints);
   }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {}
 
-std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints) {
-
+Control sdcLLC::calculateDubins(Waypoints* waypoints) {
   // Circular_arc_2 arc = Circular_arc_2(Point_2(10,0), Point_2(5,5), Point_2(0, 0));
   //Circle_2 circle = Circle_2 (Point_2(10,10), Point_2(1,8), Point_2(9, 10));
   //Segment_2 seg1 = Segment_2(Point_2(0,0), Point_2(4,20));
@@ -87,6 +89,9 @@ std::pair<SteeringAngle, TimeStep> sdcLLC::calculateDubins(Waypoints* waypoints)
   Arrangement arr;
   insert(arr, curves.begin(), curves.end());
   print_arrangement(arr);
+
+  Control ret;
+  return ret;
 }
 
 /*

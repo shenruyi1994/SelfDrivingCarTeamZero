@@ -7,11 +7,13 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(FADBAD++)
 
-find_package(OpenCV REQUIRED)
-
 find_package(CGAL REQUIRED COMPONENTS core)
 include( ${CGAL_USE_FILE} )
 
+if(NOT OpenCV_DIR)
+ find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV" HINTS    "/opt/ros/fuerte/share/OpenCV/")
+endif(NOT OpenCV_DIR)
+find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(${OpenCV_LIBS}) Spits out error messages, and also doesn't seem necessary to work
 
@@ -67,8 +69,11 @@ find_package(CGAL REQUIRED COMPONENTS Core GMP RS3 MPFI )
 include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
-add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
+target_link_libraries(sdcBoundingBox ${OpenCV_LIBS})
+
+add_library(sdcRotatedBoundingBox SHARED sdcRotatedBoundingBox.cc)
+target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${OpenCV_LIBS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
@@ -85,3 +90,6 @@ target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+
+add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})

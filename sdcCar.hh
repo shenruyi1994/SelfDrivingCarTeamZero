@@ -156,6 +156,9 @@ namespace gazebo {
     double x_;
     double y_;
 
+    double width_;
+    double length_;
+
     /////////////////////////
     // SDC-defined methods //
     /////////////////////////
