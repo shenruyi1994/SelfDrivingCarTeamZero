@@ -10,6 +10,7 @@
 #include "dataProcessing.hh"
 #include "globals.hh"
 #include "sdcCar.hh"
+#include "sdcHLC.hh"
 #include "Waypoints.hh"
 
 using namespace gazebo;
@@ -27,13 +28,15 @@ void sdcLLC::update() {
 
   math::Vector2d target(waypoints.front().x, waypoints.front().y);
 
-  direction = car_->sdcCar::GetDirection();
-  orientation = car_->sdcCar::GetOrientation();
-  angleToTarget = car_->sdcCar::AngleToTarget(target);
+  //direction = car_->sdcCar::GetDirection();
+  //orientation = car_->sdcCar::GetOrientation();
   
-
-  std::cout << "The car is moving in the direction:"  << direction << std::endl;
-  std::cout << "The car is facing the direction:" << orientation << std::endl;
+  angleToTarget = car_->sdcCar::AngleToTarget(target);
+  car_->sdcCar::SetTargetDirection(angleToTarget);
+  //sdcHLC will call Match Target Direction on this target angle
+  //should probably move MatchTargetDirection into sdcLLC
+  //std::cout << "The car is moving in the direction:"  << direction << std::endl;
+  //std::cout << "The car is facing the direction:" << orientation << std::endl;
   std::cout << "Angle between coords of car and target" << angleToTarget << std::endl;
 
   //  calculateDubins(&waypoints);
