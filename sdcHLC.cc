@@ -190,6 +190,13 @@ void sdcHLC::MatchTargetSpeed() {
   }
 }
 
+void sdcHLC::FollowSpline() {
+  splineTime_ += .01;
+
+  cv::Point2d targetPoint = spline_->GetPoint(splineTime_ + .05);
+  car_->SetTargetDirection(car_->AngleToTarget(targetPoint))
+}
+
 /*
  * Drive from point to point in the given list
  */

@@ -76,6 +76,9 @@ namespace gazebo {
     sdcLLC* llc_;
     Waypoints* waypoints_;
 
+    double splineTime_ = 0;
+    sdcSpline* spline_;
+
     // ================================================
     // 2016 states
     // ================================================
