@@ -13,8 +13,8 @@ namespace gazebo {
     sdcBoundingCircle(double x, double y, double radius): radius(radius) {
       center = cv::Point2d(x, y);
     }
-    sdcBoundingCircle(const Point2d& center, double radius):
-      centerpoint_(center), radius(radius) {}
+    sdcBoundingCircle(const cv::Point2d& center, double radius):
+      center(center), radius(radius) {}
 
     bool DoesIntersect(const sdcBoundingCircle& box) const;
 

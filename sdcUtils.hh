@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include <opencv2/opencv.hpp>
+#include "gazebo/physics/physics.hh"
 
 // computes the pythagorean theoram (for distance calculation), and only
 // accepts numeric types.
