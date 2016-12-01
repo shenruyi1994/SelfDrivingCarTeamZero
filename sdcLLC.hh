@@ -10,6 +10,7 @@
 
 #include "globals.hh"
 #include "Waypoints.hh"
+#include "dubins.hh"
 
 
 //placeholder structs for now
@@ -45,6 +46,7 @@ namespace gazebo {
     void Reverse();
     void StopReverse();
     sdcCar* car_;
+    dubins* dubins_;
   private:
     Waypoints* waypoints_;
   };

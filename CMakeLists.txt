@@ -94,8 +94,10 @@ target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
-add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
-
 add_library(dubins SHARED dubins.cc)
 target_link_libraries(dubins sdcWaypoint sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+
+

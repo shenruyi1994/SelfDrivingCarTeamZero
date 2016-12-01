@@ -12,6 +12,7 @@
 #include "sdcCar.hh"
 #include "sdcHLC.hh"
 #include "Waypoints.hh"
+#include "dubins.hh"
 
 using namespace gazebo;
 
@@ -20,13 +21,17 @@ void sdcLLC::update() {
   car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
  
-  sdcAngle direction;
-  sdcAngle orientation;
-  sdcAngle angleToTarget;
+  // sdcAngle direction;
+  //sdcAngle orientation;
+  //sdcAngle angleToTarget;
 
-  std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
-  math::Vector2d target(waypoints.front().x, waypoints.front().y);
+  //std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
+  //math::Vector2d target(waypoints.front().x, waypoints.front().y);
 
+  Waypoints testPoint;
+
+  
+  int control = dubins_->calculateDubins(&testPoint);
 
   
   //orientation = car_->sdcCar::GetOrientation();

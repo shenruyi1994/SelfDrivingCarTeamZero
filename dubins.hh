@@ -20,11 +20,11 @@ namespace gazebo {
     dubins();
     ~dubins() {}
 
-    Control calculateDubins(Waypoints* waypoints);
+    int calculateDubins(Waypoints* waypoints);
 
 
   private:
-    Control* control_;
+    //Control* control_;
 
   };
 }
