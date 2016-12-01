@@ -111,3 +111,7 @@ cv::Vec<T, 2> normalized(cv::Vec<T, 2> vec) {
 cv::Point2d mathVecToPoint(const gazebo::math::Vector2d& vec) {
   return cv::Point2d(vec.x, vec.y);
 }
+
+
+
+
