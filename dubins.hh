@@ -10,8 +10,17 @@
 
 #include "globals.hh"
 #include "Waypoints.hh"
-
+//#include <string>
 #include "sdcLLC.hh"
+
+typedef struct {
+  int seg1;
+  int seg2;
+  int seg3;
+  int length;
+  std::string type;
+  
+} Path;
 
 namespace gazebo {
     class GAZEBO_VISIBLE dubins {

@@ -28,10 +28,16 @@ void sdcLLC::update() {
   //std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
   //math::Vector2d target(waypoints.front().x, waypoints.front().y);
 
-  Waypoints testPoint;
 
-  
+  static int counter = 0;
+
+  //  if(counter%20000 == 0){
+  if(counter == 0) {
+  Waypoints testPoint;
   int control = dubins_->calculateDubins(&testPoint);
+  }
+  counter++;
+
 
   
   //orientation = car_->sdcCar::GetOrientation();
