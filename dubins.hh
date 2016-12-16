@@ -14,10 +14,10 @@
 #include "sdcLLC.hh"
 
 typedef struct {
-  int seg1;
-  int seg2;
-  int seg3;
-  int length;
+  double seg1;
+  double seg2;
+  double seg3;
+  double length;
   std::string type;
   
 } Path;

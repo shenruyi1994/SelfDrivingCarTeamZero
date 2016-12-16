@@ -56,7 +56,6 @@ Path rsr(double initD, double finalD, double dist) {
   rsrPath.type = "rsr";
 
   std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
-
   return rsrPath;
 }
 
@@ -65,10 +64,9 @@ Path rsl(double initD, double finalD, double dist) {
   double t,p,q;
   Path rslPath;
 
-  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
+  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
   t = mod(initD - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
-  q = mod(mod(finalD, 2*PI) - atan((cos(initD)-cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
-
+  q = mod(mod(finalD, 2*PI) - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
   rslPath.seg1 = t;
   rslPath.seg2 = p;
   rslPath.seg3 = q;
@@ -140,6 +138,22 @@ Path lrl(double initD, double finalD, double dist) {
 }
 
 
+bool comparePath(Path &a, Path &b) {
+  return a.length< b.length;
+}
+
+Path minPath(Path a, Path b, Path c, Path d){
+  
+  std::vector<Path> paths;
+  paths.push_back(a);
+  paths.push_back(b);
+  paths.push_back(c);
+  paths.push_back(d);
+  
+  sort(paths.begin(), paths.end(), comparePath);
+  return paths.front();
+}
+
 
 int dubins::calculateDubins(Waypoints* waypoints) {
   //direction in radians
@@ -147,9 +161,11 @@ int dubins::calculateDubins(Waypoints* waypoints) {
   cv::Point initPosition = cv::Point(0,0);
 
   //direction in radians
-  double finalDirection = 0;
+  double finalDirection =PI;
   cv::Point initPoint = cv::Point(0,10);
-  double distance = 100;
+  double distance = 80;
+  double minTurningRadius = 20;
+  distance = distance/minTurningRadius;
 
   //double distance = sdcLLC::car_->sdcCar::GetDistance(finalPosition);
 
@@ -157,8 +173,17 @@ int dubins::calculateDubins(Waypoints* waypoints) {
   Path lsrP = lsr(initDirection, finalDirection, distance);
   Path rsrP = rsr(initDirection, finalDirection, distance); 
   Path rslP = rsl(initDirection, finalDirection, distance);
-  Path rlrP = rlr(initDirection, finalDirection, distance);
-  Path lrlP = lrl(initDirection, finalDirection, distance);
+  // Path rlrP = rlr(initDirection, finalDirection, distance);
+  // Path lrlP = lrl(initDirection, finalDirection, distance);
 
+  Path dubinsPath = minPath(lslP,lsrP,rsrP,rslP);
+
+  dubinsPath.seg1= dubinsPath.seg1 * minTurningRadius;
+  dubinsPath.seg2=dubinsPath.seg2 * minTurningRadius;
+  dubinsPath.seg3= dubinsPath.seg3*minTurningRadius;
+  dubinsPath.length = dubinsPath.length*minTurningRadius;
+  std::cout << "The minimum path of type: " << dubinsPath.type << " is of length: " << dubinsPath.length << "\n";
+  std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is lenght: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
+  
   return 0;
 }
