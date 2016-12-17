@@ -29,7 +29,7 @@ Path  lsl(double initD, double finalD, double dist){
 
   t = mod((-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD)))),2*PI);
   p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(initD)-sin(finalD)));
-  q = mod(finalD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
+  q = mod(finalD - atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
 
   lslPath.seg1 = t;
   lslPath.seg2 = p;
@@ -47,7 +47,7 @@ Path rsr(double initD, double finalD, double dist) {
   Path rsrPath;
   t = mod(initD - atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
   p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(finalD)-sin(initD)));
-  q = mod(finalD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
+  q = mod(mod(-finalD,2*PI) + atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
 
   rsrPath.seg1 = t;
   rsrPath.seg2 = p;
@@ -64,7 +64,7 @@ Path rsl(double initD, double finalD, double dist) {
   double t,p,q;
   Path rslPath;
 
-  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
+  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
   t = mod(initD - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
   q = mod(mod(finalD, 2*PI) - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
   rslPath.seg1 = t;
@@ -171,11 +171,10 @@ int dubins::calculateDubins(Waypoints* waypoints) {
   cv::Point initPosition = cv::Point(0,0);
 
   //direction in radians
-  double finalDirection =PI;
+  double finalDirection =1;
   cv::Point initPoint = cv::Point(0,10);
-  double distance = 80;
-  double minTurningRadius = 20;
-  distance = distance/minTurningRadius;
+  double distance = 10;
+  distance = distance/MIN_TURNING_RADIUS;
 
   //double distance = sdcLLC::car_->sdcCar::GetDistance(finalPosition);
 
