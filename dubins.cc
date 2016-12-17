@@ -118,7 +118,7 @@ Path rlr(double initD, double finalD, double dist) {
   return rlrPath;
 }
 
-//Note there was a typo in the paper discribing how to compute the lrl,
+//Note there was a mistake in the paper discribing how to compute the lrl,
 //I did my best to compute the solution, but this section needs to be tested further
 Path lrl(double initD, double finalD, double dist) {
   double t,p,q;
@@ -155,6 +155,16 @@ Path minPath(Path a, Path b, Path c, Path d){
 }
 
 
+Path scalePath(Path dubinsPath){
+  dubinsPath.seg1 = dubinsPath.seg1*MIN_TURNING_RADIUS;
+  dubinsPath.seg2 = dubinsPath.seg2*MIN_TURNING_RADIUS;
+  dubinsPath.seg3 = dubinsPath.seg3*MIN_TURNING_RADIUS;
+  dubinsPath.length = dubinsPath.length*MIN_TURNING_RADIUS;
+
+  return dubinsPath;
+
+}
+
 int dubins::calculateDubins(Waypoints* waypoints) {
   //direction in radians
   double initDirection = 0;
@@ -177,13 +187,10 @@ int dubins::calculateDubins(Waypoints* waypoints) {
   // Path lrlP = lrl(initDirection, finalDirection, distance);
 
   Path dubinsPath = minPath(lslP,lsrP,rsrP,rslP);
-
-  dubinsPath.seg1= dubinsPath.seg1 * minTurningRadius;
-  dubinsPath.seg2=dubinsPath.seg2 * minTurningRadius;
-  dubinsPath.seg3= dubinsPath.seg3*minTurningRadius;
-  dubinsPath.length = dubinsPath.length*minTurningRadius;
+  dubinsPath = scalePath(dubinsPath);
   std::cout << "The minimum path of type: " << dubinsPath.type << " is of length: " << dubinsPath.length << "\n";
   std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is lenght: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
   
   return 0;
 }
+
