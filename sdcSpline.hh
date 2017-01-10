@@ -61,9 +61,10 @@ public:
                                cv::Point2d& p3) const;
 
   /*
-   *
+   * Returns the next point based on the current distance travelled along the
+   * spline.
    */
-  void UpdateDistance(double d);
+  void GetPointAtDistance(double d);
 
 
   /*

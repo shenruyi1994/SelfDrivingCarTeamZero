@@ -51,6 +51,14 @@ void sdcSpline::CalculateLength() {
 }
 
 /*
+ * Returns the next point based on the current distance travelled along the
+ * spline.
+ */
+void sdcSpline::GetPointAtDistance(double d) {
+  GetPoint(d / length_);
+}
+
+/*
  * Finds the nearest two control points and interpolates using the four
  * nearest control points.
  */
