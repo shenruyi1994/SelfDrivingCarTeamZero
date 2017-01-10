@@ -14,6 +14,7 @@
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
 #include "sdcRotatedBoundingBox.hh"
+#include "sdcSpline.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
@@ -32,11 +33,14 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   currentPerpendicularState_ = backPark;
   currentParallelState_ = rightBack;
   currentAvoidanceState_ = notAvoiding;
+
+  spline_ = new sdcSpline();
 }
 
 sdcHLC::~sdcHLC() {
   delete llc_;
   delete waypoints_;
+  delete spline_;
 }
 
 ////////////////////////////////
@@ -51,28 +55,34 @@ sdcHLC::~sdcHLC() {
  */
 void sdcHLC::Drive() {
 
-  // If not in avoidance, check if we should start following the thing
-  // in front of us. If following is done, kick out to default state
-  if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
-    // If there's a stop sign, assume we're at an intersection
-    if (car_->ignoreStopSignsCounter_ == 0 && sdcSensorData::stopSignFrameCount > 5) {
-      currentState_ = INTERSECTION;
-    }
+  // ===================
+  // FOR TESTING SPLINES
+  // ===================
+  currentState_ = DEFAULT_STATE;
+  FollowSpline();
 
-    // If something is ahead of us, default to trying to follow it
-    if (car_->ObjectDirectlyAhead()) {
-      currentState_ = FOLLOW;
-    } else if (currentState_ == FOLLOW && !car_->isTrackingObject_) {
-      currentState_ = DEFAULT_STATE;
-    }
-
-    // Look for objects in danger of colliding with us, react appropriately
-    if (car_->ObjectOnCollisionCourse()) {
-      currentState_ = AVOIDANCE;
-    }
-  }
-
-  car_->ignoreStopSignsCounter_ = fmax(car_->ignoreStopSignsCounter_ - 1, 0);
+  // // If not in avoidance, check if we should start following the thing
+  // // in front of us. If following is done, kick out to default state
+  // if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
+  //   // If there's a stop sign, assume we're at an intersection
+  //   if (car_->ignoreStopSignsCounter_ == 0 && sdcSensorData::stopSignFrameCount > 5) {
+  //     currentState_ = INTERSECTION;
+  //   }
+  //
+  //   // If something is ahead of us, default to trying to follow it
+  //   if (car_->ObjectDirectlyAhead()) {
+  //     currentState_ = FOLLOW;
+  //   } else if (currentState_ == FOLLOW && !car_->isTrackingObject_) {
+  //     currentState_ = DEFAULT_STATE;
+  //   }
+  //
+  //   // Look for objects in danger of colliding with us, react appropriately
+  //   if (car_->ObjectOnCollisionCourse()) {
+  //     currentState_ = AVOIDANCE;
+  //   }
+  // }
+  //
+  // car_->ignoreStopSignsCounter_ = fmax(car_->ignoreStopSignsCounter_ - 1, 0);
 
 
   // Possible states: stop, waypoint, intersection, follow, avoidance
@@ -191,10 +201,26 @@ void sdcHLC::MatchTargetSpeed() {
 }
 
 void sdcHLC::FollowSpline() {
-  splineTime_ += .01;
+  if (spline_->NumSegments() < 3) {
+    spline_->AddControlPoint(cv::Point2d(0, 0));
+    spline_->AddControlPoint(cv::Point2d(10, 0));
+    spline_->AddControlPoint(cv::Point2d(20, 5));
+    spline_->AddControlPoint(cv::Point2d(25, 15));
+    spline_->AddControlPoint(cv::Point2d(35, 20));
+    spline_->AddControlPoint(cv::Point2d(45, 15));
+    spline_->AddControlPoint(cv::Point2d(45, 5));
 
-  cv::Point2d targetPoint = spline_->GetPoint(splineTime_ + .05);
-  car_->SetTargetDirection(car_->AngleToTarget(targetPoint))
+    // for (int i = 0; i < 100; i++) {
+    //   splinePoints_.push_back(spline_->GetPoint(((double)i) / 100));
+    // }
+    car_->SetTargetSpeed(2);
+  }
+
+  splineTime_ += .01;
+  cv::Point2d targetPoint = spline_->GetPoint(splineTime_);
+
+  car_->SetTargetDirection(car_->AngleToTarget(pointToMathVec(targetPoint)));
+  llc_->Accelerate();
 }
 
 /*

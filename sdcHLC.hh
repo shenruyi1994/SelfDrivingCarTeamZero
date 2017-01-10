@@ -10,6 +10,7 @@
 #include "globals.hh"
 #include "sdcIntersection.hh"
 #include "sdcLLC.hh"
+#include "sdcSpline.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
@@ -44,6 +45,7 @@ namespace gazebo {
     void insertWaypointTypes(std::vector<int> path, Direction startDir);
 
     // Driving algorithms
+    void FollowSpline();
     void LanedDriving();
     void GridTurning(int turn);
     void WaypointDriving(std::vector<sdcWaypoint> waypoints);
@@ -78,6 +80,7 @@ namespace gazebo {
 
     double splineTime_ = 0;
     sdcSpline* spline_;
+    std::vector<cv::Point2d> splinePoints_;
 
     // ================================================
     // 2016 states
