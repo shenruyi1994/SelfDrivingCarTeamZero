@@ -1,16 +1,36 @@
+#ifndef __SDCUTILS_HH__
+#define __SDCUTILS_HH__
+
 #include <type_traits>
 #include <math.h>
 
 #include <opencv2/opencv.hpp>
 #include "gazebo/physics/physics.hh"
 
-// computes the pythagorean theoram (for distance calculation), and only
+// computes the pythagorean theorem (for distance calculation), and only
 // accepts numeric types.
 template<typename T>
 T pythag_thm(T x, T y) {
   static_assert(std::is_arithmetic<T>::value,
                 "pythag_thm only accepts numeric values");
   return sqrt(pow(x, 2) + pow(y, 2));
+}
+
+/*
+ * Returns the distance between two cv::Point2d objects, using the pythag_thm
+ * function.
+ */
+double cv_distance(const cv::Point2d& p1, const cv::Point2d& p2) {
+  return pythag_thm(fabs(p1.x - p2.x), fabs(p1.y - p2.y));
+}
+
+/*
+ * Returns the distance between two gazebo::math::Vector2d objects, using the
+ * pythag_thm function.
+ */
+double vec_distance(const gazebo::math::Vector2d& p1,
+                      const gazebo::math::Vector2d& p2) {
+  return pythag_thm(fabs(p1.x - p2.x), fabs(p1.y - p2.y));
 }
 
 /////////////////////////////////////////
@@ -122,3 +142,5 @@ cv::Point2d mathVecToPoint(const gazebo::math::Vector2d& vec) {
 gazebo::math::Vector2d pointToMathVec(const cv::Point2d& point) {
   return gazebo::math::Vector2d(point.x, point.y);
 }
+
+#endif
