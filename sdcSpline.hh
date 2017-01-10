@@ -13,6 +13,7 @@ class sdcSpline {
 protected:
   std::vector<double> knots_;
   std::vector<cv::Point2d> controlPoints_;
+  double length_;
 
 public:
   sdcSpline() {}
@@ -29,6 +30,12 @@ public:
    * smaller than the number of control points.
    */
   void ResetKnots();
+
+  /*
+   * Approximates the length of the spline. Should not be called often, as it
+   * is not especially optimized and is relatively expensive.
+   */
+  void CalculateLength();
 
   /*
    * Finds the nearest two control points and interpolates using the four
@@ -52,6 +59,12 @@ public:
                                cv::Point2d& p1,
                                cv::Point2d& p2,
                                cv::Point2d& p3) const;
+
+  /*
+   *
+   */
+  void UpdateDistance(double d);
+
 
   /*
    * Note that splines don't have segments between the first two or last

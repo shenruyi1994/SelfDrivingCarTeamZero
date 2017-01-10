@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "sdcAngle.hh"
+#include "sdcUtils.hh"
 
 void sdcSpline::AddControlPoint(cv::Point2d p) {
   controlPoints_.push_back(p);
@@ -16,6 +17,7 @@ void sdcSpline::AddControlPoint(cv::Point2d p) {
 void sdcSpline::RemoveControlPoint(int index) {
   controlPoints_.erase(controlPoints_.begin() + index);
   ResetKnots();
+  CalculateLength();
 }
 
 /*
@@ -31,6 +33,20 @@ void sdcSpline::ResetKnots() {
       double ti = (double)i / (controlPoints_.size() - 3);
       knots_.push_back(ti);
     }
+  }
+}
+
+/*
+ * Approximates the length of the spline. Should not be called often, as it
+ * is not especially optimized and is relatively expensive.
+ */
+void sdcSpline::CalculateLength() {
+  length_ = 0;
+  cv::Point2d lastPoint = sdcSpline::GetPoint(0);
+  for (int i = 1; i < 100; i++) {
+    cv::Point2d curPoint = GetPoint(((int)i) / 100);
+    // length_ += cv_distance(curPoint, lastPoint);
+    lastPoint = curPoint;
   }
 }
 
