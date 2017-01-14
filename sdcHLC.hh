@@ -46,7 +46,7 @@ namespace gazebo {
 
     // Driving algorithms
     void FollowSpline();
-    void UpdateSplineDistance();
+    void UpdateDistance();
     void LanedDriving();
     void GridTurning(int turn);
     void WaypointDriving(std::vector<sdcWaypoint> waypoints);

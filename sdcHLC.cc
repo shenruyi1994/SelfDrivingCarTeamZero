@@ -224,7 +224,7 @@ void sdcHLC::FollowSpline() {
   llc_->Accelerate();
 }
 
-void sdcHLC::UpdateSplineDistance() {
+void sdcHLC::UpdateDistance() {
   double dt = GetSimTime() - lastTime_;
   double avgVelocity = (GetSpeed() + lastSpeed_) / 2;
   lastTime_ = GetSimTime();
