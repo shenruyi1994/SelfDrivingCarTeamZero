@@ -46,6 +46,7 @@ namespace gazebo {
 
     // Driving algorithms
     void FollowSpline();
+    void UpdateSplineDistance();
     void LanedDriving();
     void GridTurning(int turn);
     void WaypointDriving(std::vector<sdcWaypoint> waypoints);
@@ -72,13 +73,14 @@ namespace gazebo {
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
 
-
   private:
     sdcCar* car_;
     sdcLLC* llc_;
     Waypoints* waypoints_;
 
-    double splineTime_ = 0;
+    double splineDist_ = 0;
+    double lastTime_ = 0;
+    double lastSpeed_ = 0;
     sdcSpline* spline_;
     std::vector<cv::Point2d> splinePoints_;
 
