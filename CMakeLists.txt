@@ -70,13 +70,13 @@ include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
-target_link_libraries(sdcBoundingBox ${OpenCV_LIBS})
+target_link_libraries(sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcRotatedBoundingBox SHARED sdcRotatedBoundingBox.cc)
-target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${OpenCV_LIBS})
+target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcBoundingCircle SHARED sdcBoundingCircle.cc)
-target_link_libraries(sdcBoundingCircle ${OpenCV_LIBS})
+target_link_libraries(sdcBoundingCircle ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
