@@ -115,13 +115,5 @@ void sdcLLC::StopReverse() {
 }
 
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
-
-  switch(path_.type){
-  case lslT:
-    
-    
-  }
   
-
-
 }
