@@ -42,7 +42,7 @@ void sdcLLC::update() {
   dubins_ = new dubins();
 
   testPoints.push_back(testPoint);
-  Controls controls = dubins_->calculateDubins(testPoints);
+  path_ = dubins_->calculateDubins(testPoints);
   }
   counter++;
 
@@ -63,7 +63,9 @@ void sdcLLC::update() {
   
   }
 
-sdcLLC::sdcLLC(sdcCar* car): car_(car) {}
+sdcLLC::sdcLLC(sdcCar* car): car_(car) {
+  
+}
 
 
 
@@ -110,4 +112,16 @@ void sdcLLC::Reverse() {
  */
 void sdcLLC::StopReverse() {
   car_->reversing_ = false;
+}
+
+cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
+
+  switch(path_.type){
+  case lslT:
+    
+    
+  }
+  
+
+
 }

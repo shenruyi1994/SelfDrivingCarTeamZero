@@ -242,7 +242,7 @@ Controls pathToControls(Path dubinsPath){
 
 //Main function to calculate a dubins path
 //Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
-Controls dubins::calculateDubins(std::vector<Waypoint> waypoints) {
+Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
   
   std::vector<Waypoint> testpoints;
   Waypoint testpoint;
@@ -280,11 +280,13 @@ Controls dubins::calculateDubins(std::vector<Waypoint> waypoints) {
   //Rescales path assuming unit turning radius to proper length
   dubinsPath = scalePath(dubinsPath);
 
-  Controls controls = pathToControls(dubinsPath);
+
+  //Controls controls = pathToControls(dubinsPath);
 
   std::cout << "The minimum path of type: " << dubinsPath.type << " is of length: " << dubinsPath.length << "\n";
   std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is length: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
   
-  return controls;
+  // return controls;
+  return dubinsPath;
 }
 

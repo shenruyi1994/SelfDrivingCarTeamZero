@@ -46,7 +46,7 @@ typedef struct{
     dubins();
     ~dubins() {}
 
-    Controls calculateDubins(std::vector<Waypoint>);
+    Path calculateDubins(std::vector<Waypoint>);
 
 
   private:

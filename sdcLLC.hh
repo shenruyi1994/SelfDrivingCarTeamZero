@@ -12,6 +12,10 @@
 #include "Waypoints.hh"
 #include "dubins.hh"
 
+#include <opencv2/opencv.hpp>
+
+
+
 
 //placeholder structs for now
 namespace gazebo {
@@ -23,6 +27,7 @@ namespace gazebo {
 
     void update();
   
+    cv::Point2d GetDubinsPoint(double distance) const; 
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
     void Brake(double amt = 1, double rate = 1.0);
@@ -31,6 +36,7 @@ namespace gazebo {
     void StopReverse();
     sdcCar* car_;
     dubins* dubins_;
+    Path path_;
   private:
     
   };
