@@ -36,7 +36,7 @@ Path  lsl(double initD, double finalD, double dist){
   lslPath.seg2 = p;
   lslPath.seg3 = q;
   lslPath.length = t+p+q;
-  lslPath.type = "lsl";
+  lslPath.type = lslT;
 
   std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
 
@@ -57,7 +57,7 @@ Path rsr(double initD, double finalD, double dist) {
   rsrPath.seg2 = p;
   rsrPath.seg3 = q;
   rsrPath.length = t+p+q;
-  rsrPath.type = "rsr";
+  rsrPath.type = rsrT;
 
   std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
 
@@ -77,7 +77,7 @@ Path rsl(double initD, double finalD, double dist) {
   rslPath.seg2 = p;
   rslPath.seg3 = q;
   rslPath.length = t+p+q;
-  rslPath.type = "rsl";
+  rslPath.type = rslT;
 
   std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
 
@@ -97,7 +97,7 @@ Path lsr(double initD, double finalD, double dist) {
   lsrPath.seg2 = p;
   lsrPath.seg3 = q;
   lsrPath.length = t+p+q;
-  lsrPath.type = "lsr";
+  lsrPath.type = lsrT;
 
   std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
 
@@ -117,7 +117,7 @@ Path rlr(double initD, double finalD, double dist) {
   rlrPath.seg2 = p;
   rlrPath.seg3 = q;
   rlrPath.length = t+p+q;
-  rlrPath.type = "rlr";
+  rlrPath.type = rlrT;
 
   std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
 
@@ -138,7 +138,7 @@ Path lrl(double initD, double finalD, double dist) {
   lrlPath.seg2 = p;
   lrlPath.seg3 = q;
   lrlPath.length = t+p+q;
-  lrlPath.type = "lrl";
+  lrlPath.type = lrlT;
 
   std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
 
@@ -165,6 +165,8 @@ Path minPath(Path a, Path b, Path c, Path d){
   return paths.front();
 }
 
+
+
 //Scales a path length by minimum turning radius, since we initially divided the distance to our waypoint by our minimum turning radius so we could calulate a dubins path with turning radius of 1 to make our calulations more simple
 Path scalePath(Path dubinsPath){
   dubinsPath.seg1 = dubinsPath.seg1*MIN_TURNING_RADIUS;
@@ -175,12 +177,85 @@ Path scalePath(Path dubinsPath){
   return dubinsPath;
 }
 
+Controls pathToControls(Path dubinsPath){
+  double updateRate = 1000;
+  double velocity = 6;
+  
+  double direction1, direction2, direction3;
+  type type = dubinsPath.type;
+  
+
+
+  switch(type){
+  case lslT:
+    direction1 = -1;
+    direction2 = 0;
+    direction3 = -1;
+    break;
+  case lsrT:
+    direction1 = -1;
+    direction2 = 0;
+    direction3 = 1;
+    break;
+  case rslT:
+    direction1 = 1;
+    direction2 = 0;
+    direction3 = -1;
+    break;
+  case rsrT:
+     direction1 = 1;
+    direction2 = 0;
+    direction3 = 1;
+    break;
+  case lrlT: 
+    direction1 = -1;
+    direction2 = 1;
+    direction3 = -1;
+    break;
+  case rlrT:
+    direction1 = 1;
+    direction2 = -1;
+    direction3 = 1;
+    break;
+  }
+    
+
+  Control control1, control2, control3;
+  Controls controls;
+
+  control1.control.first = direction1;
+  control1.control.second= dubinsPath.seg1*updateRate/velocity;
+  controls.controls.push_back(control1);
+
+  control2.control.first = direction2;
+  control2.control.second= dubinsPath.seg2*updateRate/velocity;
+  controls.controls.push_back(control2);
+
+  control3.control.first = direction3;
+  control3.control.second= dubinsPath.seg3*updateRate/velocity;
+  controls.controls.push_back(control3);
+  std::cout << "First, turn " <<  direction1 << " for: " << control1.control.second << " timesteps\n";
+  std::cout << "Then, turn " <<  direction2 << " for: " << control2.control.second <<" timesteps\n";
+  std::cout << "Finally, turn " << direction3 <<" for: " << control3.control.second <<" timesteps\n";
+  return controls;
+}
+
 //Main function to calculate a dubins path
 //Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
-int dubins::calculateDubins(Waypoints* waypoints) {
+Controls dubins::calculateDubins(std::vector<Waypoint> waypoints) {
+  
+  std::vector<Waypoint> testpoints;
+  Waypoint testpoint;
+  testpoint.x = 5;
+  testpoints.push_back(testpoint);
+  
+  //testpoints.addWaypoint(waypoints.waypoints_.front(), testpoints.waypoints_);
+  
+  std::cout << testpoints.front().x;
+
+  // testpoints.waypoints_ = testpoints.waypoints_.Waypoint(waypoints);
   //direction in radians
   double initDirection = 0;
-
   //direction in radians
   double finalDirection =1;
 
@@ -205,9 +280,11 @@ int dubins::calculateDubins(Waypoints* waypoints) {
   //Rescales path assuming unit turning radius to proper length
   dubinsPath = scalePath(dubinsPath);
 
+  Controls controls = pathToControls(dubinsPath);
+
   std::cout << "The minimum path of type: " << dubinsPath.type << " is of length: " << dubinsPath.length << "\n";
-  std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is lenght: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
+  std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is length: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
   
-  return 0;
+  return controls;
 }
 

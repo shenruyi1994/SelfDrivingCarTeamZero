@@ -2,17 +2,10 @@
 #define __WAYPOINT_HH__
 
 typedef struct {
-    int x;
-    int y;
+  double x;
+  double y;
+  double direction;
 } Waypoint;
 
-namespace gazebo {
-    class Waypoints {
-    public:
-        void addWaypoint();
-        Waypoint* nextWaypoint();
-    private:
-        std::vector<Waypoint> waypoints_;
-    };
-}
+
 #endif

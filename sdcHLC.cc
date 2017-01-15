@@ -23,8 +23,7 @@ std::vector<sdcWaypoint> WAYPOINT_VEC;
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
-  waypoints_ = new Waypoints();
-
+  
   // Initialize state enums
   DEFAULT_STATE = WAYPOINT;
   currentState_ = DEFAULT_STATE;
@@ -36,8 +35,7 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
 
 sdcHLC::~sdcHLC() {
   delete llc_;
-  delete waypoints_;
-}
+  }
 
 ////////////////////////////////
 ////////////////////////////////

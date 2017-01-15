@@ -74,8 +74,7 @@ namespace gazebo {
   private:
     sdcCar* car_;
     sdcLLC* llc_;
-    Waypoints* waypoints_;
-
+   
     // ================================================
     // 2016 states
     // ================================================

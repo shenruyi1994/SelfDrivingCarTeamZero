@@ -12,30 +12,46 @@
 #include "Waypoints.hh"
 //#include <string>
 #include "sdcLLC.hh"
+#include "dubins.hh"
 
+
+enum type{lslT, lsrT, rslT, rsrT, lrlT, rlrT};
+
+//Stores all the necessary information for a dubins path
 typedef struct {
   double seg1;
   double seg2;
   double seg3;
   double length;
-  std::string type;
+  type type;
   
 } Path;
 
-namespace gazebo {
+
+
+//Control where first is steering direction(min = -1, straight = 0, max = 1), and second # of timesteps to apply steering direction
+typedef struct{
+  std::pair<double, double> control;
+} Control;
+
+//Controls is simply a vector of controls
+typedef struct{
+  std::vector<Control> controls;
+} Controls;
+
+
     class GAZEBO_VISIBLE dubins {
 
   public:
     dubins();
     ~dubins() {}
 
-    int calculateDubins(Waypoints* waypoints);
+    Controls calculateDubins(std::vector<Waypoint>);
 
 
   private:
     //Control* control_;
 
   };
-}
 
 #endif

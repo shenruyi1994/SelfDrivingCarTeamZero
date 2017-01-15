@@ -14,20 +14,6 @@
 
 
 //placeholder structs for now
-typedef struct {
-  int angle;
-} SteeringAngle;
-
-typedef struct {
-  int timeStep;
-} TimeStep;
-
-
-typedef struct {
-  std::pair<SteeringAngle, TimeStep> control;
-} Control;
-
-
 namespace gazebo {
   class sdcCar;
   class GAZEBO_VISIBLE sdcLLC {
@@ -36,9 +22,7 @@ namespace gazebo {
     ~sdcLLC() {}
 
     void update();
-    void setWaypoints(Waypoints* waypoints);
-   
-
+  
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
     void Brake(double amt = 1, double rate = 1.0);
@@ -48,7 +32,7 @@ namespace gazebo {
     sdcCar* car_;
     dubins* dubins_;
   private:
-    Waypoints* waypoints_;
+    
   };
 }
 #endif

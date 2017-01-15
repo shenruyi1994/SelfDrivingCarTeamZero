@@ -33,8 +33,16 @@ void sdcLLC::update() {
 
   //  if(counter%20000 == 0){
   if(counter == 0) {
-  Waypoints testPoint;
-  int control = dubins_->calculateDubins(&testPoint);
+    std::vector<Waypoint> testPoints;
+  Waypoint testPoint;
+  testPoint.x = 20;
+  testPoint.y = 40;
+  testPoint.direction = PI;
+
+  dubins_ = new dubins();
+
+  testPoints.push_back(testPoint);
+  Controls controls = dubins_->calculateDubins(testPoints);
   }
   counter++;
 
