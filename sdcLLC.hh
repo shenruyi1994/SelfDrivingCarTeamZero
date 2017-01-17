@@ -26,8 +26,8 @@ namespace gazebo {
     ~sdcLLC() {}
 
     void update();
-  
-    cv::Point2d GetDubinsPoint(double distance) const; 
+
+    cv::Point2d GetDubinsPoint(double distance) const;
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
     void Brake(double amt = 1, double rate = 1.0);
@@ -38,7 +38,7 @@ namespace gazebo {
     dubins* dubins_;
     Path path_;
   private:
-    
+
   };
 }
 #endif

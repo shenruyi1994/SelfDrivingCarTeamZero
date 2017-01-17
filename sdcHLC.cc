@@ -23,7 +23,7 @@ std::vector<sdcWaypoint> WAYPOINT_VEC;
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
-  
+
   // Initialize state enums
   DEFAULT_STATE = WAYPOINT;
   currentState_ = DEFAULT_STATE;
@@ -220,6 +220,70 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
   } else {
     currentState_ = STOP;
   }
+}
+
+/*
+ * Drive along a road or other surface, following waypoints. Rather than
+ * directly following a path, aim for a point in front of the vehicle. This
+ * less accurately follows the waypoints but provides a smoother transition
+ * along sharp turns in the curve.
+ *
+ * TODO: implement this function fully to work with dubins path algorithm
+ */
+void sdcHLC::FollowWaypoints() {
+  llc_->Accelerate();
+
+  cv::Point2d targetPoint = FindDubinsTargetPoint();
+  car_->SetTargetDirection(car_->AngleToTarget(pointToMathVec(targetPoint)));
+}
+
+/*
+ * Updates the distance the car has travelled along the current dubins path
+ */
+void sdcHLC::UpdatePathDistance() {
+  // TODO: implement small randomization of location to make it more realistic,
+  //       rather than using the exact GPS coordinates
+
+  // common::Time dt = car_->model_->GetWorld()->GetSimTime() - lastTime_;
+  // double avgVelocity = (car_->GetSpeed() + lastSpeed_) / 2;
+  // lastTime_ = car_->model_->GetWorld()->GetSimTime();
+  // lastSpeed_ = car_->GetSpeed();
+
+  // double distanceTravelled = avgVelocity * dt.Double();
+  pathDist_ += pythag_thm(car_->x_ - lastX_, car_->y_ - lastY_);
+}
+
+/*
+ * Returns the point along the dubins path that the car should be following.
+ */
+cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
+  cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
+  cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_);
+  double distanceToDubins = cv_distance(location, tempTarget);
+  double adjustment = 2 * (distanceToDubins - DUBINS_TARGET_DIST_);
+  double maxError = 0.1;
+  double tempPathDist = pathDist_;
+
+  // finds a point along the dubins path that is beyond the ideal target distance
+  while (distanceToDubins < DUBINS_TARGET_DIST_) {
+    tempPathDist += adjustment;
+    distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+    adjustment *= 2;
+  }
+
+  // does a binary search to find the correct distance along the path that we
+  // need to aim for
+  while (fabs(distanceToDubins - DUBINS_TARGET_DIST_) > maxError) {
+    if (distanceToDubins > DUBINS_TARGET_DIST_) {
+      tempPathDist -= adjustment;
+    } else {
+      tempPathDist += adjustment;
+    }
+    distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+    adjustment *= .5;
+  }
+
+  return tempTarget;
 }
 
 /*

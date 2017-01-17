@@ -37,5 +37,5 @@ const double MIN_TURNING_RADIUS = 3.8;
 
 //maximum steering andlge of a car in radians
 //MAX_STEERING_ANGLE = atan(WHEEL_BASE/(MIN_TURNING_RADIUS - CAR_WIDTH))
-const double MAX_STEERING_ANGLE = 0.507947; 
+const double MAX_STEERING_ANGLE = 0.507947;
 #endif

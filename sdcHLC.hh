@@ -43,6 +43,11 @@ namespace gazebo {
     std::vector<int> dijkstras(int start, int dest);
     void insertWaypointTypes(std::vector<int> path, Direction startDir);
 
+    // Dubins path following functions
+    void FollowWaypoints();
+    void UpdatePathDistance();
+    cv::Point2d FindDubinsTargetPoint() const;
+
     // Driving algorithms
     void LanedDriving();
     void GridTurning(int turn);
@@ -74,7 +79,15 @@ namespace gazebo {
   private:
     sdcCar* car_;
     sdcLLC* llc_;
-   
+
+    double pathDist_;
+    common::Time lastTime_;
+    double lastSpeed_;
+    double DUBINS_TARGET_DIST_;
+
+    double lastX_;
+    double lastY_;
+
     // ================================================
     // 2016 states
     // ================================================
