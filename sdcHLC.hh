@@ -49,6 +49,7 @@ namespace gazebo {
     cv::Point2d FindDubinsTargetPoint() const;
     sdcAngle CalculateTurningAngle(const math::Vector2d& point) const;
     double ScaledLookaheadDistance() const;
+    void AngleWheelsTowardsTarget(const math::Vector2d& target);
 
     // Driving algorithms
     void LanedDriving();

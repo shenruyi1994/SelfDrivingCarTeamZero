@@ -253,7 +253,7 @@ bool sdcCar::IsObjectTooFurious(const sdcVisibleObject* obj) const {
 
 /*
  * Sets the rate of acceleration for the car. The rate is a scalar for the
- * force applies to accelerate the car
+ * force applied to accelerate the car
  *
  * Default rate: 1.0, can't be negative
  */
@@ -283,6 +283,13 @@ void sdcCar::SetTargetDirection(sdcAngle direction) {
  */
 void sdcCar::SetTargetSteeringAmount(double a) {
   targetSteeringAmount_ = a;
+}
+
+/*
+ * Sets the steering amount for the steering wheel
+ */
+void sdcCar::SetSteeringAmount(double a) {
+  steeringAmount_ = a;
 }
 
 /*
