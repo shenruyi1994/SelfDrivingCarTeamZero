@@ -41,7 +41,7 @@ double vec_distance(const gazebo::math::Vector2d& p1,
  * Returns a point rotated about axis by angle.
  */
 template<typename T>
-cv::Point_<T> rotatePoint(cv::Point_<T> point, const cv::Point_<T>& axis,
+cv::Point_<T> rotate_point(cv::Point_<T> point, const cv::Point_<T>& axis,
                           T angle) {
   static_assert(std::is_arithmetic<T>::value,
                 "rotatePoint only accepts Points with numeric values");
@@ -62,7 +62,7 @@ cv::Point_<T> rotatePoint(cv::Point_<T> point, const cv::Point_<T>& axis,
  * Returns a point rotated about the origin by angle.
  */
 template<typename T>
-cv::Point_<T> rotatePoint(cv::Point_<T> point, T angle) {
+cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
   static_assert(std::is_arithmetic<T>::value,
                 "rotatePoint only accepts Points with numeric values");
   float s = sin(angle);
@@ -79,7 +79,7 @@ cv::Point_<T> rotatePoint(cv::Point_<T> point, T angle) {
  * Returns a vector rotated about an axis by an angle.
  */
 template<typename T>
-cv::Vec<T, 2> rotateVector(cv::Vec<T, 2> vec, T angle) {
+cv::Vec<T, 2> rotate_vector(cv::Vec<T, 2> vec, T angle) {
   static_assert(std::is_arithmetic<T>::value,
                 "rotatePoint only accepts Points with numeric values");
   float s = sin(angle);
@@ -132,14 +132,14 @@ cv::Vec<T, 2> normalized(cv::Vec<T, 2> vec) {
 /*
  * Converts a math::Vector2d to a cv::Point2d
  */
-cv::Point2d mathVecToPoint(const gazebo::math::Vector2d& vec) {
+cv::Point2d math_vec_to_point(const gazebo::math::Vector2d& vec) {
   return cv::Point2d(vec.x, vec.y);
 }
 
 /*
  * Converts a cv::Point2d to a math::Vector2d
  */
-gazebo::math::Vector2d pointToMathVec(const cv::Point2d& point) {
+gazebo::math::Vector2d point_to_math_vec(const cv::Point2d& point) {
   return gazebo::math::Vector2d(point.x, point.y);
 }
 

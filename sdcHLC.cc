@@ -234,8 +234,8 @@ void sdcHLC::FollowWaypoints() {
   llc_->Accelerate();
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  AngleWheelsTowardsTarget(pointToMathVec(targetPoint));
-  // car_->SetTargetDirection(car_->AngleToTarget(pointToMathVec(targetPoint)));
+  AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
+  // car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }
 
 void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
@@ -676,13 +676,13 @@ double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   sdcBoundingCircle selfCircle = sdcBoundingCircle(
-    mathVecToPoint(GetPositionAtTime(time)),
+    math_vec_to_point(GetPositionAtTime(time)),
     pythag_thm(car_->width_, car_->length_)
   );
 
   // TODO: figure out how to estimate size of an object
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    mathVecToPoint(obj->GetProjectedPositionAtTime(time)),
+    math_vec_to_point(obj->GetProjectedPositionAtTime(time)),
     1 // placeholder for above TODO
   );
 
