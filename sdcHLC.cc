@@ -259,13 +259,15 @@ void sdcHLC::UpdatePathDistance() {
 cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
   cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_);
+
+  double lookaheadDistance = ScaledLookaheadDistance();
   double distanceToDubins = cv_distance(location, tempTarget);
-  double adjustment = 2 * (distanceToDubins - DUBINS_TARGET_DIST_);
+  double adjustment = 2 * (distanceToDubins - lookaheadDistance);
   double maxError = 0.1;
   double tempPathDist = pathDist_;
 
   // finds a point along the dubins path that is beyond the ideal target distance
-  while (distanceToDubins < DUBINS_TARGET_DIST_) {
+  while (distanceToDubins < lookaheadDistance) {
     tempPathDist += adjustment;
     distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
     adjustment *= 2;
@@ -273,8 +275,8 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
 
   // does a binary search to find the correct distance along the path that we
   // need to aim for
-  while (fabs(distanceToDubins - DUBINS_TARGET_DIST_) > maxError) {
-    if (distanceToDubins > DUBINS_TARGET_DIST_) {
+  while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
+    if (distanceToDubins > lookaheadDistance) {
       tempPathDist -= adjustment;
     } else {
       tempPathDist += adjustment;
@@ -284,6 +286,28 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
   }
 
   return tempTarget;
+}
+
+/*
+ * Returns the lookahead distance scaled to account for linear velocity of the
+ * vehicle. Only returns values within the range [lookaheadMin_, lookaheadMax_].
+ */
+double sdcHLC::ScaledLookaheadDistance() const {
+  double tempDist = lookaheadScalor_ * car_->GetSpeed();
+  return fmin(fmax(tempDist, lookaheadMin_), lookaheadMax_);
+}
+
+/*
+ * Calculate the turning angle necessary to reach the provided point. Based on
+ * the tuned pure pursuit algorithm found in this paper:
+ * http://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf
+ */
+sdcAngle sdcHLC::CalculateTurningAngle(const math::Vector2d& point) const {
+  sdcAngle alpha = car_->AngleToTarget(point);
+  double numerator = 2 * WHEEL_BASE * sin(alpha.angle);
+  double denominator = lookaheadScalor_ * car_->GetSpeed();
+
+  return atan2(numerator, denominator);
 }
 
 /*

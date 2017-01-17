@@ -47,6 +47,8 @@ namespace gazebo {
     void FollowWaypoints();
     void UpdatePathDistance();
     cv::Point2d FindDubinsTargetPoint() const;
+    sdcAngle CalculateTurningAngle(const math::Vector2d& point) const;
+    double ScaledLookaheadDistance() const;
 
     // Driving algorithms
     void LanedDriving();
@@ -80,13 +82,16 @@ namespace gazebo {
     sdcCar* car_;
     sdcLLC* llc_;
 
-    double pathDist_;
-    common::Time lastTime_;
-    double lastSpeed_;
-    double DUBINS_TARGET_DIST_;
+    double pathDist_ = 0;
+    common::Time lastTime_ = 0;
+    double lastSpeed_ = 0;
 
-    double lastX_;
-    double lastY_;
+    double lookaheadMin_ = 1.5;
+    double lookaheadMax_ = 12.5;
+    double lookaheadScalor_ = 0.6;
+
+    double lastX_ = 0;
+    double lastY_ = 0;
 
     // ================================================
     // 2016 states
