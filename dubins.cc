@@ -177,14 +177,14 @@ Path scalePath(Path dubinsPath){
   return dubinsPath;
 }
 
-Controls pathToControls(Path dubinsPath){
+std::vector<Control> dubins::pathToControls(Path dubinsPath){
   double updateRate = 1000;
   double velocity = 6;
   
   double direction1, direction2, direction3;
   type type = dubinsPath.type;
   
-
+  std::vector<Control> controls;
 
   switch(type){
   case lslT:
@@ -221,22 +221,21 @@ Controls pathToControls(Path dubinsPath){
     
 
   Control control1, control2, control3;
-  Controls controls;
 
-  control1.control.first = direction1;
-  control1.control.second= dubinsPath.seg1*updateRate/velocity;
-  controls.controls.push_back(control1);
+  control1.direction = direction1;
+  control1.distance = dubinsPath.seg1;
+  controls.push_back(control1);
 
-  control2.control.first = direction2;
-  control2.control.second= dubinsPath.seg2*updateRate/velocity;
-  controls.controls.push_back(control2);
+  control2.direction = direction2;
+  control2.distance = dubinsPath.seg2;
+  controls.push_back(control2);
 
-  control3.control.first = direction3;
-  control3.control.second= dubinsPath.seg3*updateRate/velocity;
-  controls.controls.push_back(control3);
-  std::cout << "First, turn " <<  direction1 << " for: " << control1.control.second << " timesteps\n";
-  std::cout << "Then, turn " <<  direction2 << " for: " << control2.control.second <<" timesteps\n";
-  std::cout << "Finally, turn " << direction3 <<" for: " << control3.control.second <<" timesteps\n";
+  control3.direction = direction3;
+  control3.distance= dubinsPath.seg3;
+  controls.push_back(control3);
+  std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
+  std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
+  std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
   return controls;
 }
 
@@ -249,19 +248,14 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
   testpoint.x = 5;
   testpoints.push_back(testpoint);
   
-  //testpoints.addWaypoint(waypoints.waypoints_.front(), testpoints.waypoints_);
-  
-  std::cout << testpoints.front().x;
-
-  // testpoints.waypoints_ = testpoints.waypoints_.Waypoint(waypoints);
-  //direction in radians
+   //direction in radians
   double initDirection = 0;
   //direction in radians
-  double finalDirection =1;
+  double finalDirection = PI;
 
   //distance to object
   //TODO: Replace this with a dunction that calculates distance between car and Waypoint
-  double distance = 10;
+  double distance = 100;
 
   //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius 
   distance = distance/MIN_TURNING_RADIUS;
@@ -290,3 +284,43 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
   return dubinsPath;
 }
 
+cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
+ cv::Point3d newPos;
+
+  newPos.x = x+sin(theta + dist) - sin(theta);
+  newPos.y = y-cos(theta + dist) + cos(theta);
+  newPos.z = theta + dist;
+
+  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+  //std::cout << "Our new y coord is: " << newPos.y << "/n";
+  return newPos;
+}
+
+  cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
+  cv::Point3d newPos;
+  
+  newPos.x=x-sin(theta-dist)+sin(theta);
+  newPos.y=y+cos(theta-dist)-cos(theta);
+  newPos.z=theta-dist;
+
+  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+  //std::cout << "Our new y coord is: " << newPos.y << "/n";
+
+  return newPos;
+
+}
+
+
+
+cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
+  cv::Point3d newPos;
+  
+  newPos.x = x+dist*cos(theta);
+  newPos.y=y+dist*sin(theta);
+  newPos.z = theta;
+
+  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+  //std::cout << "Our new y coord is: " << newPos.y << "/n";
+
+  return newPos;
+}

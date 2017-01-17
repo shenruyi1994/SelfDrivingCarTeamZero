@@ -31,20 +31,28 @@ void sdcLLC::update() {
 
   static int counter = 0;
 
-  //  if(counter%20000 == 0){
+  // if(counter%20000 == 0){
   if(counter == 0) {
     std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = 20;
-  testPoint.y = 40;
-  testPoint.direction = PI;
+  testPoint.x = 10;
+  testPoint.y = 0;
+  testPoint.direction = 0;
 
   dubins_ = new dubins();
 
   testPoints.push_back(testPoint);
   path_ = dubins_->calculateDubins(testPoints);
+
+  cv::Point2d testDubinsPoint =  GetDubinsPoint(15);
+
+  // cv::Point3d testPos = dubins_->rightTurn(0, 0, 0, 0.5);
+
+  //std::cout << "straight turn testy: " << testPos.x << ", " << testPos.y << std::endl;
+
   }
   counter++;
+   
 
 
   
@@ -115,5 +123,47 @@ void sdcLLC::StopReverse() {
 }
 
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
+  math::Vector2d carPos = sdcSensorData::GetPosition();
+  cv::Point3d origin;
+  //origin.x = carPos.x;
+  //origin.y = carPos.y;
+  // origin.z = car_->GetDirection().angle;
+  
+  origin.x = 0;
+  origin.y = 0;
+  origin.z = 0;
+  std::vector<Control> cont = dubins_->pathToControls(path_);
+  
+  std::vector<Control>::iterator it;
+  double currentAngle = 0;
+  cv::Point3d newPoint;
+
+  for(it=cont.begin(); it < cont.end(); it++){
+
+    switch(it->direction){
+    case -1:
+      newPoint = dubins_->leftTurn(origin.x, origin.y, origin.z, it->distance);
+      origin.x = newPoint.x;		       
+      origin.y = newPoint.y;
+      origin.z = newPoint.z;
+    case 0:
+       newPoint = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
+      origin.x = newPoint.x;
+      origin.y = newPoint.y;
+      origin.z = newPoint.z;
+    case 1:
+       newPoint = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
+      origin.x = newPoint.x;
+      origin.y = newPoint.y;
+      origin.z = newPoint.z;
+	}
+  }
+
+  std::cout << "OUR NEW POSITION AFTER THE DUBINS IS!!!!: " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
+
+
+
+  //double dist = sqrt(2*MIN_TURNING_RADIUS*MIN_TURNING_RADIUS-2*MIN_TURNING_RADIUS*MIN_TURNING_RADIUS*cos(theta));
+  // std::cout << "The distance is: " << dist << "\n";
   
 }

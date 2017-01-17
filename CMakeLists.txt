@@ -100,7 +100,8 @@ target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenC
 add_library(dubins SHARED dubins.cc)
 target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
+
+add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc dubins.cc)
 target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 

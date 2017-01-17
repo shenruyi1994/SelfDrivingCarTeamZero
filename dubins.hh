@@ -13,6 +13,8 @@
 //#include <string>
 #include "sdcLLC.hh"
 #include "dubins.hh"
+#include <opencv2/opencv.hpp>
+
 
 
 enum type{lslT, lsrT, rslT, rsrT, lrlT, rlrT};
@@ -31,14 +33,11 @@ typedef struct {
 
 //Control where first is steering direction(min = -1, straight = 0, max = 1), and second # of timesteps to apply steering direction
 typedef struct{
-  std::pair<double, double> control;
+  int direction;
+  double distance;
 } Control;
 
 //Controls is simply a vector of controls
-typedef struct{
-  std::vector<Control> controls;
-} Controls;
-
 
     class GAZEBO_VISIBLE dubins {
 
@@ -47,8 +46,10 @@ typedef struct{
     ~dubins() {}
 
     Path calculateDubins(std::vector<Waypoint>);
-
-
+    std::vector<Control> pathToControls(Path);
+    cv::Point3d leftTurn(double, double, double, double);
+    cv::Point3d rightTurn(double, double, double, double);
+    cv::Point3d straightTurn(double, double, double, double);
   private:
     //Control* control_;
 
