@@ -234,7 +234,15 @@ void sdcHLC::FollowWaypoints() {
   llc_->Accelerate();
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  car_->SetTargetDirection(car_->AngleToTarget(pointToMathVec(targetPoint)));
+  AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
+  // car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
+}
+
+void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
+  sdcAngle directionAngle = CalculateTurningAngle(target);
+
+  // We can't set the wheel angle directly, so instead we set the steering
+  car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
 }
 
 /*
@@ -323,6 +331,12 @@ void sdcHLC::LanedDriving() {
     car_->SetTargetDirection(car_->GetDirection() + laneWeight);
   }
 }
+
+////////////////////////////
+////////////////////////////
+// END WAYPOINT FOLLOWING //
+////////////////////////////
+////////////////////////////
 
 /*
  * Car follows an object directly in front of it and slows down to stop when it starts to get close
@@ -662,13 +676,13 @@ double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   sdcBoundingCircle selfCircle = sdcBoundingCircle(
-    mathVecToPoint(GetPositionAtTime(time)),
+    math_vec_to_point(GetPositionAtTime(time)),
     pythag_thm(car_->width_, car_->length_)
   );
 
   // TODO: figure out how to estimate size of an object
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    mathVecToPoint(obj->GetProjectedPositionAtTime(time)),
+    math_vec_to_point(obj->GetProjectedPositionAtTime(time)),
     1 // placeholder for above TODO
   );
 
