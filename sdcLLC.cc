@@ -17,60 +17,30 @@
 using namespace gazebo;
 
 void sdcLLC::update() {
-  // std::pair<SteeringAngle, TimeStep> dubins  = calculateDubins(NULL);
-  car_->SetTargetSteeringAmount(0);
+  //car_->SetTargetSteeringAmount(0);
   car_->SetTargetSpeed(10);
  
-  // sdcAngle direction;
-  //sdcAngle orientation;
-  //sdcAngle angleToTarget;
-
-  //std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
-  //math::Vector2d target(waypoints.front().x, waypoints.front().y);
-
-
   static int counter = 0;
 
-  // if(counter%20000 == 0){
   if(counter == 0) {
     std::vector<Waypoint> testPoints;
-  Waypoint testPoint;
-  testPoint.x = 10;
-  testPoint.y = 0;
-  testPoint.direction = 0;
+    Waypoint testPoint;
+    testPoint.x = 10;
+    testPoint.y = 0;
+    testPoint.direction = 0;
+    
+    dubins_ = new dubins();
 
-  dubins_ = new dubins();
+    testPoints.push_back(testPoint);
+    path_ = dubins_->calculateDubins(testPoints);
 
-  testPoints.push_back(testPoint);
-  path_ = dubins_->calculateDubins(testPoints);
-
-  cv::Point2d testDubinsPoint =  GetDubinsPoint(15);
-
-  // cv::Point3d testPos = dubins_->rightTurn(0, 0, 0, 0.5);
-
-  //std::cout << "straight turn testy: " << testPos.x << ", " << testPos.y << std::endl;
-
+    cv::Point2d testDubinsPoint =  GetDubinsPoint(15);
   }
+
   counter++;
-   
+}
 
-
-  
-  //orientation = car_->sdcCar::GetOrientation();
-  
-  // angleToTarget = car_->sdcCar::AngleToTarget(target);
-
-  // car_->sdcCar::SetTargetDirection(angleToTarget);
-  //sdcHLC will call Match Target Direction on this target angle
-  //should probably move MatchTargetDirection into sdcLLC
-  //std::cout << "The car is moving in the direction:"  << direction << std::endl;
-  //std::cout << "The car is facing the direction:" << orientation << std::endl;
-  //std::cout << "Angle between coords of car and target" << angleToTarget << std::endl;
-
-
-  
-  }
-
+// LLC Constructor
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   
 }
@@ -122,9 +92,11 @@ void sdcLLC::StopReverse() {
   car_->reversing_ = false;
 }
 
+//Helper function for calculating our dubins point
+//Given a distance to travel and input controls corresponding to a dubins path, output controls coresponding to travel a given distance along the path 
 std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double distance){
-  std::vector<Control>::iterator it;
 
+  std::vector<Control>::iterator it;
   std::vector<Control> newControls;
 
   for(it=controls.begin(); it < controls.end(); it++){
@@ -133,38 +105,40 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
     if (it->distance >= distance){
       temp.distance = it->distance;
       distance = distance - it->distance;
-
     }
     else{
       temp.distance = distance;
       distance = 0;
     }
     newControls.push_back(temp);
-
   }
   return newControls;
 }
 
+//Function that finds a point along our dubins path at a specified distance
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   math::Vector2d carPos = sdcSensorData::GetPosition();
   cv::Point3d origin;
+
   //origin.x = carPos.x;
   //origin.y = carPos.y;
-  // origin.z = car_->GetDirection().angle;
+  //origin.z = car_->GetDirection().angle;
   
   origin.x = 0;
   origin.y = 0;
   origin.z = 0;
+
   std::vector<Control> cont = dubins_->pathToControls(path_);
   
   std::vector<Control>::iterator it;
   double currentAngle = 0;
   cv::Point3d newPoint;
-
+  
+  //generates temporary set of controls used to help find a point on the dubins path
   cont = dubinsPointHelper(cont, 15);
 
+  //this loop controls the logic to find a point along our dubins path
   for(it=cont.begin(); it < cont.end(); it++){
-
     switch(it->direction){
     case -1:
       newPoint = dubins_->leftTurn(origin.x, origin.y, origin.z, it->distance);
@@ -183,14 +157,10 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
       origin.z = newPoint.z;
 	}
   }
+  std::cout << "Our new position along the dubins path is (x,y,angle) : " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
 
-  std::cout << "OUR NEW POSITION AFTER THE DUBINS IS!!!!: " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
-
-
-
-  //double dist = sqrt(2*MIN_TURNING_RADIUS*MIN_TURNING_RADIUS-2*MIN_TURNING_RADIUS*MIN_TURNING_RADIUS*cos(theta));
-  // std::cout << "The distance is: " << dist << "\n";
-  
+  cv::Point2d nullPoint;
+  return nullPoint;
 }
 
 

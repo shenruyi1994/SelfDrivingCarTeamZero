@@ -177,6 +177,7 @@ Path scalePath(Path dubinsPath){
   return dubinsPath;
 }
 
+//Converts a Path into a set of Controls, consisting of a turn direction and distance
 std::vector<Control> dubins::pathToControls(Path dubinsPath){
   double updateRate = 1000;
   double velocity = 6;
@@ -233,9 +234,9 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
   control3.direction = direction3;
   control3.distance= dubinsPath.seg3;
   controls.push_back(control3);
-  std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
-  std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
-  std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
+  // std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
+  //std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
+  //std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
   return controls;
 }
 
@@ -251,7 +252,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
    //direction in radians
   double initDirection = 0;
   //direction in radians
-  double finalDirection = 0;
+  double finalDirection = PI;
 
   //distance to object
   //TODO: Replace this with a dunction that calculates distance between car and Waypoint
@@ -284,6 +285,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
   return dubinsPath;
 }
 
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maximum left turn 
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
  cv::Point3d newPos;
 
@@ -296,7 +298,8 @@ cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
   return newPos;
 }
 
-  cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maxim right turn                           
+cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
   
   newPos.x=x-sin(theta-dist)+sin(theta);
@@ -311,7 +314,7 @@ cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
 }
 
 
-
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a straight 'turn'                            
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
   
