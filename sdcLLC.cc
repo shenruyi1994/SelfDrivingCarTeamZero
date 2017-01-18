@@ -122,6 +122,29 @@ void sdcLLC::StopReverse() {
   car_->reversing_ = false;
 }
 
+std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double distance){
+  std::vector<Control>::iterator it;
+
+  std::vector<Control> newControls;
+
+  for(it=controls.begin(); it < controls.end(); it++){
+    Control temp;
+    temp.direction = it->direction;
+    if (it->distance >= distance){
+      temp.distance = it->distance;
+      distance = distance - it->distance;
+
+    }
+    else{
+      temp.distance = distance;
+      distance = 0;
+    }
+    newControls.push_back(temp);
+
+  }
+  return newControls;
+}
+
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   math::Vector2d carPos = sdcSensorData::GetPosition();
   cv::Point3d origin;
@@ -137,6 +160,8 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   std::vector<Control>::iterator it;
   double currentAngle = 0;
   cv::Point3d newPoint;
+
+  cont = dubinsPointHelper(cont, 15);
 
   for(it=cont.begin(); it < cont.end(); it++){
 
@@ -167,3 +192,5 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   // std::cout << "The distance is: " << dist << "\n";
   
 }
+
+

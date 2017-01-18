@@ -50,6 +50,7 @@ typedef struct{
     cv::Point3d leftTurn(double, double, double, double);
     cv::Point3d rightTurn(double, double, double, double);
     cv::Point3d straightTurn(double, double, double, double);
+
   private:
     //Control* control_;
 

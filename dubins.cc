@@ -251,11 +251,11 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
    //direction in radians
   double initDirection = 0;
   //direction in radians
-  double finalDirection = PI;
+  double finalDirection = 0;
 
   //distance to object
   //TODO: Replace this with a dunction that calculates distance between car and Waypoint
-  double distance = 100;
+  double distance = 20;
 
   //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius 
   distance = distance/MIN_TURNING_RADIUS;
