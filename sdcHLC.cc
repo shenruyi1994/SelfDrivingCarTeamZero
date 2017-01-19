@@ -48,7 +48,9 @@ sdcHLC::~sdcHLC() {
  * request from Gazebo
  */
 void sdcHLC::Drive() {
+  FollowWaypoints();
 
+  /*
   // If not in avoidance, check if we should start following the thing
   // in front of us. If following is done, kick out to default state
   if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
@@ -127,6 +129,7 @@ void sdcHLC::Drive() {
   MatchTargetDirection();
   // Attempts to match the target speed
   MatchTargetSpeed();
+  */
 }
 
 /*

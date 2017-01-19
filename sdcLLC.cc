@@ -18,15 +18,15 @@ using namespace gazebo;
 
 void sdcLLC::update() {
   //car_->SetTargetSteeringAmount(0);
-  car_->SetTargetSpeed(10);
+  //car_->SetTargetSpeed(10);
  
   static int counter = 0;
 
   if(counter == 0) {
     std::vector<Waypoint> testPoints;
     Waypoint testPoint;
-    testPoint.x=20;
-    testPoint.y=0;
+    testPoint.x=50;
+    testPoint.y=30;
     testPoint.direction=0;
 
     math::Vector2d carPos = sdcSensorData::GetPosition();
@@ -43,7 +43,7 @@ void sdcLLC::update() {
     testPoints.push_back(testPoint);
     path_ = dubins_->calculateDubins(testPoints, carPoint);
 
-    cv::Point2d testDubinsPoint =  GetDubinsPoint(15);
+    cv::Point2d testDubinsPoint =  GetDubinsPoint(50);
   }
 
   counter++;
@@ -144,7 +144,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   cv::Point3d newPoint;
   
   //generates temporary set of controls used to help find a point on the dubins path
-  cont = dubinsPointHelper(cont, 17);
+  cont = dubinsPointHelper(cont, distance);
 
   //this loop controls the logic to find a point along our dubins path
   for(it=cont.begin(); it < cont.end(); it++){
@@ -154,29 +154,31 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
       origin.x = newPoint.x;		       
       origin.y = newPoint.y;
       origin.z = newPoint.z;
-      std::cout << "Left turn for" << it->distance << "distance\n";
+      //std::cout << "Left turn for" << it->distance << "distance\n";
       break;
     case 0:
        newPoint = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
       origin.x = newPoint.x;
       origin.y = newPoint.y;
       origin.z = newPoint.z;
-      std::cout<< "Straight turn for " <<it->distance <<"distance\n";
+      //std::cout<< "Straight turn for " <<it->distance <<"distance\n";
       break;
     case 1:
        newPoint = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
       origin.x = newPoint.x;
       origin.y = newPoint.y;
       origin.z = newPoint.z;
-      std::cout<< "Right turn for " <<it->distance <<"distance\n";
+      //  std::cout<< "Right turn for " <<it->distance <<"distance\n";
       break;
 	}
   }
-  std::cout << "Our new position along the dubins path is (x,y,angle) : " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
+  //  std::cout << "Our new position along the dubins path is (x,y,angle) : " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
 
 
-  cv::Point2d nullPoint;
-  return nullPoint;
+  cv::Point2d finalPoint;
+  finalPoint.x=origin.x;
+  finalPoint.y=origin.y;
+  return finalPoint;
 }
 
 
