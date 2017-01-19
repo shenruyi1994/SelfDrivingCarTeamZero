@@ -102,7 +102,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
   for(it=controls.begin(); it < controls.end(); it++){
     Control temp;
     temp.direction = it->direction;
-    if (it->distance >= distance){
+    if (it->distance <= distance){
       temp.distance = it->distance;
       distance = distance - it->distance;
     }
@@ -135,7 +135,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   cv::Point3d newPoint;
   
   //generates temporary set of controls used to help find a point on the dubins path
-  cont = dubinsPointHelper(cont, 15);
+  cont = dubinsPointHelper(cont, 17);
 
   //this loop controls the logic to find a point along our dubins path
   for(it=cont.begin(); it < cont.end(); it++){
@@ -145,19 +145,26 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
       origin.x = newPoint.x;		       
       origin.y = newPoint.y;
       origin.z = newPoint.z;
+      std::cout << "Left turn for" << it->distance << "distance\n";
+      break;
     case 0:
        newPoint = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
       origin.x = newPoint.x;
       origin.y = newPoint.y;
       origin.z = newPoint.z;
+      std::cout<< "Straight turn for " <<it->distance <<"distance\n";
+      break;
     case 1:
        newPoint = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
       origin.x = newPoint.x;
       origin.y = newPoint.y;
       origin.z = newPoint.z;
+      std::cout<< "Right turn for " <<it->distance <<"distance\n";
+      break;
 	}
   }
   std::cout << "Our new position along the dubins path is (x,y,angle) : " << origin.x << ", " << origin.y << ", " << origin.z << std::endl;
+
 
   cv::Point2d nullPoint;
   return nullPoint;

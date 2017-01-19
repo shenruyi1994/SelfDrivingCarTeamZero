@@ -252,7 +252,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
    //direction in radians
   double initDirection = 0;
   //direction in radians
-  double finalDirection = PI;
+  double finalDirection = 0.01*PI;
 
   //distance to object
   //TODO: Replace this with a dunction that calculates distance between car and Waypoint
@@ -288,10 +288,13 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
 //Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maximum left turn 
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
  cv::Point3d newPos;
+ dist = dist/MIN_TURNING_RADIUS;
 
-  newPos.x = x+sin(theta + dist) - sin(theta);
-  newPos.y = y-cos(theta + dist) + cos(theta);
-  newPos.z = theta + dist;
+ //theta= mod(theta, 2*PI);
+
+ newPos.x = x+sin(theta + dist) - sin(theta)*MIN_TURNING_RADIUS;
+ newPos.y = y-cos(theta + dist) + cos(theta)*MIN_TURNING_RADIUS;
+ newPos.z = theta + dist*MIN_TURNING_RADIUS;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
@@ -302,9 +305,13 @@ cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
 cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
   
-  newPos.x=x-sin(theta-dist)+sin(theta);
-  newPos.y=y+cos(theta-dist)-cos(theta);
-  newPos.z=theta-dist;
+  //theta = mod(theta, 2*PI);
+
+  dist = dist/MIN_TURNING_RADIUS;
+  
+  newPos.x=x- sin(theta-dist)+sin(theta)*MIN_TURNING_RADIUS;
+  newPos.y=y+cos(theta-dist)-cos(theta)*MIN_TURNING_RADIUS;
+  newPos.z=theta-dist*MIN_TURNING_RADIUS;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
@@ -317,9 +324,13 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
 //Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a straight 'turn'                            
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
+
+  //stheta= mod(theta, 2*PI);
+
+  dist = dist/MIN_TURNING_RADIUS;
   
-  newPos.x = x+dist*cos(theta);
-  newPos.y=y+dist*sin(theta);
+  newPos.x = x+dist*cos(theta)*MIN_TURNING_RADIUS;
+  newPos.y=y+dist*sin(theta)*MIN_TURNING_RADIUS;
   newPos.z = theta;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
