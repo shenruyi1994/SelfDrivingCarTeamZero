@@ -45,7 +45,7 @@ typedef struct{
     dubins();
     ~dubins() {}
 
-    Path calculateDubins(std::vector<Waypoint>);
+    Path calculateDubins(std::vector<Waypoint>, Waypoint);
     std::vector<Control> pathToControls(Path);
     cv::Point3d leftTurn(double, double, double, double);
     cv::Point3d rightTurn(double, double, double, double);

@@ -25,14 +25,23 @@ void sdcLLC::update() {
   if(counter == 0) {
     std::vector<Waypoint> testPoints;
     Waypoint testPoint;
-    testPoint.x = 10;
-    testPoint.y = 0;
-    testPoint.direction = 0;
-    
+    testPoint.x=20;
+    testPoint.y=0;
+    testPoint.direction=0;
+
+    math::Vector2d carPos = sdcSensorData::GetPosition();
+    Waypoint carPoint;
+    carPoint.x=carPos.x;
+    carPoint.y=carPos.y;
+    carPoint.direction=car_->GetDirection().angle;
+    //carPoint.x=0;
+    //carPoint.y=0;
+    //carPoint.direction=0;
+  
     dubins_ = new dubins();
 
     testPoints.push_back(testPoint);
-    path_ = dubins_->calculateDubins(testPoints);
+    path_ = dubins_->calculateDubins(testPoints, carPoint);
 
     cv::Point2d testDubinsPoint =  GetDubinsPoint(15);
   }
@@ -120,13 +129,13 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   math::Vector2d carPos = sdcSensorData::GetPosition();
   cv::Point3d origin;
 
-  //origin.x = carPos.x;
-  //origin.y = carPos.y;
-  //origin.z = car_->GetDirection().angle;
+  origin.x = carPos.x;
+  origin.y = carPos.y;
+  origin.z = car_->GetDirection().angle;
   
-  origin.x = 0;
-  origin.y = 0;
-  origin.z = 0;
+  //origin.x = 0;
+  //origin.y = 0;
+  //origin.z = 0;
 
   std::vector<Control> cont = dubins_->pathToControls(path_);
   

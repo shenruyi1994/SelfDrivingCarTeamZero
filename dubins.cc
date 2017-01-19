@@ -242,21 +242,18 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
 
 //Main function to calculate a dubins path
 //Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
-Path dubins::calculateDubins(std::vector<Waypoint> waypoints) {
+Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
   
-  std::vector<Waypoint> testpoints;
-  Waypoint testpoint;
-  testpoint.x = 5;
-  testpoints.push_back(testpoint);
-  
-   //direction in radians
-  double initDirection = 0;
-  //direction in radians
-  double finalDirection = 0.01*PI;
+   Waypoint testpoint = waypoints.front();
 
-  //distance to object
-  //TODO: Replace this with a dunction that calculates distance between car and Waypoint
-  double distance = 20;
+  double distance=sqrt(pow((testpoint.x-carpoint.x),2)+pow((testpoint.y-carpoint.y),2));
+  double initDirection=carpoint.direction;
+  double finalDirection=testpoint.direction;
+  //testpoints.push_back(testpoint);
+
+
+  
+
 
   //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius 
   distance = distance/MIN_TURNING_RADIUS;
