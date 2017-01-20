@@ -94,6 +94,8 @@ namespace gazebo {
     double lastX_ = 0;
     double lastY_ = 0;
 
+    common::Time lastUpdateTime_;
+
     // ================================================
     // 2016 states
     // ================================================

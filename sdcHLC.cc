@@ -31,6 +31,8 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   currentPerpendicularState_ = backPark;
   currentParallelState_ = rightBack;
   currentAvoidanceState_ = notAvoiding;
+
+  lastUpdateTime_ = common::Time(0);
 }
 
 sdcHLC::~sdcHLC() {
@@ -48,6 +50,14 @@ sdcHLC::~sdcHLC() {
  * request from Gazebo
  */
 void sdcHLC::Drive() {
+  common::Time curTime = car_->model_->GetWorld()->GetSimTime();
+  if (curTime.Double() - lastUpdateTime_.Double() < .01) {
+    UpdatePathDistance();
+    return;
+  } else {
+    lastUpdateTime_ = common::Time(curTime);
+  }
+
   FollowWaypoints();
 
   /*
@@ -123,13 +133,12 @@ void sdcHLC::Drive() {
       PerpendicularPark();
       // ParallelPark();
       break;
-  }
+  } */
 
   // Attempts to turn towards the target direction
   MatchTargetDirection();
   // Attempts to match the target speed
   MatchTargetSpeed();
-  */
 }
 
 /*
@@ -234,11 +243,17 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * TODO: implement this function fully to work with dubins path algorithm
  */
 void sdcHLC::FollowWaypoints() {
-  llc_->Accelerate();
+  // llc_->Accelerate();
+  car_->SetTargetSpeed(10);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
-  // car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
+  // cv::Point2d targetPoint = cv::Point2d(20, 0);
+  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  printf("  speed: %f\n", car_->GetSpeed());
+  printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  // fflush(stdout);
+  // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
+  car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }
 
 void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
@@ -271,30 +286,31 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
   cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_);
 
-  double lookaheadDistance = ScaledLookaheadDistance();
+  // double lookaheadDistance = ScaledLookaheadDistance();
+  double lookaheadDistance = 10;
   double distanceToDubins = cv_distance(location, tempTarget);
   double adjustment = 2 * (distanceToDubins - lookaheadDistance);
   double maxError = 0.1;
   double tempPathDist = pathDist_;
 
-  // finds a point along the dubins path that is beyond the ideal target distance
-  while (distanceToDubins < lookaheadDistance) {
-    tempPathDist += adjustment;
-    distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
-    adjustment *= 2;
-  }
-
-  // does a binary search to find the correct distance along the path that we
-  // need to aim for
-  while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
-    if (distanceToDubins > lookaheadDistance) {
-      tempPathDist -= adjustment;
-    } else {
-      tempPathDist += adjustment;
-    }
-    distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
-    adjustment *= .5;
-  }
+  // // finds a point along the dubins path that is beyond the ideal target distance
+  // while (distanceToDubins < lookaheadDistance) {
+  //   tempPathDist += adjustment;
+  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   adjustment *= 2;
+  // }
+  //
+  // // does a binary search to find the correct distance along the path that we
+  // // need to aim for
+  // while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
+  //   if (distanceToDubins > lookaheadDistance) {
+  //     tempPathDist -= adjustment;
+  //   } else {
+  //     tempPathDist += adjustment;
+  //   }
+  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   adjustment *= .5;
+  // }
 
   return tempTarget;
 }

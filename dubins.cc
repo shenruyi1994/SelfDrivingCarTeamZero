@@ -112,7 +112,7 @@ Path rlr(double initD, double finalD, double dist) {
   p = acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(sin(initD)-sin(finalD))));
   t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
   q = mod(initD-finalD-t+p,2*PI);
-  
+
   rlrPath.seg1 = t;
   rlrPath.seg2 = p;
   rlrPath.seg3 = q;
@@ -159,7 +159,7 @@ Path minPath(Path a, Path b, Path c, Path d){
   paths.push_back(b);
   paths.push_back(c);
   paths.push_back(d);
-  
+
   sort(paths.begin(), paths.end(), comparePath);
 
   return paths.front();
@@ -181,10 +181,10 @@ Path scalePath(Path dubinsPath){
 std::vector<Control> dubins::pathToControls(Path dubinsPath){
   double updateRate = 1000;
   double velocity = 6;
-  
+
   double direction1, direction2, direction3;
   type type = dubinsPath.type;
-  
+
   std::vector<Control> controls;
 
   switch(type){
@@ -208,7 +208,7 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
     direction2 = 0;
     direction3 = 1;
     break;
-  case lrlT: 
+  case lrlT:
     direction1 = -1;
     direction2 = 1;
     direction3 = -1;
@@ -219,7 +219,7 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
     direction3 = 1;
     break;
   }
-    
+
 
   Control control1, control2, control3;
 
@@ -243,7 +243,7 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
 //Main function to calculate a dubins path
 //Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
-  
+
    Waypoint testpoint = waypoints.front();
 
   double distance=sqrt(pow((testpoint.x-carpoint.x),2)+pow((testpoint.y-carpoint.y),2));
@@ -251,17 +251,13 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   double finalDirection=testpoint.direction;
   //testpoints.push_back(testpoint);
 
-
-  
-
-
-  //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius 
+  //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius
   distance = distance/MIN_TURNING_RADIUS;
 
   //Calculate each type of dubins path individually
   Path lslP = lsl(initDirection, finalDirection, distance);
   Path lsrP = lsr(initDirection, finalDirection, distance);
-  Path rsrP = rsr(initDirection, finalDirection, distance); 
+  Path rsrP = rsr(initDirection, finalDirection, distance);
   Path rslP = rsl(initDirection, finalDirection, distance);
   // Path rlrP = rlr(initDirection, finalDirection, distance);
   // Path lrlP = lrl(initDirection, finalDirection, distance);
@@ -271,18 +267,20 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
 
   //Rescales path assuming unit turning radius to proper length
   dubinsPath = scalePath(dubinsPath);
-
+  dubinsPath.origin.x = carpoint.x;
+  dubinsPath.origin.y = carpoint.y;
+  dubinsPath.origin.z = carpoint.direction;
 
   //Controls controls = pathToControls(dubinsPath);
 
   std::cout << "The minimum path of type: " << dubinsPath.type << " is of length: " << dubinsPath.length << "\n";
   std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  Seg 2 is length: " << dubinsPath.seg2 << "  Seg 3 is length: " << dubinsPath.seg3 << "\n";
-  
+
   // return controls;
   return dubinsPath;
 }
 
-//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maximum left turn 
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maximum left turn
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
  cv::Point3d newPos;
  dist = dist/MIN_TURNING_RADIUS;
@@ -298,14 +296,14 @@ cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
   return newPos;
 }
 
-//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maxim right turn                           
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maxim right turn
 cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
-  
+
   //theta = mod(theta, 2*PI);
 
   dist = dist/MIN_TURNING_RADIUS;
-  
+
   newPos.x=x- sin(theta-dist)+sin(theta)*MIN_TURNING_RADIUS;
   newPos.y=y+cos(theta-dist)-cos(theta)*MIN_TURNING_RADIUS;
   newPos.z=theta-dist*MIN_TURNING_RADIUS;
@@ -318,14 +316,14 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
 }
 
 
-//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a straight 'turn'                            
+//Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a straight 'turn'
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
   cv::Point3d newPos;
 
   //stheta= mod(theta, 2*PI);
 
   dist = dist/MIN_TURNING_RADIUS;
-  
+
   newPos.x = x+dist*cos(theta)*MIN_TURNING_RADIUS;
   newPos.y=y+dist*sin(theta)*MIN_TURNING_RADIUS;
   newPos.z = theta;

@@ -26,7 +26,9 @@ typedef struct {
   double seg3;
   double length;
   type type;
-  
+
+  cv::Point3d origin;
+
 } Path;
 
 
