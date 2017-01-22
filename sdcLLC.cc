@@ -115,6 +115,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
     if (it->distance <= distance){
       temp.distance = it->distance;
       distance = distance - it->distance;
+      std::cout << "Is this working???? " << distance << std::endl;
     }
     else{
       temp.distance = distance;
@@ -127,7 +128,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 
 //Function that finds a point along our dubins path at a specified distance
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
-  // distance = fmin(distance, path_.length);
+  distance = fmin(distance, path_.length);
   math::Vector2d carPos = sdcSensorData::GetPosition();
 
   //path_.origin.x = 0;
@@ -138,8 +139,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
 
   std::vector<Control>::iterator it;
   //double currentAngle = 0;
-  cv::Point3d newPoint;
-  cv::Point3d origin = cv::Point3d(path_.origin);
+    cv::Point3d origin = cv::Point3d(path_.origin);
 
   //generates temporary set of controls used to help find a point on the dubins path
   cont = dubinsPointHelper(cont, distance);
@@ -149,27 +149,38 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
     switch(it->direction){
     case -1:
       origin = dubins_->leftTurn(origin.x, origin.y, origin.z, it->distance);
-      //std::cout << "Left turn for" << it->distance << "distance\n";
+      std::cout << "Left turn for" << it->distance << "distance\n";
       break;
     case 0:
       origin = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
-      //std::cout<< "Straight turn for " <<it->distance <<"distance\n";
+      std::cout<< "Straight turn for " <<it->distance <<"distance\n";
       break;
     case 1:
       origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
-      //   std::cout<< "Right turn for " <<it->distance <<"distance\n";
+         std::cout<< "Right turn for " <<it->distance <<"distance\n";
       break;
     
     }
   }
  
-
-
+  
+  cv::Point2d tempPoint;
   cv::Point2d finalPoint;
-  finalPoint.x = origin.x;
-  finalPoint.y = origin.y;
+  tempPoint.x = origin.x-path_.origin.x;
+  tempPoint.y = origin.y-path_.origin.y;
 
 
-  std::cout <<"(x,y,theta)   " << finalPoint.x << " " << finalPoint.y << " "  << origin.z  << std::endl;
+  finalPoint.x=tempPoint.x;
+  finalPoint.y=tempPoint.y;
+
+  //  finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
+
+  //  finalPoint.y=tempPoint.x*sin(path_.rotationAngle)+tempPoint.y*cos(path_.rotationAngle);
+
+  finalPoint.x+=path_.origin.x;
+  finalPoint.y+=path_.origin.y;
+
+
+  std::cout <<"(x,y,theta)   " << origin.x << " " << origin.y << " "  << origin.z  << std::endl;
   return finalPoint;
 }

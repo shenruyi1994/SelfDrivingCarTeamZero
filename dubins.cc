@@ -202,6 +202,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   dubinsPath.origin.x = carpoint.x;
   dubinsPath.origin.y = carpoint.y;
   dubinsPath.origin.z = carpoint.direction;
+  dubinsPath.rotationAngle = dubinsAngle;
 
   //Controls controls = pathToControls(dubinsPath);
 
