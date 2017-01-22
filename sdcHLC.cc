@@ -277,6 +277,8 @@ void sdcHLC::UpdatePathDistance() {
 
   // double distanceTravelled = avgVelocity * dt.Double();
   pathDist_ += pythag_thm(car_->x_ - lastX_, car_->y_ - lastY_);
+  lastX_ = car_->x_;
+  lastY_ = car_->y_;
 }
 
 /*
@@ -284,15 +286,15 @@ void sdcHLC::UpdatePathDistance() {
  */
 cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
-  cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_);
+  printf("pathdist_: %f\n", pathDist_);
+  double lookaheadDistance = ScaledLookaheadDistance();
+  cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_ + lookaheadDistance);
 
-  // double lookaheadDistance = ScaledLookaheadDistance();
-  double lookaheadDistance = 10;
-  double distanceToDubins = cv_distance(location, tempTarget);
-  double adjustment = 2 * (distanceToDubins - lookaheadDistance);
-  double maxError = 0.1;
-  double tempPathDist = pathDist_;
-
+  // double distanceToDubins = cv_distance(location, tempTarget);
+  // double adjustment = distanceToDubins - lookaheadDistance;
+  // double maxError = 0.1;
+  // double tempPathDist = pathDist_;
+  //
   // // finds a point along the dubins path that is beyond the ideal target distance
   // while (distanceToDubins < lookaheadDistance) {
   //   tempPathDist += adjustment;
