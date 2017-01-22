@@ -12,6 +12,7 @@ using namespace gazebo;
 
 
 dubins::dubins() {
+  scalingFactor_ = 3.14159 * pow(MIN_TURNING_RADIUS, 2);
 }
 
 //True mod function that does not return negative values
@@ -23,7 +24,7 @@ double mod(double a, double b) {
 }
 
 //Calculates a dubins path consisting of left turn, then straight .segment, then left turn
-Path  lsl(double initD, double finalD, double dist) {
+Path lsl(double initD, double finalD, double dist) {
   //p is length of first turn, q is length of second turn, q is length of third turn
   double t, p, q;
   t = mod((-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD)))),2*PI);
@@ -104,40 +105,6 @@ Path lrl(double initD, double finalD, double dist) {
   return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
 }
 
-//Custom compare functor to compare lengths of dubins path
-bool comparePath(Path &a, Path &b) {
-  return a.length< b.length;
-}
-
-//Returns the minimum lenght dubins path
-//Right now we are only checking the paths of form CSC, will implement CCC paths if needed
-Path minPath(Path a, Path b, Path c, Path d) {
-  std::vector<Path> paths;
-
-  paths.push_back(a);
-  paths.push_back(b);
-  paths.push_back(c);
-  paths.push_back(d);
-
-  sort(paths.begin(), paths.end(), comparePath);
-
-  return paths.front();
-}
-
-
-
-// Scales a path length by minimum turning radius, since we initially divided
-// the distance to our waypoint by our minimum turning radius so we could
-// calulate a dubins path with turning radius of 1 to make our calulations simpler
-Path scalePath(Path dubinsPath) {
-  dubinsPath.seg1 = dubinsPath.seg1*MIN_TURNING_RADIUS;
-  dubinsPath.seg2 = dubinsPath.seg2*MIN_TURNING_RADIUS;
-  dubinsPath.seg3 = dubinsPath.seg3*MIN_TURNING_RADIUS;
-  dubinsPath.length = dubinsPath.length*MIN_TURNING_RADIUS;
-
-  return dubinsPath;
-}
-
 //Converts a Path into a set of Controls, consisting of a turn direction and distance
 std::vector<Control> dubins::pathToControls(Path dubinsPath) {
   double updateRate = 1000;
@@ -158,21 +125,20 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
   return std::vector<Control> { control1, control2, control3 };
 }
 
-
-
 //Distance funciton between two 2d points
 double distance2d(double x1, double x2, double y2, double y1 ){
   double dist= sqrt(pow(x2-x1,2)+pow(y2-y1,2));
   return dist;
 }
 
-//Main function to calculate a dubins path
-//Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
+// Main function to calculate a dubins path
+// Calls functions to calculate each path individually, finds minimum length
+// path assuming unit turning radius,  then scales path to proper length
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
 
   Waypoint testpoint = waypoints.front();
 
-  
+
   double distance = distance2d(testpoint.x, carpoint.x, testpoint.y, carpoint.y);
   //double distance=sqrt(pow((testpoint.x-carpoint.x),2)+pow((testpoint.y-carpoint.y),2));
   double dubinsAngle = atan((testpoint.y-carpoint.y)/(testpoint.x-carpoint.x));
@@ -184,21 +150,27 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   //testpoints.push_back(testpoint);
 
   //Scale our distance, so we calculate dubins path length assuming a unit minimum turning radius
-  distance = distance/MIN_TURNING_RADIUS;
+  distance = distance / scalingFactor_;
 
   //Calculate each type of dubins path individually
-  Path lslP = lsl(initDirection, finalDirection, distance);
-  Path lsrP = lsr(initDirection, finalDirection, distance);
-  Path rsrP = rsr(initDirection, finalDirection, distance);
-  Path rslP = rsl(initDirection, finalDirection, distance);
-  // Path rlrP = rlr(initDirection, finalDirection, distance);
-  // Path lrlP = lrl(initDirection, finalDirection, distance);
+  std::vector<Path> paths;
+  paths.push_back(lsl(initDirection, finalDirection, distance));
+  paths.push_back(lsr(initDirection, finalDirection, distance));
+  paths.push_back(rsr(initDirection, finalDirection, distance));
+  paths.push_back(rsl(initDirection, finalDirection, distance));
+  // paths.push_back(rlr(initDirection, finalDirection, distance));
+  // paths.push_back(lrl(initDirection, finalDirection, distance));
 
-  //Returns path of smallest length
-  Path dubinsPath = minPath(lslP,lsrP,rsrP,rslP);
+  // Finds path of smallest length
+  Path dubinsPath = paths[0];
+  for (Path path : paths) {
+    if (path.length < dubinsPath.length) {
+      dubinsPath = path;
+    }
+  }
 
   //Rescales path assuming unit turning radius to proper length
-  dubinsPath = scalePath(dubinsPath);
+  dubinsPath *= scalingFactor_;
   dubinsPath.origin.x = carpoint.x;
   dubinsPath.origin.y = carpoint.y;
   dubinsPath.origin.z = carpoint.direction;
@@ -265,4 +237,3 @@ cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist) 
 
   return newPos;
 }
-
