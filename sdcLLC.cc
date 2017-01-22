@@ -26,7 +26,7 @@ void sdcLLC::update() {
     std::vector<Waypoint> testPoints;
     Waypoint testPoint;
     testPoint.x=50;
-    testPoint.y=0;
+    testPoint.y=50;
     testPoint.direction=car_->GetDirection().angle;
 
     math::Vector2d carPos = sdcSensorData::GetPosition();
@@ -41,9 +41,10 @@ void sdcLLC::update() {
     dubins_ = new dubins();
 
     testPoints.push_back(testPoint);
+
     path_ = dubins_->calculateDubins(testPoints, carPoint);
 
-    cv::Point2d testDubinsPoint =  GetDubinsPoint(50);
+    cv::Point2d testDubinsPoint =  GetDubinsPoint(path_.length);
   }
 
   counter++;
@@ -126,17 +127,17 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 
 //Function that finds a point along our dubins path at a specified distance
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
-  distance = fmin(distance, path_.length);
+  // distance = fmin(distance, path_.length);
   math::Vector2d carPos = sdcSensorData::GetPosition();
 
   //path_.origin.x = 0;
-  //path_.origin.y = 0;
+  //path_.origin.y = 0; 
   //path_.origin.z = 0;
 
   std::vector<Control> cont = dubins_->pathToControls(path_);
 
   std::vector<Control>::iterator it;
-  double currentAngle = 0;
+  //double currentAngle = 0;
   cv::Point3d newPoint;
   cv::Point3d origin = cv::Point3d(path_.origin);
 
@@ -156,15 +157,19 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
       break;
     case 1:
       origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
-      //  std::cout<< "Right turn for " <<it->distance <<"distance\n";
+      //   std::cout<< "Right turn for " <<it->distance <<"distance\n";
       break;
+    
     }
   }
-  //  std::cout << "Our new position along the dubins path is (x,y,angle) : " << path_.origin.x << ", " << path_.origin.y << ", " << path_.origin.z << std::endl;
+ 
 
 
   cv::Point2d finalPoint;
   finalPoint.x = origin.x;
   finalPoint.y = origin.y;
+
+
+  std::cout <<"(x,y,theta)   " << finalPoint.x << " " << finalPoint.y << " "  << origin.z  << std::endl;
   return finalPoint;
 }

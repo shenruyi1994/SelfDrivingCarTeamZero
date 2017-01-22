@@ -240,13 +240,27 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath){
   return controls;
 }
 
+
+
+//Distance funciton between two 2d points
+double distance2d(double x1, double x2, double y2, double y1 ){
+  double dist= sqrt(pow(x2-x1,2)+pow(y2-y1,2));
+  return dist;
+}
+
 //Main function to calculate a dubins path
 //Calls functions to calculate each path individually, finds minimum lenght path assuming unit turning radius,  then scales path to proper length
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
 
-   Waypoint testpoint = waypoints.front();
+  Waypoint testpoint = waypoints.front();
 
-  double distance=sqrt(pow((testpoint.x-carpoint.x),2)+pow((testpoint.y-carpoint.y),2));
+  
+  double distance = distance2d(testpoint.x, carpoint.x, testpoint.y, carpoint.y);
+  //double distance=sqrt(pow((testpoint.x-carpoint.x),2)+pow((testpoint.y-carpoint.y),2));
+  double dubinsAngle = atan((testpoint.y-carpoint.y)/(testpoint.x-carpoint.x));
+  std::cout << std::endl << "OUr dubins angle is" << dubinsAngle << std::endl;
+
+
   double initDirection=carpoint.direction;
   double finalDirection=testpoint.direction;
   //testpoints.push_back(testpoint);
@@ -283,13 +297,13 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
 //Left turn operator, given an initial waypoint, position, and distance to travel, return a point corresponding to a maximum left turn
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist){
  cv::Point3d newPos;
- dist = dist/MIN_TURNING_RADIUS;
+ //dist = dist/MIN_TURNING_RADIUS;
 
  //theta= mod(theta, 2*PI);
 
- newPos.x = x+sin(theta + dist) - sin(theta)*MIN_TURNING_RADIUS;
- newPos.y = y-cos(theta + dist) + cos(theta)*MIN_TURNING_RADIUS;
- newPos.z = theta + dist*MIN_TURNING_RADIUS;
+ newPos.x = x+sin(theta + dist) - sin(theta);
+ newPos.y = y-cos(theta + dist) + cos(theta);
+ newPos.z = theta + dist;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
@@ -302,11 +316,11 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist){
 
   //theta = mod(theta, 2*PI);
 
-  dist = dist/MIN_TURNING_RADIUS;
+  //dist = dist/MIN_TURNING_RADIUS;
 
-  newPos.x=x- sin(theta-dist)+sin(theta)*MIN_TURNING_RADIUS;
-  newPos.y=y+cos(theta-dist)-cos(theta)*MIN_TURNING_RADIUS;
-  newPos.z=theta-dist*MIN_TURNING_RADIUS;
+  newPos.x=x- sin(theta-dist)+sin(theta);
+  newPos.y=y+cos(theta-dist)-cos(theta);
+  newPos.z=theta-dist;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
@@ -322,10 +336,10 @@ cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
 
   //stheta= mod(theta, 2*PI);
 
-  dist = dist/MIN_TURNING_RADIUS;
+  // dist = dist/MIN_TURNING_RADIUS;
 
-  newPos.x = x+dist*cos(theta)*MIN_TURNING_RADIUS;
-  newPos.y=y+dist*sin(theta)*MIN_TURNING_RADIUS;
+  newPos.x = x+dist*cos(theta);
+  newPos.y=y+dist*sin(theta);
   newPos.z = theta;
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
@@ -333,3 +347,4 @@ cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist){
 
   return newPos;
 }
+
