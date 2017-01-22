@@ -27,7 +27,9 @@ struct Path {
   double seg2;
   double seg3;
   double length;
-  PathDirection* dirs;
+  PathDirection dir1;
+  PathDirection dir2;
+  PathDirection dir3;
   cv::Point3d origin;
 
   Path& operator *=(double n) {

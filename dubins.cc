@@ -26,83 +26,77 @@ double mod(double a, double b) {
 //Calculates a dubins path consisting of left turn, then straight .segment, then left turn
 Path lsl(double initD, double finalD, double dist) {
   //p is length of first turn, q is length of second turn, q is length of third turn
-  double t, p, q;
-  t = mod((-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD)))),2*PI);
-  p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(initD)-sin(finalD)));
-  q = mod(finalD - atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
+  double t = mod((-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD)))),2*PI);
+  double p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(initD)-sin(finalD)));
+  double q = mod(finalD - atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
 
   std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_LEFT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_LEFT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_LEFT };
 }
 
 
 //Calculates a dubins path consisting of a right turn, then a straight .segment, then a right turn
 Path rsr(double initD, double finalD, double dist) {
-  double t,p,q;
-  t = mod(initD - atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
-  p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(finalD)-sin(initD)));
-  q = mod(mod(-finalD,2*PI) + atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
+  double t = mod(initD - atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
+  double p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(finalD)-sin(initD)));
+  double q = mod(mod(-finalD,2*PI) + atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
 
   std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_RIGHT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_RIGHT };
 }
 
 //Calculates a dubins path consisting of a right turn, then a straight .segment, then a left turn
 Path rsl(double initD, double finalD, double dist) {
-  double t,p,q;
-  t = mod(initD - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
-  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
-  q = mod(mod(finalD, 2*PI) - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
+  double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
+  double t = mod(initD - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
+  double q = mod(mod(finalD, 2*PI) - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
 
   std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_LEFT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_LEFT };
 }
 
 //Calculates a dubins path consisting of a left turn, then a straight .segment, then a right turn
 Path lsr(double initD, double finalD, double dist) {
-  double t,p,q;
-  t = mod(-initD + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
-  p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
-  q = mod(mod(-finalD, 2*PI) + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
+  double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
+  double t = mod(-initD + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
+  double q = mod(mod(-finalD, 2*PI) + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
 
   std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_RIGHT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_LEFT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_RIGHT };
 }
 
 //Calculates a dubins path consisting of a right turn, then a left turn, then a right turn
 Path rlr(double initD, double finalD, double dist) {
-  double t,p,q;
-  t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
-  p = acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(sin(initD)-sin(finalD))));
-  q = mod(initD-finalD-t+p,2*PI);
+  double p = acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(sin(initD)-sin(finalD))));
+  double t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
+  double q = mod(initD-finalD-t+p,2*PI);
 
   std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_RIGHT, DUBINS_LEFT, DUBINS_RIGHT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_LEFT, .dir3=DUBINS_RIGHT };
 }
 
 //Note:: there was a mistake in the paper discribing how to compute the lrl,
 //I did my best to compute the solution, but this section needs to be tested further
 //Calculates a dubins path consisting of a left turn, then a right turn, then a left turn
 Path lrl(double initD, double finalD, double dist) {
-  double t,p,q;
-  p = mod(acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(initD-finalD))),2*PI);
-  t = mod(-initD-atan((cos(initD)-cos(finalD))/(dist+sin(initD)-sin(finalD)))+(p/2),2*PI);
-  q = mod(mod(finalD,2*PI)-initD+2*p,2*PI);
+  double p = mod(acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(initD-finalD))),2*PI);
+  double t = mod(-initD-atan((cos(initD)-cos(finalD))/(dist+sin(initD)-sin(finalD)))+(p/2),2*PI);
+  double q = mod(mod(finalD,2*PI)-initD+2*p,2*PI);
 
   std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
 
-  PathDirection dirs [3] = { DUBINS_LEFT, DUBINS_RIGHT, DUBINS_LEFT };
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q, .dirs=dirs };
+  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
+                 .dir1=DUBINS_LEFT, .dir2=DUBINS_RIGHT, .dir3=DUBINS_LEFT };
 }
 
 //Converts a Path into a set of Controls, consisting of a turn direction and distance
@@ -111,13 +105,13 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
   double velocity = 6;
   Control control1, control2, control3;
 
-  control1.direction = dubinsPath.dirs[0];
+  control1.direction = dubinsPath.dir1;
   control1.distance = dubinsPath.seg1;
 
-  control2.direction = dubinsPath.dirs[1];
+  control2.direction = dubinsPath.dir2;
   control2.distance = dubinsPath.seg2;
 
-  control3.direction = dubinsPath.dirs[2];
+  control3.direction = dubinsPath.dir3;
   control3.distance= dubinsPath.seg3;
   // std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
   //std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
