@@ -15,9 +15,11 @@
 #include "dubins.hh"
 #include <opencv2/opencv.hpp>
 
-
-
-enum type{lslT, lsrT, rslT, rsrT, lrlT, rlrT};
+enum PathDirection {
+  DUBINS_LEFT = -1,
+  DUBINS_STRAIGHT = 0,
+  DUBINS_RIGHT = 1
+};
 
 //Stores all the necessary information for a dubins path
 typedef struct {
@@ -25,10 +27,8 @@ typedef struct {
   double seg2;
   double seg3;
   double length;
-  type type;
-
+  PathDirection* dirs;
   cv::Point3d origin;
-
 } Path;
 
 
@@ -39,9 +39,7 @@ typedef struct{
   double distance;
 } Control;
 
-//Controls is simply a vector of controls
-
-    class GAZEBO_VISIBLE dubins {
+class GAZEBO_VISIBLE dubins {
 
   public:
     dubins();
