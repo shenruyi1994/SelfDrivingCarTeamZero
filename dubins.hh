@@ -22,17 +22,28 @@ enum PathDirection {
 };
 
 //Stores all the necessary information for a dubins path
-typedef struct {
+struct Path {
   double seg1;
   double seg2;
   double seg3;
   double length;
+
   double rotationAngle;
-  PathDirection* dirs;
+
+
+  PathDirection dir1;
+  PathDirection dir2;
+  PathDirection dir3;
   cv::Point3d origin;
-} Path;
 
-
+  Path& operator *=(double n) {
+    this->seg1 *= n;
+    this->seg2 *= n;
+    this->seg3 *= n;
+    this->length *= n;
+    return *this;
+  }
+};
 
 //Control where first is steering direction(min = -1, straight = 0, max = 1), and second # of timesteps to apply steering direction
 typedef struct{
@@ -53,6 +64,7 @@ class GAZEBO_VISIBLE dubins {
     cv::Point3d straightTurn(double, double, double, double);
 
   private:
+    double scalingFactor_ = 1;
     //Control* control_;
 
   };

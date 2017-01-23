@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if cd build/ && make; then
+	cd .. && gazebo 2_scenario_follow_object_straight_road.world --verbose
+else
+	cd ..
+fi
+
