@@ -26,7 +26,7 @@ void sdcLLC::update() {
     std::vector<Waypoint> testPoints;
     Waypoint testPoint;
     testPoint.x = 50;
-    testPoint.y = 0;
+    testPoint.y =50;
     testPoint.direction=car_->GetDirection().angle;
 
     math::Vector2d carPos = sdcSensorData::GetPosition();
@@ -163,17 +163,24 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
     }
   }
 
+
+  cv::Point2d finalPoint;
+  cv::Point2d tempPoint;
+
+  tempPoint.x = origin.x-path_.origin.x;
+  tempPoint.y = origin.y-path_.origin.y;
+  
   finalPoint.x=tempPoint.x;
   finalPoint.y=tempPoint.y;
 
-  //  finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
+    finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
 
-  //  finalPoint.y=tempPoint.x*sin(path_.rotationAngle)+tempPoint.y*cos(path_.rotationAngle);
+    finalPoint.y=tempPoint.x*sin(path_.rotationAngle)+tempPoint.y*cos(path_.rotationAngle);
 
   finalPoint.x+=path_.origin.x;
   finalPoint.y+=path_.origin.y;
 
 
-  std::cout <<"(x,y,theta)   " << origin.x << " " << origin.y << " "  << origin.z  << std::endl;
+  std::cout <<"(x,y,theta)   " << finalPoint.x << " " << finalPoint.y << " "  << origin.z  << std::endl;
   return finalPoint;
 }
