@@ -239,19 +239,14 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * directly following a path, aim for a point in front of the vehicle. This
  * less accurately follows the waypoints but provides a smoother transition
  * along sharp turns in the curve.
- *
- * TODO: implement this function fully to work with dubins path algorithm
  */
 void sdcHLC::FollowWaypoints() {
-  // llc_->Accelerate();
   car_->SetTargetSpeed(10);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  // cv::Point2d targetPoint = cv::Point2d(20, 0);
   printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   printf("  speed: %f\n", car_->GetSpeed());
   printf("  location: (%f, %f)\n", car_->x_, car_->y_);
-  // fflush(stdout);
   // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
   car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }

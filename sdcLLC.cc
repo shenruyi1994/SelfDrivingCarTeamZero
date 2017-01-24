@@ -17,41 +17,27 @@
 using namespace gazebo;
 
 void sdcLLC::update() {
-  //car_->SetTargetSteeringAmount(0);
-  //car_->SetTargetSpeed(10);
-
-  static int counter = 0;
-
-  if(counter == 0) {
-    std::vector<Waypoint> testPoints;
-    Waypoint testPoint;
-    testPoint.x = 82;
-    testPoint.y = -9;
-    testPoint.direction=car_->GetDirection().angle;
-    math::Vector2d carPos = sdcSensorData::GetPosition();
-    Waypoint carPoint;
-    carPoint.x = carPos.x;
-    carPoint.y = carPos.y;
-    carPoint.direction=car_->GetDirection().angle;
-    //carPoint.x=0;
-    //carPoint.y=0;
-    //carPoint.direction=0;
-
-    dubins_ = new dubins();
-
-    testPoints.push_back(testPoint);
-
-    path_ = dubins_->calculateDubins(testPoints, carPoint);
-
-    //cv::Point2d testDubinsPoint =  GetDubinsPoint(path_.length);
-  }
-
-  counter++;
 }
 
 // LLC Constructor
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
+  std::vector<Waypoint> testPoints;
+  Waypoint testPoint;
+  testPoint.x = 82;
+  testPoint.y = -9;
+  testPoint.direction = car_->GetDirection().angle;
 
+  math::Vector2d carPos = sdcSensorData::GetPosition();
+  Waypoint carPoint;
+  carPoint.x = carPos.x;
+  carPoint.y = carPos.y;
+  carPoint.direction = car_->GetDirection().angle;
+
+  dubins_ = new dubins();
+
+  testPoints.push_back(testPoint);
+
+  path_ = dubins_->calculateDubins(testPoints, carPoint);
 }
 
 
@@ -103,15 +89,15 @@ void sdcLLC::StopReverse() {
 
 //Helper function for calculating our dubins point
 //Given a distance to travel and input controls corresponding to a dubins path, output controls coresponding to travel a given distance along the path
-std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double distance){
+std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double distance) {
 
   std::vector<Control>::iterator it;
   std::vector<Control> newControls;
 
-  for(it=controls.begin(); it < controls.end(); it++){
+  for(it = controls.begin(); it < controls.end(); it++) {
     Control temp;
     temp.direction = it->direction;
-    if (it->distance <= distance){
+    if (it->distance <= distance) {
       temp.distance = it->distance;
       distance = distance - it->distance;
     }
@@ -129,22 +115,15 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   distance = fmin(distance, path_.length);
   math::Vector2d carPos = sdcSensorData::GetPosition();
 
-  //path_.origin.x = 0;
-  //path_.origin.y = 0;
-  //path_.origin.z = 0;
-
   std::vector<Control> cont = dubins_->pathToControls(path_);
-
-  std::vector<Control>::iterator it;
-  //double currentAngle = 0;
-    cv::Point3d origin = cv::Point3d(path_.origin);
+  cv::Point3d origin = cv::Point3d(path_.origin);
 
   //generates temporary set of controls used to help find a point on the dubins path
   cont = dubinsPointHelper(cont, distance);
 
   //this loop controls the logic to find a point along our dubins path
-  for(it=cont.begin(); it < cont.end(); it++){
-    switch(it->direction){
+  for(std::vector<Control>::iterator it = cont.begin(); it < cont.end(); it++) {
+    switch(it->direction) {
     case -1:
       origin = dubins_->leftTurn(origin.x, origin.y, origin.z, it->distance);
       break;
@@ -162,22 +141,20 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   cv::Point2d tempPoint;
 
   //move target point to the origin of our original dubins path
-  tempPoint.x = origin.x-path_.origin.x;
-  tempPoint.y = origin.y-path_.origin.y;
-  
-  finalPoint.x=tempPoint.x;
-  finalPoint.y=tempPoint.y;
-
+  tempPoint.x = origin.x - path_.origin.x;
+  tempPoint.y = origin.y - path_.origin.y;
 
   //rotate target point around dubins path origin
-    finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
-    finalPoint.y=tempPoint.x*sin(path_.rotationAngle)+tempPoint.y*cos(path_.rotationAngle);
+  finalPoint.x = tempPoint.x * cos(path_.rotationAngle)
+               - tempPoint.y * sin(path_.rotationAngle);
+  finalPoint.y = tempPoint.x * sin(path_.rotationAngle)
+               + tempPoint.y * cos(path_.rotationAngle);
 
     //scale rotated point back to a place corressponding to its original coords
-  finalPoint.x+=path_.origin.x;
-  finalPoint.y+=path_.origin.y;
+  finalPoint.x += path_.origin.x;
+  finalPoint.y += path_.origin.y;
 
 
-  std::cout <<"(x,y,theta)   " << finalPoint.x << " " << finalPoint.y << " "  << origin.z  << std::endl;
+  printf("(x,y,theta): (%f, %f, %f)\n", finalPoint.x, finalPoint.y, origin.z);
   return finalPoint;
 }
