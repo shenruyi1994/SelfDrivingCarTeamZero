@@ -7,13 +7,10 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Arr_circle_segment_traits_2.h>
 #include <CGAL/Arrangement_2.h>
+#include <opencv2/opencv.hpp>
 
 #include "globals.hh"
 #include "Waypoints.hh"
-//#include <string>
-#include "sdcLLC.hh"
-#include "dubins.hh"
-#include <opencv2/opencv.hpp>
 
 enum PathDirection {
   DUBINS_LEFT = -1,
@@ -29,7 +26,6 @@ struct Path {
   double length;
 
   double rotationAngle;
-
 
   PathDirection dir1;
   PathDirection dir2;
@@ -65,8 +61,6 @@ class GAZEBO_VISIBLE dubins {
 
   private:
     double scalingFactor_ = 1;
-    //Control* control_;
-
   };
 
 #endif

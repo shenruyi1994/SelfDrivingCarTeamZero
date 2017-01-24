@@ -1,12 +1,13 @@
-#include "sdcLLC.hh"
-#include "sdcCar.hh"
-#include "Waypoints.hh"
-#include "sdcAngle.hh"
 #include "dubins.hh"
-#include "globals.hh"
+
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <cmath>
+
+#include "globals.hh"
+#include "sdcAngle.hh"
+#include "sdcUtils.hh"
+#include "Waypoints.hh"
 
 using namespace gazebo;
 
@@ -132,12 +133,6 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
   return std::vector<Control> { control1, control2, control3 };
 }
 
-// Distance funciton between two 2d points
-double distance2d(double x1, double x2, double y2, double y1 ) {
-  double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2));
-  return dist;
-}
-
 /*
  * Main function to calculate a dubins path
  * Calls functions to calculate each path individually, finds minimum length
@@ -146,7 +141,7 @@ double distance2d(double x1, double x2, double y2, double y1 ) {
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
   Waypoint testpoint = waypoints.front();
 
-  double distance = distance2d(testpoint.x, carpoint.x, testpoint.y, carpoint.y);
+  double distance = waypoint_distance(testpoint, carpoint);
   double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
   printf("\nOur dubins angle is %f\n", dubinsAngle);
 

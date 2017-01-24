@@ -7,8 +7,12 @@
 #include <opencv2/opencv.hpp>
 #include "gazebo/physics/physics.hh"
 
-// computes the pythagorean theorem (for distance calculation), and only
-// accepts numeric types.
+#include "Waypoints.hh"
+
+/*
+ * Computes the pythagorean theorem (for distance calculation), and only
+ * accepts numeric types.
+ */
 template<typename T>
 T pythag_thm(T x, T y) {
   static_assert(std::is_arithmetic<T>::value,
@@ -21,7 +25,7 @@ T pythag_thm(T x, T y) {
  * function.
  */
 double cv_distance(const cv::Point2d& p1, const cv::Point2d& p2) {
-  return pythag_thm(fabs(p1.x - p2.x), fabs(p1.y - p2.y));
+  return pythag_thm(p1.x - p2.x, p1.y - p2.y);
 }
 
 /*
@@ -30,7 +34,15 @@ double cv_distance(const cv::Point2d& p1, const cv::Point2d& p2) {
  */
 double vec_distance(const gazebo::math::Vector2d& p1,
                       const gazebo::math::Vector2d& p2) {
-  return pythag_thm(fabs(p1.x - p2.x), fabs(p1.y - p2.y));
+  return pythag_thm(p1.x - p2.x, p1.y - p2.y);
+}
+
+/*
+ * Returns the distance between two Waypoint instances, using the
+ * pythag_thm function.
+ */
+double waypoint_distance(const Waypoint& p1, const Waypoint& p2) {
+  return pythag_thm(p1.x - p2.x, p1.y - p2.y);
 }
 
 /////////////////////////////////////////
