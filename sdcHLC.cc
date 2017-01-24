@@ -37,7 +37,7 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
 
 sdcHLC::~sdcHLC() {
   delete llc_;
-  }
+}
 
 ////////////////////////////////
 ////////////////////////////////

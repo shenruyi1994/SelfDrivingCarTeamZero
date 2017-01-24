@@ -14,9 +14,6 @@
 
 #include <opencv2/opencv.hpp>
 
-
-
-
 //placeholder structs for now
 namespace gazebo {
   class sdcCar;
@@ -28,7 +25,7 @@ namespace gazebo {
     void update();
 
     cv::Point2d GetDubinsPoint(double distance) const;
-    
+
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
     void Brake(double amt = 1, double rate = 1.0);
