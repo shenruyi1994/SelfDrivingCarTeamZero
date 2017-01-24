@@ -25,10 +25,9 @@ void sdcLLC::update() {
   if(counter == 0) {
     std::vector<Waypoint> testPoints;
     Waypoint testPoint;
-    testPoint.x = 50;
-    testPoint.y =50;
+    testPoint.x = 82;
+    testPoint.y = -9;
     testPoint.direction=car_->GetDirection().angle;
-
     math::Vector2d carPos = sdcSensorData::GetPosition();
     Waypoint carPoint;
     carPoint.x = carPos.x;
@@ -44,7 +43,7 @@ void sdcLLC::update() {
 
     path_ = dubins_->calculateDubins(testPoints, carPoint);
 
-    cv::Point2d testDubinsPoint =  GetDubinsPoint(path_.length);
+    //cv::Point2d testDubinsPoint =  GetDubinsPoint(path_.length);
   }
 
   counter++;
@@ -115,7 +114,6 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
     if (it->distance <= distance){
       temp.distance = it->distance;
       distance = distance - it->distance;
-      std::cout << "Is this working???? " << distance << std::endl;
     }
     else{
       temp.distance = distance;
@@ -149,17 +147,13 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
     switch(it->direction){
     case -1:
       origin = dubins_->leftTurn(origin.x, origin.y, origin.z, it->distance);
-      std::cout << "Left turn for" << it->distance << "distance\n";
       break;
     case 0:
       origin = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
-      std::cout<< "Straight turn for " <<it->distance <<"distance\n";
       break;
     case 1:
       origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
-         std::cout<< "Right turn for " <<it->distance <<"distance\n";
       break;
-
     }
   }
 
@@ -167,16 +161,19 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   cv::Point2d finalPoint;
   cv::Point2d tempPoint;
 
+  //move target point to the origin of our original dubins path
   tempPoint.x = origin.x-path_.origin.x;
   tempPoint.y = origin.y-path_.origin.y;
   
   finalPoint.x=tempPoint.x;
   finalPoint.y=tempPoint.y;
 
-    finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
 
+  //rotate target point around dubins path origin
+    finalPoint.x = tempPoint.x*cos(path_.rotationAngle)-tempPoint.y*sin(path_.rotationAngle);
     finalPoint.y=tempPoint.x*sin(path_.rotationAngle)+tempPoint.y*cos(path_.rotationAngle);
 
+    //scale rotated point back to a place corressponding to its original coords
   finalPoint.x+=path_.origin.x;
   finalPoint.y+=path_.origin.y;
 

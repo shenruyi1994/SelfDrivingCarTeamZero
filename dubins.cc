@@ -172,7 +172,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
 
   //Controls controls = pathToControls(dubinsPath);
 
-  std::cout << "The minimum path "/* of type: " << dubinsPath.type */ << " is of length: " << dubinsPath.length << "\n";
+    std::cout << "The minimum path "/* of type: " << dubinsPath.type */ << " is of length: " << dubinsPath.length << "\n";
   std::cout << "Seg 1 is length: " << dubinsPath.seg1 << "  .seg 2 is length: " << dubinsPath.seg2 << "  .seg 3 is length: " << dubinsPath.seg3 << "\n";
 
   // return controls;
