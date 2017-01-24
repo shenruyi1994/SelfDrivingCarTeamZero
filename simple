@@ -1,7 +1,20 @@
 #!/bin/bash
 
-if cd build/ && make; then
-	cd .. && gazebo 2_scenario_follow_object_straight_road.world --verbose
+uflag=''
+world='test.world'
+verbose=''
+
+while getopts 'uw:v' flag; do
+	case "${flag}" in
+		u) uflag='-u' ;;
+		w) world="${OPTARG}" ;;
+		v) verbose='--verbose' ;;
+		*) error "Unexpected option ${flag}" ;;
+	esac
+done
+
+if cd build/ && make -j10; then
+	cd .. && gazebo $world $uflag $verbose
 else
 	cd ..
 fi
