@@ -27,7 +27,7 @@ double mod(double a, double b) {
  * then a right turn.
  */
 Path lsl(double initD, double finalD, double dist) {
-  double t = mod((-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD)))),2*PI);
+  double t = mod(-initD + atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
   double p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(initD)-sin(finalD)));
   double q = mod(finalD - atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
 
@@ -141,12 +141,14 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
   Waypoint testpoint = waypoints.front();
 
+
+
   double distance = waypoint_distance(testpoint, carpoint);
   double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
   printf("\nOur dubins angle is %f\n", dubinsAngle);
 
-  double initDirection = carpoint.direction;
-  double finalDirection = testpoint.direction;
+  double initDirection = carpoint.direction-dubinsAngle;
+  double finalDirection = testpoint.direction-dubinsAngle;
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius

@@ -3,7 +3,6 @@
 
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
-#include <CGAl/Arrangement_2.h>
 #include <opencv2/opencv.hpp>
 
 #include "arr_print.h"
@@ -23,15 +22,19 @@ void sdcLLC::update() {
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = 82;
-  testPoint.y = -9;
-  testPoint.direction = car_->GetDirection().angle;
+  testPoint.x = 70;
+  testPoint.y = 5;
+  //testPoint.direction = car_->GetDirection().angle;
+  testPoint.direction=0;
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
-  carPoint.x = carPos.x;
-  carPoint.y = carPos.y;
-  carPoint.direction = car_->GetDirection().angle;
+  //  carPoint.x = carPos.x;
+  //carPoint.y = carPos.y;
+  //carPoint.direction = car_->GetDirection().angle;
+  carPoint.x=0;
+  carPoint.y=0;
+  carPoint.direction=0;
 
   dubins_ = new dubins();
 
@@ -146,9 +149,9 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
 
   //rotate target point around dubins path origin
   finalPoint.x = tempPoint.x * cos(path_.rotationAngle)
-               - tempPoint.y * sin(path_.rotationAngle);
-  finalPoint.y = tempPoint.x * sin(path_.rotationAngle)
-               + tempPoint.y * cos(path_.rotationAngle);
+    - tempPoint.y * sin(path_.rotationAngle);
+finalPoint.y = tempPoint.x * sin(path_.rotationAngle)
+  + tempPoint.y * cos(path_.rotationAngle);
 
     //scale rotated point back to a place corressponding to its original coords
   finalPoint.x += path_.origin.x;
