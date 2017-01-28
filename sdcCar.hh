@@ -33,6 +33,8 @@
 #include "sdcIntersection.hh"
 #include "sdcSensorData.hh"
 #include "sdcWaypoint.hh"
+#include <opencv2/opencv.hpp>
+
 
 namespace gazebo {
   class sdcHLC;
@@ -183,6 +185,7 @@ namespace gazebo {
 
     void SetTargetDirection(sdcAngle direction);
     void SetTargetSteeringAmount(double a);
+    void SetSteeringAmount(double a);
     void SetTargetSpeed(double s);
     void SetTurningLimit(double limit);
 

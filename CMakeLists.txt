@@ -22,6 +22,9 @@ list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 add_library(sdcBox SHARED sdcBox.cpp)
 target_link_libraries(sdcBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
+add_library(waypoints SHARED Waypoints.cc)
+target_link_libraries(waypoints ${GAZEBO_LIBRARIES} ${BOOST_LIBRARIES})
+
 add_library(sdcFlyingBox SHARED sdcFlyingBox.cc)
 target_link_libraries(sdcFlyingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -70,13 +73,13 @@ include_directories(${CGAL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
-target_link_libraries(sdcBoundingBox ${OpenCV_LIBS})
+target_link_libraries(sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcRotatedBoundingBox SHARED sdcRotatedBoundingBox.cc)
-target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${OpenCV_LIBS})
+target_link_libraries(sdcRotatedBoundingBox sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcBoundingCircle SHARED sdcBoundingCircle.cc)
-target_link_libraries(sdcBoundingCircle ${OpenCV_LIBS})
+target_link_libraries(sdcBoundingCircle ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
@@ -94,6 +97,11 @@ target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
+add_library(dubins SHARED dubins.cc)
+target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+
+
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+
 

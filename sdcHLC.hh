@@ -43,6 +43,14 @@ namespace gazebo {
     std::vector<int> dijkstras(int start, int dest);
     void insertWaypointTypes(std::vector<int> path, Direction startDir);
 
+    // Dubins path following functions
+    void FollowWaypoints();
+    void UpdatePathDistance();
+    cv::Point2d FindDubinsTargetPoint() const;
+    sdcAngle CalculateTurningAngle(const math::Vector2d& point) const;
+    double ScaledLookaheadDistance() const;
+    void AngleWheelsTowardsTarget(const math::Vector2d& target);
+
     // Driving algorithms
     void LanedDriving();
     void GridTurning(int turn);
@@ -63,8 +71,8 @@ namespace gazebo {
                                         double time) const;
     bool DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
                                               double time) const;
-    std::vector<sdcWaypoint*>* ComputeAvoidancePath(
-      sdcVisibleObject* obj, math::Vector2d collision);
+    std::vector<sdcWaypoint*>* ComputeAvoidancePath(sdcVisibleObject* obj,
+                                                    math::Vector2d collision);
     math::Vector2d GetPositionAtTime(double time) const;
     sdcAngle GetAngleAtTime(double time) const;
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
@@ -74,7 +82,19 @@ namespace gazebo {
   private:
     sdcCar* car_;
     sdcLLC* llc_;
-    Waypoints* waypoints_;
+
+    double pathDist_ = 0;
+    common::Time lastTime_ = 0;
+    double lastSpeed_ = 0;
+
+    double lookaheadMin_ = 1.5;
+    double lookaheadMax_ = 12.5;
+    double lookaheadScalor_ = 0.6;
+
+    double lastX_ = 0;
+    double lastY_ = 0;
+
+    common::Time lastUpdateTime_;
 
     // ================================================
     // 2016 states

@@ -23,7 +23,6 @@ std::vector<sdcWaypoint> WAYPOINT_VEC;
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
-  waypoints_ = new Waypoints();
 
   // Initialize state enums
   DEFAULT_STATE = WAYPOINT;
@@ -32,11 +31,12 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   currentPerpendicularState_ = backPark;
   currentParallelState_ = rightBack;
   currentAvoidanceState_ = notAvoiding;
+
+  lastUpdateTime_ = common::Time(0);
 }
 
 sdcHLC::~sdcHLC() {
   delete llc_;
-  delete waypoints_;
 }
 
 ////////////////////////////////
@@ -50,7 +50,17 @@ sdcHLC::~sdcHLC() {
  * request from Gazebo
  */
 void sdcHLC::Drive() {
+  common::Time curTime = car_->model_->GetWorld()->GetSimTime();
+  if (curTime.Double() - lastUpdateTime_.Double() < .01) {
+    UpdatePathDistance();
+    return;
+  } else {
+    lastUpdateTime_ = common::Time(curTime);
+  }
 
+  FollowWaypoints();
+
+  /*
   // If not in avoidance, check if we should start following the thing
   // in front of us. If following is done, kick out to default state
   if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
@@ -123,7 +133,7 @@ void sdcHLC::Drive() {
       PerpendicularPark();
       // ParallelPark();
       break;
-  }
+  } */
 
   // Attempts to turn towards the target direction
   MatchTargetDirection();
@@ -225,6 +235,106 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
 }
 
 /*
+ * Drive along a road or other surface, following waypoints. Rather than
+ * directly following a path, aim for a point in front of the vehicle. This
+ * less accurately follows the waypoints but provides a smoother transition
+ * along sharp turns in the curve.
+ */
+void sdcHLC::FollowWaypoints() {
+  car_->SetTargetSpeed(10);
+
+  cv::Point2d targetPoint = FindDubinsTargetPoint();
+  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  printf("  speed: %f\n", car_->GetSpeed());
+  printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
+  car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
+}
+
+void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
+  sdcAngle directionAngle = CalculateTurningAngle(target);
+
+  // We can't set the wheel angle directly, so instead we set the steering
+  car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
+}
+
+/*
+ * Updates the distance the car has travelled along the current dubins path
+ */
+void sdcHLC::UpdatePathDistance() {
+  // TODO: implement small randomization of location to make it more realistic,
+  //       rather than using the exact GPS coordinates
+
+  // common::Time dt = car_->model_->GetWorld()->GetSimTime() - lastTime_;
+  // double avgVelocity = (car_->GetSpeed() + lastSpeed_) / 2;
+  // lastTime_ = car_->model_->GetWorld()->GetSimTime();
+  // lastSpeed_ = car_->GetSpeed();
+
+  // double distanceTravelled = avgVelocity * dt.Double();
+  pathDist_ += pythag_thm(car_->x_ - lastX_, car_->y_ - lastY_);
+  lastX_ = car_->x_;
+  lastY_ = car_->y_;
+}
+
+/*
+ * Returns the point along the dubins path that the car should be following.
+ */
+cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
+  cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
+  printf("pathdist_: %f\n", pathDist_);
+  double lookaheadDistance = ScaledLookaheadDistance();
+  cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_ + lookaheadDistance);
+
+  // double distanceToDubins = cv_distance(location, tempTarget);
+  // double adjustment = distanceToDubins - lookaheadDistance;
+  // double maxError = 0.1;
+  // double tempPathDist = pathDist_;
+  //
+  // // finds a point along the dubins path that is beyond the ideal target distance
+  // while (distanceToDubins < lookaheadDistance) {
+  //   tempPathDist += adjustment;
+  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   adjustment *= 2;
+  // }
+  //
+  // // does a binary search to find the correct distance along the path that we
+  // // need to aim for
+  // while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
+  //   if (distanceToDubins > lookaheadDistance) {
+  //     tempPathDist -= adjustment;
+  //   } else {
+  //     tempPathDist += adjustment;
+  //   }
+  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   adjustment *= .5;
+  // }
+
+  return tempTarget;
+}
+
+/*
+ * Returns the lookahead distance scaled to account for linear velocity of the
+ * vehicle. Only returns values within the range [lookaheadMin_, lookaheadMax_].
+ */
+double sdcHLC::ScaledLookaheadDistance() const {
+  double tempDist = lookaheadScalor_ * car_->GetSpeed();
+  return fmin(fmax(tempDist, lookaheadMin_), lookaheadMax_);
+}
+
+/*
+ * Calculate the turning angle necessary to reach the provided point. Based on
+ * the tuned pure pursuit algorithm found in this paper:
+ * http://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf
+ */
+sdcAngle sdcHLC::CalculateTurningAngle(const math::Vector2d& point) const {
+  sdcAngle alpha = car_->AngleToTarget(point);
+  double numerator = 2 * WHEEL_BASE * sin(alpha.angle);
+  double denominator = lookaheadScalor_ * car_->GetSpeed();
+
+  return atan2(numerator, denominator);
+}
+
+/*
  * Uses camera data to detect lanes and sets targetDirection to stay as close
  * as possible to the midpoint.
  */
@@ -237,6 +347,12 @@ void sdcHLC::LanedDriving() {
     car_->SetTargetDirection(car_->GetDirection() + laneWeight);
   }
 }
+
+////////////////////////////
+////////////////////////////
+// END WAYPOINT FOLLOWING //
+////////////////////////////
+////////////////////////////
 
 /*
  * Car follows an object directly in front of it and slows down to stop when it starts to get close
@@ -576,13 +692,13 @@ double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   sdcBoundingCircle selfCircle = sdcBoundingCircle(
-    mathVecToPoint(GetPositionAtTime(time)),
+    math_vec_to_point(GetPositionAtTime(time)),
     pythag_thm(car_->width_, car_->length_)
   );
 
   // TODO: figure out how to estimate size of an object
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    mathVecToPoint(obj->GetProjectedPositionAtTime(time)),
+    math_vec_to_point(obj->GetProjectedPositionAtTime(time)),
     1 // placeholder for above TODO
   );
 

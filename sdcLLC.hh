@@ -10,33 +10,11 @@
 
 #include "globals.hh"
 #include "Waypoints.hh"
+#include "dubins.hh"
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-typedef Kernel::FT               Number_type;
-typedef CGAL::Arr_circle_segment_traits_2<Kernel> Traits;
-typedef Traits::CoordNT CoordNT;
-typedef Traits::Point_2 Point;
-typedef Traits::Curve_2 Curve;
-typedef Traits::Rational_point_2 Rational_point;
-typedef Traits::Rational_segment_2 Segment;
-typedef Traits::Rational_circle_2 Circle;
-typedef CGAL::Arrangement_2<Traits> Arrangement;
+#include <opencv2/opencv.hpp>
 
 //placeholder structs for now
-typedef struct {
-  int angle;
-} SteeringAngle;
-
-typedef struct {
-  int timeStep;
-} TimeStep;
-
-
-typedef struct {
-  std::pair<SteeringAngle, TimeStep> control;
-} Control;
-
-
 namespace gazebo {
   class sdcCar;
   class GAZEBO_VISIBLE sdcLLC {
@@ -45,8 +23,8 @@ namespace gazebo {
     ~sdcLLC() {}
 
     void update();
-    void setWaypoints(Waypoints* waypoints);
-    Control calculateDubins(Waypoints* waypoints);
+
+    cv::Point2d GetDubinsPoint(double distance) const;
 
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
@@ -54,10 +32,11 @@ namespace gazebo {
     void Stop();
     void Reverse();
     void StopReverse();
-
-  private:
     sdcCar* car_;
-    Waypoints* waypoints_;
+    dubins* dubins_;
+    Path path_;
+  private:
+
   };
 }
 #endif
