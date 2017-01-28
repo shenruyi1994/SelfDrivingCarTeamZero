@@ -23,15 +23,18 @@ void sdcLLC::update() {
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = 82;
-  testPoint.y = -9;
-  testPoint.direction = car_->GetDirection().angle;
+  testPoint.x = -10;
+  testPoint.y = 20;
+  //testPoint.direction = car_->GetDirection().angle;
+  testPoint.direction = 0.0;
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
   carPoint.x = carPos.x;
   carPoint.y = carPos.y;
   carPoint.direction = car_->GetDirection().angle;
+  printf("initDirection  %f", carPoint.direction);
+   //carPoint.direction = -0.785398;
 
   dubins_ = new dubins();
 
@@ -93,7 +96,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 
   std::vector<Control>::iterator it;
   std::vector<Control> newControls;
-
+  
   for(it = controls.begin(); it < controls.end(); it++) {
     Control temp;
     temp.direction = it->direction;
@@ -106,6 +109,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
       distance = 0;
     }
     newControls.push_back(temp);
+    printf("\n new control(dist, type), %f, %d", temp.distance, temp.direction);
   }
   return newControls;
 }
@@ -114,9 +118,11 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   distance = fmin(distance, path_.length);
   math::Vector2d carPos = sdcSensorData::GetPosition();
+    cv::Point3d origin = cv::Point3d(path_.origin);
 
-  std::vector<Control> cont = dubins_->pathToControls(path_);
-  cv::Point3d origin = cv::Point3d(path_.origin);
+    std::vector<Control> cont = dubins_->pathToControls(path_);
+
+  //cv::Point3d origin (0,0,0);
 
   //generates temporary set of controls used to help find a point on the dubins path
   cont = dubinsPointHelper(cont, distance);
@@ -136,25 +142,25 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
     }
   }
 
+  // move target point to the origin of our original dubins path
+  // tempPoint.x = origin.x - path_.origin.x;
+  // tempPoint.y = origin.y - path_.origin.y;
 
-  cv::Point2d finalPoint;
-  cv::Point2d tempPoint;
-
-  //move target point to the origin of our original dubins path
-  tempPoint.x = origin.x - path_.origin.x;
-  tempPoint.y = origin.y - path_.origin.y;
+  //tempPoint.x = 0;
+  //temPoint
 
   //rotate target point around dubins path origin
-  finalPoint.x = tempPoint.x * cos(path_.rotationAngle)
-               - tempPoint.y * sin(path_.rotationAngle);
-  finalPoint.y = tempPoint.x * sin(path_.rotationAngle)
-               + tempPoint.y * cos(path_.rotationAngle);
+  //finalPoint.x = origin.x * cos(path_.rotationAngle) - origin.y * sin(path_.rotationAngle);
+  //finalPoint.y = origin.x * sin(path_.rotationAngle) + origin.y * cos(path_.rotationAngle);
 
-    //scale rotated point back to a place corressponding to its original coords
-  finalPoint.x += path_.origin.x;
-  finalPoint.y += path_.origin.y;
+  // scale rotated point back to a place corressponding to its original coords
+  // finalPoint.x += path_.origin.x;
+  // finalPoint.y += path_.origin.y;
 
 
-  printf("(x,y,theta): (%f, %f, %f)\n", finalPoint.x, finalPoint.y, origin.z);
-  return finalPoint;
+  printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
+  cv::Point2d returnP;
+  returnP.x = origin.x;
+  returnP.y = origin.y;
+  return returnP;
 }
