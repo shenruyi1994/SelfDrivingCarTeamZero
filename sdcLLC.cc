@@ -3,7 +3,6 @@
 
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
-#include <CGAl/Arrangement_2.h>
 #include <opencv2/opencv.hpp>
 
 #include "arr_print.h"
