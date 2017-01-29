@@ -139,16 +139,23 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
   Waypoint testpoint = waypoints.front();
 
-    double distance = waypoint_distance(testpoint, carpoint);
-   double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
+  double distance = waypoint_distance(testpoint, carpoint);
+  double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
   printf("\nOur dubins angle is %f\n", dubinsAngle);
 
-   double initDirection = carpoint.direction-dubinsAngle;
-   double finalDirection = testpoint.direction-dubinsAngle;
+  if(testpoint.x < 0){
+    dubinsAngle += PI;
+}
 
-   // double initDirection = 1.570796;
-   //double finalDirection = 0.392699;
+  printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
+  
+  double initDirection = carpoint.direction-dubinsAngle;
+  double finalDirection = testpoint.direction-dubinsAngle;
+  
+  //double initDirection = 1.570796;
+  //double finalDirection = 0.392699;
+  
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
   // distance = distance / scalingFactor_;

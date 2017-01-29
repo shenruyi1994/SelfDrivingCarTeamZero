@@ -23,10 +23,10 @@ void sdcLLC::update() {
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = -10;
-  testPoint.y = 20;
+  testPoint.x = -30;
+  testPoint.y = 10;
   //testPoint.direction = car_->GetDirection().angle;
-  testPoint.direction = 0.0;
+  testPoint.direction = PI/2;
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
@@ -39,8 +39,9 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   dubins_ = new dubins();
 
   testPoints.push_back(testPoint);
-
   path_ = dubins_->calculateDubins(testPoints, carPoint);
+
+
 }
 
 
@@ -111,6 +112,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
     newControls.push_back(temp);
     printf("\n new control(dist, type), %f, %d", temp.distance, temp.direction);
   }
+  std::cout << std::endl;
   return newControls;
 }
 
