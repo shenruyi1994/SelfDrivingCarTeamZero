@@ -33,8 +33,11 @@ Path lsl(double initD, double finalD, double dist) {
 
   std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_LEFT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_LEFT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_LEFT // dir1, dir2, dir3
+  };
 }
 
 /*
@@ -48,8 +51,11 @@ Path rsr(double initD, double finalD, double dist) {
 
   std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_RIGHT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_RIGHT // dir1, dir2, dir3
+  };
 }
 
 /*
@@ -63,8 +69,11 @@ Path rsl(double initD, double finalD, double dist) {
 
   std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_LEFT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_LEFT // dir1, dir2, dir3
+  };
 }
 
 /*
@@ -78,8 +87,11 @@ Path lsr(double initD, double finalD, double dist) {
 
   std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_LEFT, .dir2=DUBINS_STRAIGHT, .dir3=DUBINS_RIGHT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_RIGHT // dir1, dir2, dir3
+  };
 }
 
 //Calculates a dubins path consisting of a right turn, then a left turn, then a right turn
@@ -90,8 +102,11 @@ Path rlr(double initD, double finalD, double dist) {
 
   std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_RIGHT, .dir2=DUBINS_LEFT, .dir3=DUBINS_RIGHT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_RIGHT, DUBINS_LEFT, DUBINS_RIGHT // dir1, dir2, dir3
+  };
 }
 
 /* Note:: there was a mistake in the paper discribing how to compute the lrl, I
@@ -106,8 +121,11 @@ Path lrl(double initD, double finalD, double dist) {
 
   std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
 
-  return (Path){ .seg1=t, .seg2=p, .seg3=q, .length=t+p+q,
-                 .dir1=DUBINS_LEFT, .dir2=DUBINS_RIGHT, .dir3=DUBINS_LEFT };
+  return (Path) {
+    t, p, q, // seg1, seg2, seg3
+    t + p + q, // length
+    DUBINS_LEFT, DUBINS_RIGHT, DUBINS_LEFT // dir1, dir2, dir3
+  };
 }
 
 /*
