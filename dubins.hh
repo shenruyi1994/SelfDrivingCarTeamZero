@@ -4,6 +4,9 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 
+#include <opencv2/opencv.hpp>
+
+
 #include "globals.hh"
 #include "Waypoints.hh"
 
