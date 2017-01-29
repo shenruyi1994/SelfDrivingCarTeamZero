@@ -7,7 +7,6 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(FADBAD++)
 
-find_package(CGAL REQUIRED COMPONENTS core)
 
 if(NOT OpenCV_DIR)
  find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV" HINTS    "/opt/ros/fuerte/share/OpenCV/")
