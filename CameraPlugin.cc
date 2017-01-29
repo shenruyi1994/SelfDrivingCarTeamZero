@@ -129,27 +129,27 @@ void CameraPlugin::OnUpdate()
         int lo = ROI_lo + i * interval;
         int hi = lo + interval;
 
-				std::vector<cv::Point> pts = vanishPoint(proc_subs[i], lo);
+        std::vector<cv::Point> pts = vanishPoint(proc_subs[i], lo);
         worldPts.push_back(pts[0]);
-				imagePts.push_back(pts[1]);
+        imagePts.push_back(pts[1]);
 
-				circle(image, pts[1], 2, Scalar(255,0,0), 3);
+        circle(image, pts[1], 2, Scalar(255,0,0), 3);
     }
 
-		cv::Point originaPoint = cv::Point(320,400);
-		imagePts.push_back(originaPoint);
+    cv::Point originaPoint = cv::Point(320,400);
+    imagePts.push_back(originaPoint);
 
-		double previousAngle = 0;
-		for(int i = 3; i > 0; i--)
-		{
-			double angle = getAngle(imagePts[i].x, imagePts[i].y, imagePts[i-1].x, imagePts[i-1].y, previousAngle);
-			previousAngle +=angle;
-			std::cout << "angle " << i <<" is " << angle << '\n';
-			waypointAngles.push_back(angle);
-		}
+    double previousAngle = 0;
+    for(int i = 3; i > 0; i--)
+    {
+        double angle = getAngle(imagePts[i].x, imagePts[i].y, imagePts[i-1].x, imagePts[i-1].y, previousAngle);
+        previousAngle +=angle;
+        std::cout << "angle " << i <<" is " << angle << '\n';
+        waypointAngles.push_back(angle);
+    }
 
-		dataProcessing::updateWaypoints(worldPts);
-		dataProcessing::updateWaypointsAngles(waypointAngles);
+    dataProcessing::updateWaypoints(worldPts);
+    dataProcessing::updateWaypointsAngles(waypointAngles);
 
     imshow("img", image);
     imwrite("waypoints.png", image);
@@ -234,12 +234,12 @@ std::vector<cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     // find x, given y = mid
     int waypoint_x = (mid-n)/m;
 
-		math::Vector3 originCoord;
-		math::Vector3 direction;
-		this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, mid, originCoord, direction);
+    math::Vector3 originCoord;
+    math::Vector3 direction;
+    this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, mid, originCoord, direction);
 
-		cout << "viewportWidth originCoord is " << originCoord << endl;
-		cout << "viewportWidth direction is " << direction << endl;
+    cout << "viewportWidth originCoord is " << originCoord << endl;
+    cout << "viewportWidth direction is " << direction << endl;
 
 		// get the realworld coordinates
     double prop = - double(originCoord[2])/direction[2];
@@ -247,12 +247,12 @@ std::vector<cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     double newY = prop * direction[1] + originCoord[1];
 
     cout << "realworld X is" << newX << endl;
-		cout << "realworld Y is " << newY << endl;
+    cout << "realworld Y is " << newY << endl;
 
-		std::vector<cv::Point> pts;
-		pts.push_back(cv::Point(newX,newY));
-		pts.push_back(cv::Point(waypoint_x,mid));
-		return pts;
+    std::vector<cv::Point> pts;
+    pts.push_back(cv::Point(newX,newY));
+    pts.push_back(cv::Point(waypoint_x,mid));
+    return pts;
     //return cv::Point(waypoint_x,mid);
 }
 
