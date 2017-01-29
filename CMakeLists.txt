@@ -7,8 +7,6 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(FADBAD++)
 
-find_package(CGAL REQUIRED COMPONENTS core)
-include( ${CGAL_USE_FILE} )
 
 if(NOT OpenCV_DIR)
  find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV" HINTS    "/opt/ros/fuerte/share/OpenCV/")
@@ -68,9 +66,6 @@ target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(sdcIntersection SHARED sdcIntersection.cc)
 target_link_libraries(sdcIntersection ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-find_package(CGAL REQUIRED COMPONENTS Core GMP RS3 MPFI )
-include_directories(${CGAL_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${CGAL_LIBRARIES})
 
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
 target_link_libraries(sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
@@ -102,6 +97,6 @@ target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} 
 
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${CGAL_LIBRARIES} ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 
