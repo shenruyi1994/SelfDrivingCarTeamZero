@@ -4,11 +4,6 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Arr_circle_segment_traits_2.h>
-#include <CGAL/Arrangement_2.h>
-#include <opencv2/opencv.hpp>
-
 #include "globals.hh"
 #include "Waypoints.hh"
 

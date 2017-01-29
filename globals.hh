@@ -33,7 +33,8 @@ enum Direction { north, south, east, west };
 const double WHEEL_BASE = 1.67;
 
 //The radius of the circle made by a car driving in a circle turning as sharpley as possible
-const double MIN_TURNING_RADIUS = 3.8;
+//const double MIN_TURNING_RADIUS = 3.8;
+const double MIN_TURNING_RADIUS = 1;
 
 //maximum steering andlge of a car in radians
 //MAX_STEERING_ANGLE = atan(WHEEL_BASE/(MIN_TURNING_RADIUS - CAR_WIDTH))
