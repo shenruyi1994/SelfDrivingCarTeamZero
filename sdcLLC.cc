@@ -21,8 +21,8 @@ void sdcLLC::update() {
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = 30;
-  testPoint.y = 10;
+  testPoint.x = 10;
+  testPoint.y = 15;
   //testPoint.direction = car_->GetDirection().angle;
   testPoint.direction = PI/2;
 
