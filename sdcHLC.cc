@@ -241,7 +241,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(10);
+  car_->SetTargetSpeed(5);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
   printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);

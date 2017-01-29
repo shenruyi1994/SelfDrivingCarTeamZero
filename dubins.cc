@@ -33,11 +33,11 @@ Path lsl(double initD, double finalD, double dist) {
 
   std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_LEFT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_LEFT; path.dir2 = DUBINS_STRAIGHT; path.dir3 = DUBINS_LEFT;
+  return path;
 }
 
 /*
@@ -51,11 +51,11 @@ Path rsr(double initD, double finalD, double dist) {
 
   std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_RIGHT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_RIGHT; path.dir2 = DUBINS_STRAIGHT; path.dir3 = DUBINS_RIGHT;
+  return path;
 }
 
 /*
@@ -69,11 +69,11 @@ Path rsl(double initD, double finalD, double dist) {
 
   std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_RIGHT, DUBINS_STRAIGHT, DUBINS_LEFT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_RIGHT; path.dir2 = DUBINS_STRAIGHT; path.dir3 = DUBINS_LEFT;
+  return path;
 }
 
 /*
@@ -87,11 +87,11 @@ Path lsr(double initD, double finalD, double dist) {
 
   std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_LEFT, DUBINS_STRAIGHT, DUBINS_RIGHT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_LEFT; path.dir2 = DUBINS_STRAIGHT; path.dir3 = DUBINS_RIGHT;
+  return path;
 }
 
 //Calculates a dubins path consisting of a right turn, then a left turn, then a right turn
@@ -102,11 +102,11 @@ Path rlr(double initD, double finalD, double dist) {
 
   std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_RIGHT, DUBINS_LEFT, DUBINS_RIGHT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_RIGHT; path.dir2 = DUBINS_LEFT; path.dir3 = DUBINS_RIGHT;
+  return path;
 }
 
 /* Note:: there was a mistake in the paper discribing how to compute the lrl, I
@@ -121,12 +121,14 @@ Path lrl(double initD, double finalD, double dist) {
 
   std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
 
-  return (Path) {
-    t, p, q, // seg1, seg2, seg3
-    t + p + q, // length
-    DUBINS_LEFT, DUBINS_RIGHT, DUBINS_LEFT // dir1, dir2, dir3
-  };
+  struct Path path {};
+  path.seg1 = t; path.seg2 = p; path.seg3 = q;
+  path.length = t + p + q;
+  path.dir1 = DUBINS_LEFT; path.dir2 = DUBINS_RIGHT; path.dir3 = DUBINS_LEFT;
+  return path;
 }
+
+
 
 /*
  * Converts a Path into a set of Controls, consisting of a turn direction and
@@ -161,29 +163,25 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
   printf("\nOur dubins angle is %f\n", dubinsAngle);
 
-  if(testpoint.x < 0){
-    dubinsAngle += PI;
-}
+  // account for negatives
+  if (testpoint.x < 0) { dubinsAngle += PI; }
 
   printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
-  
   double initDirection = carpoint.direction-dubinsAngle;
   double finalDirection = testpoint.direction-dubinsAngle;
-  
-  //double initDirection = 1.570796;
-  //double finalDirection = 0.392699;
-  
+
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-  // distance = distance / scalingFactor_;
+  distance = distance / scalingFactor_;
 
   // Calculate each type of dubins path individually
-  std::vector<Path> paths;
-  paths.push_back(lsl(initDirection, finalDirection, distance));
-  paths.push_back(lsr(initDirection, finalDirection, distance));
-  paths.push_back(rsr(initDirection, finalDirection, distance));
-  paths.push_back(rsl(initDirection, finalDirection, distance));
+  Path paths[4] = {
+    lsl(initDirection, finalDirection, distance),
+    lsr(initDirection, finalDirection, distance),
+    rsr(initDirection, finalDirection, distance),
+    rsl(initDirection, finalDirection, distance)
+  };
 
   // Finds path of smallest length
   Path dubinsPath = paths[0];
@@ -194,7 +192,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   }
 
   // Rescales path assuming unit turning radius to proper length
-  // dubinsPath *= scalingFactor_;
+  dubinsPath *= scalingFactor_;
   dubinsPath.origin.x = carpoint.x;
   dubinsPath.origin.y = carpoint.y;
   dubinsPath.origin.z = carpoint.direction;

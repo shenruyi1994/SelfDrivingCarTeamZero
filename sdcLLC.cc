@@ -18,14 +18,12 @@ using namespace gazebo;
 void sdcLLC::update() {
 }
 
-// LLC Constructor
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
-  testPoint.x = 40;
-  testPoint.y = 10;
-  //testPoint.direction = car_->GetDirection().angle;
-  testPoint.direction = PI/2;
+  testPoint.x = 30;
+  testPoint.y = 0;
+  testPoint.direction = car_->GetDirection().angle;
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
@@ -39,8 +37,6 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
 
   testPoints.push_back(testPoint);
   path_ = dubins_->calculateDubins(testPoints, carPoint);
-
-
 }
 
 
@@ -96,7 +92,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 
   std::vector<Control>::iterator it;
   std::vector<Control> newControls;
-  
+
   for(it = controls.begin(); it < controls.end(); it++) {
     Control temp;
     temp.direction = it->direction;

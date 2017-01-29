@@ -23,12 +23,12 @@ struct Path {
   double seg3;
   double length;
 
-  double rotationAngle;
-
   PathDirection dir1;
   PathDirection dir2;
   PathDirection dir3;
   cv::Point3d origin;
+
+  double rotationAngle;
 
   Path& operator *=(double n) {
     this->seg1 *= n;
