@@ -12,7 +12,7 @@
 using namespace gazebo;
 
 dubins::dubins() {
-  scalingFactor_ = MIN_TURNING_RADIUS;
+  scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
 }
 
 //True mod function that does not return negative values
@@ -190,7 +190,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   }
 
   // Rescales path assuming unit turning radius to proper length
-  // dubinsPath *= scalingFactor_;
+  dubinsPath *= scalingFactor_;
   dubinsPath.origin.x = carPoint.x;
   dubinsPath.origin.y = carPoint.y;
   dubinsPath.origin.z = carPoint.direction;

@@ -87,8 +87,8 @@ namespace gazebo {
     common::Time lastTime_ = 0;
     double lastSpeed_ = 0;
 
-    double lookaheadMin_ = 1.5;
-    double lookaheadMax_ = 12.5;
+    double lookaheadMin_ = 0.5;
+    double lookaheadMax_ = 3.5;
     double lookaheadScalor_ = 0.6;
 
     double lastX_ = 0;

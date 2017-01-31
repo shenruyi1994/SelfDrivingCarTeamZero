@@ -16,9 +16,13 @@
 using namespace gazebo;
 
 void sdcLLC::update() {
+  if (car_->model_->GetWorld()->GetSimTime().Double() < 0.2) {
+    GenerateNewDubins();
+  }
 }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
+  dubins_ = new dubins();
   GenerateNewDubins();
 }
 
@@ -27,7 +31,6 @@ bool sdcLLC::BeyondPath(double distance) const {
   for (Path path : paths_) {
     totalPathLength += path.length;
   }
-
   return distance > totalPathLength;
 }
 
@@ -38,19 +41,22 @@ void sdcLLC::GenerateNewDubins() {
   carPoint.y = carPos.y;
   carPoint.direction = car_->GetDirection().angle;
   printf("initDirection  %f", carPoint.direction);
-
-  dubins_ = new dubins();
   paths_.clear();
 
   std::array<cv::Point, 3> rawWaypoints = dataProcessing::getWaypoints();
   std::array<double, 3> waypointAngles = dataProcessing::getWaypointAngles();
+  Waypoint startPoint = carPoint;
   for (int i = 0; i < 3; i++) {
     Waypoint waypoint;
     waypoint.x = rawWaypoints[i].x;
     waypoint.y = rawWaypoints[i].y;
     waypoint.direction = waypointAngles[i];
 
-    paths_.push_back(dubins_->calculateDubins(waypoint, carPoint));
+    printf("==========\n  ========== waypoint: (%f, %f)",
+      waypoint.x, waypoint.y);
+
+    paths_.push_back(dubins_->calculateDubins(waypoint, startPoint));
+    startPoint = waypoint;
   }
 }
 
@@ -125,20 +131,22 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
 }
 
 // Finds a point along our dubins path at a specified distance
-cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
+cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
+  GenerateNewDubins();
   Path path;
-  if (distance <= paths_[0].length)
+  if (distance <= paths_[0].length) {
     path = paths_[0];
-  else if (distance <= paths_[1].length)
+  } else if (distance <= paths_[0].length + paths_[1].length) {
     path = paths_[1];
-  else
+  } else {
     path = paths_[2];
+    distance = fmin(distance, paths_[0].length + paths_[1].length + paths_[2].length);
+  }
 
-  distance = fmin(distance, path.length);
   math::Vector2d carPos = sdcSensorData::GetPosition();
-    cv::Point3d origin = cv::Point3d(path.origin);
+  cv::Point3d origin = cv::Point3d(path.origin);
 
-    std::vector<Control> cont = dubins_->pathToControls(path);
+  std::vector<Control> cont = dubins_->pathToControls(path);
 
   //cv::Point3d origin (0,0,0);
 

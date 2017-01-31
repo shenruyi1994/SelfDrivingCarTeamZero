@@ -33,6 +33,9 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   currentAvoidanceState_ = notAvoiding;
 
   lastUpdateTime_ = common::Time(0);
+
+  lastX_ = car_->x_;
+  lastY_ = car_->y_;
 }
 
 sdcHLC::~sdcHLC() {
@@ -278,6 +281,9 @@ void sdcHLC::UpdatePathDistance() {
   //       rather than using the exact GPS coordinates
 
   // common::Time dt = car_->model_->GetWorld()->GetSimTime() - lastTime_;
+  if (car_->model_->GetWorld()->GetSimTime().Double() < 0.01) {
+    pathDist_ = 0;
+  }
   // double avgVelocity = (car_->GetSpeed() + lastSpeed_) / 2;
   // lastTime_ = car_->model_->GetWorld()->GetSimTime();
   // lastSpeed_ = car_->GetSpeed();

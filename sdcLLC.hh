@@ -22,7 +22,7 @@ namespace gazebo {
 
     void update();
 
-    cv::Point2d GetDubinsPoint(double distance) const;
+    cv::Point2d GetDubinsPoint(double distance);
     void GenerateNewDubins();
     bool BeyondPath(double distance) const;
 
