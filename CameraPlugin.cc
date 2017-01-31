@@ -63,8 +63,8 @@ void CameraPlugin::OnUpdate()
   // added to check about the viewport
   int viewportWidth = (int)this->parentSensor->GetCamera(0)->GetViewportWidth();
   int viewportHeight = (int)this->parentSensor->GetCamera(0)->GetViewportHeight();
-  cout << "viewportWidth pixels is " << viewportWidth << endl;
-  cout << "viewportHeight pixels is " << viewportHeight << endl;
+  // cout << "viewportWidth pixels is " << viewportWidth << endl;
+  // cout << "viewportHeight pixels is " << viewportHeight << endl;
 
   // math::Vector3 originCoord;
   // math::Vector3 direction;
