@@ -23,7 +23,6 @@ namespace gazebo {
     void update();
 
     cv::Point2d GetDubinsPoint(double distance) const;
-    double GetDubinsLength() const { return path_.length; }
     void GenerateNewDubins();
     bool BeyondPath(double distance) const;
 
@@ -35,7 +34,7 @@ namespace gazebo {
     void StopReverse();
     sdcCar* car_;
     dubins* dubins_;
-    Path path_;
+    std::vector<Path> paths_;
   private:
 
   };

@@ -23,32 +23,35 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
 }
 
 bool sdcLLC::BeyondPath(double distance) const {
-  return distance > path_.length;
+  double totalPathLength = 0;
+  for (Path path : paths_) {
+    totalPathLength += path.length;
+  }
+
+  return distance > totalPathLength;
 }
 
 void sdcLLC::GenerateNewDubins() {
-  std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
-  std::vector<double> waypointAngles = dataProcessing::getWaypointAngles();
-
-  std::vector<Waypoint> testPoints;
-  Waypoint testPoint;
-  testPoint.x = 10;
-  testPoint.y = 15;
-  //testPoint.direction = car_->GetDirection().angle;
-  testPoint.direction = PI/2;
-
-  testPoints.push_back(testPoint);
-
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
   carPoint.x = carPos.x;
   carPoint.y = carPos.y;
   carPoint.direction = car_->GetDirection().angle;
   printf("initDirection  %f", carPoint.direction);
-   //carPoint.direction = -0.785398;
 
   dubins_ = new dubins();
-  path_ = dubins_->calculateDubins(testPoints, carPoint);
+  paths_.clear();
+
+  std::vector<cv::Point> rawWaypoints = dataProcessing::getWaypoints();
+  std::vector<double> waypointAngles = dataProcessing::getWaypointAngles();
+  for (int i = 0; i < rawWaypoints.size(); i++) {
+    Waypoint waypoint;
+    waypoint.x = rawWaypoints[i].x;
+    waypoint.y = rawWaypoints[i].y;
+    waypoint.direction = waypointAngles[i];
+
+    paths_.push_back(dubins_->calculateDubins(waypoint, carPoint));
+  }
 }
 
 /*
@@ -121,13 +124,21 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
   return newControls;
 }
 
-//Function that finds a point along our dubins path at a specified distance
+// Finds a point along our dubins path at a specified distance
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
-  distance = fmin(distance, path_.length);
-  math::Vector2d carPos = sdcSensorData::GetPosition();
-    cv::Point3d origin = cv::Point3d(path_.origin);
+  Path path;
+  if (distance <= paths_[0].length)
+    path = paths_[0];
+  else if (distance <= paths_[1].length)
+    path = paths_[1];
+  else
+    path = paths_[2];
 
-    std::vector<Control> cont = dubins_->pathToControls(path_);
+  distance = fmin(distance, path.length);
+  math::Vector2d carPos = sdcSensorData::GetPosition();
+    cv::Point3d origin = cv::Point3d(path.origin);
+
+    std::vector<Control> cont = dubins_->pathToControls(path);
 
   //cv::Point3d origin (0,0,0);
 
@@ -150,19 +161,19 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) const {
   }
 
   // move target point to the origin of our original dubins path
-  // tempPoint.x = origin.x - path_.origin.x;
-  // tempPoint.y = origin.y - path_.origin.y;
+  // tempPoint.x = origin.x - path.origin.x;
+  // tempPoint.y = origin.y - path.origin.y;
 
   //tempPoint.x = 0;
   //temPoint
 
   //rotate target point around dubins path origin
-  //finalPoint.x = origin.x * cos(path_.rotationAngle) - origin.y * sin(path_.rotationAngle);
-  //finalPoint.y = origin.x * sin(path_.rotationAngle) + origin.y * cos(path_.rotationAngle);
+  //finalPoint.x = origin.x * cos(path.rotationAngle) - origin.y * sin(path.rotationAngle);
+  //finalPoint.y = origin.x * sin(path.rotationAngle) + origin.y * cos(path.rotationAngle);
 
   // scale rotated point back to a place corressponding to its original coords
-  // finalPoint.x += path_.origin.x;
-  // finalPoint.y += path_.origin.y;
+  // finalPoint.x += path.origin.x;
+  // finalPoint.y += path.origin.y;
 
 
   printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
