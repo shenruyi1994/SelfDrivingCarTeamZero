@@ -19,9 +19,9 @@ double dataProcessing::carZ = 0;
 std::vector<double>* dataProcessing::frontLidarData = new std::vector<double>();
 std::vector<double>* dataProcessing::backLidarData = new std::vector<double>();
 std::map<LidarPosition, LidarInfo> dataProcessing::lidarInfo = std::map<LidarPosition, LidarInfo>();
-cv::Point waypoint1;
-cv::Point waypoint2;
-cv::Point waypoint3;
+cv::Point2d waypoint1;
+cv::Point2d waypoint2;
+cv::Point2d waypoint3;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
@@ -78,7 +78,7 @@ std::vector<double>* dataProcessing::GetLidarData(LidarPosition pos) {
 	return NULL;
 }
 
-void dataProcessing::updateWaypoints(std::vector<cv::Point> waypoints) {
+void dataProcessing::updateWaypoints(std::vector<cv::Point2d> waypoints) {
 	waypoint1 = waypoints[0];
 	waypoint2 = waypoints[1];
 	waypoint3 = waypoints[2];
@@ -90,7 +90,7 @@ void dataProcessing::updateWaypointsAngles(std::vector<double> waypointAngles) {
 	waypointAngle3 = waypointAngles[2];
 }
 
-std::array<cv::Point, 3> dataProcessing::getWaypoints() {
+std::array<cv::Point2d, 3> dataProcessing::getWaypoints() {
   return { waypoint1, waypoint2, waypoint3 };
 }
 

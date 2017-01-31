@@ -43,7 +43,7 @@ void sdcLLC::GenerateNewDubins() {
   printf("initDirection  %f", carPoint.direction);
   paths_.clear();
 
-  std::array<cv::Point, 3> rawWaypoints = dataProcessing::getWaypoints();
+  std::array<cv::Point2d, 3> rawWaypoints = dataProcessing::getWaypoints();
   std::array<double, 3> waypointAngles = dataProcessing::getWaypointAngles();
   Waypoint startPoint = carPoint;
   for (int i = 0; i < 3; i++) {
@@ -138,9 +138,13 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
     path = paths_[0];
   } else if (distance <= paths_[0].length + paths_[1].length) {
     path = paths_[1];
+    distance -= paths_[0].length;
   } else {
     path = paths_[2];
-    distance = fmin(distance, paths_[0].length + paths_[1].length + paths_[2].length);
+    distance -= paths_[0].length + paths_[1].length;
+
+    // Here we should probably eventually handle this with slowing down
+    distance = fmin(distance, paths_[2].length);
   }
 
   math::Vector2d carPos = sdcSensorData::GetPosition();

@@ -26,8 +26,9 @@ namespace gazebo
 		public: void OnUpdate();
         public: void ROI(cv::Mat &m, int lo, int hi);
         public: cv::Mat preprocess(cv::Mat m);
-        public: std::vector<cv::Point> vanishPoint(cv::Mat m, int mid);
-				public: double getAngle (int firstX, int firsty, int secondX, int secondY, double previousAngle);
+        public: std::vector<cv::Point2d> vanishPoint(cv::Mat m, int mid);
+				public: double getAngle(double firstX, double firsty,
+																double secondX, double secondY, double previousAngle);
 
 		private: sensors::MultiCameraSensorPtr parentSensor;
 		private: event::ConnectionPtr updateConnection;

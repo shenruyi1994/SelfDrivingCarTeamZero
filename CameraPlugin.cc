@@ -81,8 +81,8 @@ void CameraPlugin::OnUpdate()
 
 
     // Rectangular region of interest
-    int ROI_lo = height/9;
-    int ROI_hi = height/1.02;
+    double ROI_lo = height/9;
+    double ROI_hi = height/1.02;
 
     Mat rect_roi(image.size(), image.type());
     image.copyTo(rect_roi);
@@ -91,10 +91,10 @@ void CameraPlugin::OnUpdate()
 
     // Create sub ROIs
     int n_sub = 3;
-    int interval = (ROI_hi-ROI_lo)/n_sub;
+    double interval = (ROI_hi-ROI_lo)/n_sub;
 
-    int sub_lo = ROI_lo;
-    int sub_hi;
+    double sub_lo = ROI_lo;
+    double sub_hi;
 
     vector<Mat> subs;
     for(int i = 0; i < n_sub; i++)
@@ -119,24 +119,24 @@ void CameraPlugin::OnUpdate()
     }
 
     // For each sub ROI, find vanishing point
-    vector<cv::Point> pts;
-    vector<cv::Point> worldPts;
-    vector<cv::Point> imagePts;
+    vector<cv::Point2d> pts;
+    vector<cv::Point2d> worldPts;
+    vector<cv::Point2d> imagePts;
     vector<double> waypointAngles;
 
     for(size_t i = 0; i < proc_subs.size(); i++)
     {
-        int lo = ROI_lo + i * interval;
-        int hi = lo + interval;
+        double lo = ROI_lo + i * interval;
+        double hi = lo + interval;
 
-        std::vector<cv::Point> pts = vanishPoint(proc_subs[i], lo);
+        std::vector<cv::Point2d> pts = vanishPoint(proc_subs[i], lo);
         worldPts.push_back(pts[0]);
         imagePts.push_back(pts[1]);
 
         circle(image, pts[1], 2, Scalar(255,0,0), 3);
     }
 
-    cv::Point originaPoint = cv::Point(320,400);
+    cv::Point2d originaPoint = cv::Point2d(320,400);
     imagePts.push_back(originaPoint);
 
     double previousAngle = 0;
@@ -157,9 +157,10 @@ void CameraPlugin::OnUpdate()
     waitKey(4);
 }
 
-double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY, double previousAngle)
+double CameraPlugin::getAngle(double firstX, double firstY,
+                              double secondX, double secondY, double previousAngle)
 {
-  double tangValue = double(secondX - firstX) / double(firstY - secondY);
+  double tangValue = (secondX - firstX) / (firstY - secondY);
   double angle = atan(tangValue) - previousAngle;
   return angle;
 }
@@ -180,7 +181,7 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
     }
 }
 
-std::vector<cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
+std::vector<cv::Point2d> CameraPlugin::vanishPoint(Mat mat, int mid)
 {
     vector<Vec2f> lines;
     HoughLines(mat, lines, 1, PI/180, 38, 0, 0);
@@ -249,11 +250,11 @@ std::vector<cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     // cout << "realworld X is" << newX << endl;
     // cout << "realworld Y is " << newY << endl;
 
-    std::vector<cv::Point> pts;
-    pts.push_back(cv::Point(newX,newY));
-    pts.push_back(cv::Point(waypoint_x,mid));
+    std::vector<cv::Point2d> pts;
+    pts.push_back(cv::Point2d(newX,newY));
+    pts.push_back(cv::Point2d(waypoint_x,mid));
     return pts;
-    //return cv::Point(waypoint_x,mid);
+    //return cv::Point2d(waypoint_x,mid);
 }
 
 // Gray -> Gaussian Blur -> Morph Open -> Edge
