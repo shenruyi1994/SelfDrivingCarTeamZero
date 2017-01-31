@@ -19,7 +19,10 @@ void sdcLLC::update() {
 }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-  std::vector<Waypoint> testPoints;
+  // std::vector<Waypoint> testPoints=;
+  std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
+  std::vector<double> waypointAngles dataProcessing::getWaypointAngles();
+  
   Waypoint testPoint;
   testPoint.x = 10;
   testPoint.y = 15;

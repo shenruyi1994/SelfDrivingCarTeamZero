@@ -21,19 +21,19 @@ namespace gazebo
 	{
 		public:
 			static void InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays);
-			static void UpdateCameraData(double newX, double newY);
 			static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
 			static void GetLanePosition();
 			static std::vector<double>* GetLidarData(LidarPosition pos);
 	  	static std::vector<cv::Point> getWaypoints();
-			static void updateWaypoints(cv::Point p1, cv::Point p2, cv::Point p3);
+			static std::vector<double> getWaypointAngles();
+			static void updateWaypoints(std::vector<cv::Point> waypoints);
+			static void updateWaypointsAngles(std::vector<double> waypointAngles);
 			static void UpdateCarPosition(double x, double y, double z);
+
 		private:
 			static double carX;
 			static double carY;
 			static double carZ;
-			static double lanePositionX;
-			static double lanePositionY;
 			static std::vector<double>* frontLidarData;
 			static std::vector<double>* backLidarData;
 			static std::map<LidarPosition, LidarInfo> lidarInfo;

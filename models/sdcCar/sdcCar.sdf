@@ -680,7 +680,7 @@
 
         <!-- CAMERA -->
         <link name='camera::link'>
-              <pose>0.65 0 0.85 0 0.008 0</pose>
+              <pose>1.5 0 1.9 0 0.89 0</pose>
 
               <self_collide>0</self_collide>
               <kinematic>0</kinematic>
@@ -693,7 +693,7 @@
 
                 <camera name="left">
                   <pose>0 0 0 0 0 0</pose>
-                  <horizontal_fov>1.047</horizontal_fov>
+                  <horizontal_fov>2.0944</horizontal_fov>
                   <image>
                     <width>640</width>
                     <height>480</height>
@@ -723,10 +723,11 @@
                   </save>
                 </camera> -->
 
-                <plugin name="sdcCameraSensor" filename="build/libsdcCameraSensor.so" />
+                <plugin name="sdcCameraSensor" filename="build/libcamera.so" />
 
               </sensor>
 
+	      <!--
               <visual name='visual'>
                 <geometry>
                   <box>
@@ -740,8 +741,8 @@
                 <cast_shadows>1</cast_shadows>
                 <transparency>0</transparency>
               </visual>
+	      -->
         </link>
-
 
         <!-- JOINT BETWEEN CAMERA SENSOR AND CAR -->
         <joint name='camera' type='revolute'>
