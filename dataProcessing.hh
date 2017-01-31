@@ -6,6 +6,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/sensors/sensors.hh>
 #include <stdio.h>
+#include <array>
 #include <vector>
 #include <map>
 
@@ -24,8 +25,8 @@ namespace gazebo
 			static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
 			static void GetLanePosition();
 			static std::vector<double>* GetLidarData(LidarPosition pos);
-	  	static std::vector<cv::Point> getWaypoints();
-			static std::vector<double> getWaypointAngles();
+	  	static std::array<cv::Point, 3> getWaypoints();
+			static std::array<double, 3> getWaypointAngles();
 			static void updateWaypoints(std::vector<cv::Point> waypoints);
 			static void updateWaypointsAngles(std::vector<double> waypointAngles);
 			static void UpdateCarPosition(double x, double y, double z);

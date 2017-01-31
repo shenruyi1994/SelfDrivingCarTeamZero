@@ -42,9 +42,9 @@ void sdcLLC::GenerateNewDubins() {
   dubins_ = new dubins();
   paths_.clear();
 
-  std::vector<cv::Point> rawWaypoints = dataProcessing::getWaypoints();
-  std::vector<double> waypointAngles = dataProcessing::getWaypointAngles();
-  for (int i = 0; i < rawWaypoints.size(); i++) {
+  std::array<cv::Point, 3> rawWaypoints = dataProcessing::getWaypoints();
+  std::array<double, 3> waypointAngles = dataProcessing::getWaypointAngles();
+  for (int i = 0; i < 3; i++) {
     Waypoint waypoint;
     waypoint.x = rawWaypoints[i].x;
     waypoint.y = rawWaypoints[i].y;

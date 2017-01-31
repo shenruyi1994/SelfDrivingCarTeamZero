@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <math.h>
+#include <array>
 #include "dataProcessing.hh"
 #include "sdcCar.hh"
 #include <opencv2/opencv.hpp>
@@ -89,20 +90,10 @@ void dataProcessing::updateWaypointsAngles(std::vector<double> waypointAngles) {
 	waypointAngle3 = waypointAngles[2];
 }
 
-std::vector<cv::Point> dataProcessing::getWaypoints() {
-	std::vector<cv::Point> waypoints;
-
-  waypoints.push_back(waypoint1);
-  waypoints.push_back(waypoint2);
-  waypoints.push_back(waypoint3);
-  return waypoints;
+std::array<cv::Point, 3> dataProcessing::getWaypoints() {
+  return { waypoint1, waypoint2, waypoint3 };
 }
 
-std::vector<double> dataProcessing::getWaypointAngles() {
-	std::vector<double> waypointAngles;
-
-  waypointAngles.push_back(waypointAngle1);
-  waypointAngles.push_back(waypointAngle2);
-  waypointAngles.push_back(waypointAngle3);
-  return waypointAngles;
+std::array<double, 3> dataProcessing::getWaypointAngles() {
+	return { waypointAngle1, waypointAngle2, waypointAngle3 };
 }
