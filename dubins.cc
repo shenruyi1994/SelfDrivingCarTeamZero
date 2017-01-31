@@ -31,7 +31,7 @@ Path lsl(double initD, double finalD, double dist) {
   double p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(initD)-sin(finalD)));
   double q = mod(finalD - atan((cos(finalD)-cos(initD))/(dist+sin(initD)-sin(finalD))),2*PI);
 
-  std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
+  // std::cout << "LSL-t is: " << t << ",  " << "LSL-p is: " <<  p << ",  " << "LSL-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -49,7 +49,7 @@ Path rsr(double initD, double finalD, double dist) {
   double p = sqrt(2 + dist*dist - 2*cos(initD - finalD) + 2*dist*(sin(finalD)-sin(initD)));
   double q = mod(mod(-finalD,2*PI) + atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD))),2*PI);
 
-  std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
+  // std::cout << "RSR-t is: " << t << ",  " << "RSR-p is: " <<  p << ",  " << "RSR-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -67,7 +67,7 @@ Path rsl(double initD, double finalD, double dist) {
   double t = mod(initD - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
   double q = mod(mod(finalD, 2*PI) - atan((cos(initD)+cos(finalD))/(dist-sin(initD)-sin(finalD)))+atan(2/p),2*PI);
 
-  std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
+  // std::cout << "RSL-t is: " << t << ",  " << "RSL-p is: " <<  p << ",  " << "RSL-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -85,7 +85,7 @@ Path lsr(double initD, double finalD, double dist) {
   double t = mod(-initD + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
   double q = mod(mod(-finalD, 2*PI) + atan((-cos(initD)-cos(finalD))/(dist+sin(initD)+sin(finalD)))-atan(-2/p),2*PI);
 
-  std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
+  // std::cout << "LSR-t is: " << t << ",  " << "LSR-p is: " <<  p << ",  " << "LSR-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -100,7 +100,7 @@ Path rlr(double initD, double finalD, double dist) {
   double t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
   double q = mod(initD-finalD-t+p,2*PI);
 
-  std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
+  // std::cout << "RLR-t is: " << t << ",  " << "RLR-p is: " <<  p << ",  " << "RLR-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -119,7 +119,7 @@ Path lrl(double initD, double finalD, double dist) {
   double t = mod(-initD-atan((cos(initD)-cos(finalD))/(dist+sin(initD)-sin(finalD)))+(p/2),2*PI);
   double q = mod(mod(finalD,2*PI)-initD+2*p,2*PI);
 
-  std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
+  // std::cout << "LRL-t is: " << t << ",  " << "LRL-p is: " <<  p << ",  " << "LRL-q is: " <<  q << "\n";
 
   struct Path path {};
   path.seg1 = t; path.seg2 = p; path.seg3 = q;
@@ -159,12 +159,12 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
-  printf("\nOur dubins angle is %f\n", dubinsAngle);
+  // printf("\nOur dubins angle is %f\n", dubinsAngle);
 
   // account for negatives
   if (waypoint.x < 0) { dubinsAngle += PI; }
 
-  printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
+  // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
   double initDirection = carPoint.direction-dubinsAngle;
   double finalDirection = waypoint.direction-dubinsAngle;
@@ -196,9 +196,9 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   dubinsPath.origin.z = carPoint.direction;
   dubinsPath.rotationAngle = dubinsAngle;
 
-  printf("The minimum path is of length: %f\n", dubinsPath.length);
-  printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
-    dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
+  // printf("The minimum path is of length: %f\n", dubinsPath.length);
+  // printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
+    // dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
 
   return dubinsPath;
 }
