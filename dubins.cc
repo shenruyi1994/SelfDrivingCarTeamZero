@@ -156,20 +156,18 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
  * Calls functions to calculate each path individually, finds minimum length
  * path assuming unit turning radius,  then scales path to proper length
  */
-Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint) {
-  Waypoint testpoint = waypoints.front();
-
-  double distance = waypoint_distance(testpoint, carpoint)/scalingFactor_;
-  double dubinsAngle = atan((testpoint.y - carpoint.y) / (testpoint.x - carpoint.x));
+Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
+  double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
+  double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
   printf("\nOur dubins angle is %f\n", dubinsAngle);
 
   // account for negatives
-  if (testpoint.x < 0) { dubinsAngle += PI; }
+  if (waypoint.x < 0) { dubinsAngle += PI; }
 
   printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
-  double initDirection = carpoint.direction-dubinsAngle;
-  double finalDirection = testpoint.direction-dubinsAngle;
+  double initDirection = carPoint.direction-dubinsAngle;
+  double finalDirection = waypoint.direction-dubinsAngle;
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
@@ -193,9 +191,9 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
 
   // Rescales path assuming unit turning radius to proper length
   // dubinsPath *= scalingFactor_;
-  dubinsPath.origin.x = carpoint.x;
-  dubinsPath.origin.y = carpoint.y;
-  dubinsPath.origin.z = carpoint.direction;
+  dubinsPath.origin.x = carPoint.x;
+  dubinsPath.origin.y = carPoint.y;
+  dubinsPath.origin.z = carPoint.direction;
   dubinsPath.rotationAngle = dubinsAngle;
 
   printf("The minimum path is of length: %f\n", dubinsPath.length);
