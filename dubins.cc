@@ -173,7 +173,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-  //  distance = distance / scalingFactor_;
+  // distance = distance / scalingFactor_;
 
   // Calculate each type of dubins path individually
   Path paths[4] = {
@@ -192,7 +192,7 @@ Path dubins::calculateDubins(std::vector<Waypoint> waypoints, Waypoint carpoint)
   }
 
   // Rescales path assuming unit turning radius to proper length
-  dubinsPath *= scalingFactor_;
+  // dubinsPath *= scalingFactor_;
   dubinsPath.origin.x = carpoint.x;
   dubinsPath.origin.y = carpoint.y;
   dubinsPath.origin.z = carpoint.direction;

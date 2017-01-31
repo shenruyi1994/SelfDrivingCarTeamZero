@@ -251,11 +251,23 @@ void sdcHLC::FollowWaypoints() {
   car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }
 
+/*
+ * Calculate the turning angle necessary to reach the provided point, and then
+ * set the wheel angle correctly. Based on the tuned pure pursuit algorithm
+ * found in this paper:
+ * http://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf
+ */
 void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
-  sdcAngle directionAngle = CalculateTurningAngle(target);
+  sdcAngle alpha = car_->AngleToTarget(target);
+  double numerator = 2 * WHEEL_BASE * sin(alpha.angle);
+  double denominator = lookaheadScalor_ * car_->GetSpeed();
+
+  sdcAngle directionAngle = atan2(numerator, denominator);
 
   // We can't set the wheel angle directly, so instead we set the steering
-  car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
+  printf("    +++++ directionAngle: %f\n", directionAngle.angle);
+  printf("    +++++ steeringAmount: %f\n", directionAngle.angle * car_->steeringRatio_);
+  // car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
 }
 
 /*
@@ -319,19 +331,6 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
 double sdcHLC::ScaledLookaheadDistance() const {
   double tempDist = lookaheadScalor_ * car_->GetSpeed();
   return fmin(fmax(tempDist, lookaheadMin_), lookaheadMax_);
-}
-
-/*
- * Calculate the turning angle necessary to reach the provided point. Based on
- * the tuned pure pursuit algorithm found in this paper:
- * http://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf
- */
-sdcAngle sdcHLC::CalculateTurningAngle(const math::Vector2d& point) const {
-  sdcAngle alpha = car_->AngleToTarget(point);
-  double numerator = 2 * WHEEL_BASE * sin(alpha.angle);
-  double denominator = lookaheadScalor_ * car_->GetSpeed();
-
-  return atan2(numerator, denominator);
 }
 
 /*
