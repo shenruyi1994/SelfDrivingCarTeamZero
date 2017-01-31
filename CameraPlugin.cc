@@ -37,47 +37,47 @@ sensors::MultiCameraSensorPtr parentSensor;
 
 void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 {
-	this->parentSensor =
-		boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
+  this->parentSensor =
+    boost::dynamic_pointer_cast<sensors::MultiCameraSensor>(_sensor);
 
-	if(!this->parentSensor)
-	{
-		gzerr << "Couldn't find a camera\n";
-		return;
-	}
+  if(!this->parentSensor)
+  {
+    gzerr << "Couldn't find a camera\n";
+    return;
+  }
 
-	// connect to the sensor update event.
-	this->updateConnection = this->parentSensor->ConnectUpdated(boost::bind(&CameraPlugin::OnUpdate, this));
+  // connect to the sensor update event.
+  this->updateConnection = this->parentSensor->ConnectUpdated(boost::bind(&CameraPlugin::OnUpdate, this));
 
-	// make sure the parent sensor is active
-	this->parentSensor->SetActive(true);
+  // make sure the parent sensor is active
+  this->parentSensor->SetActive(true);
 }
 
 void CameraPlugin::OnUpdate()
 {
-	// get image width, height and data
-	int width = (int)this->parentSensor->GetImageWidth(0);
-	int height = (int)this->parentSensor->GetImageHeight(0);
-	const unsigned char* imageData = this->parentSensor->GetImageData(0);
+  // get image width, height and data
+  int width = (int)this->parentSensor->GetImageWidth(0);
+  int height = (int)this->parentSensor->GetImageHeight(0);
+  const unsigned char* imageData = this->parentSensor->GetImageData(0);
 
-	// added to check about the viewport
-	int viewportWidth = (int)this->parentSensor->GetCamera(0)->GetViewportWidth();
-	int viewportHeight = (int)this->parentSensor->GetCamera(0)->GetViewportHeight();
-	cout << "viewportWidth pixels is " << viewportWidth << endl;
-	cout << "viewportHeight pixels is " << viewportHeight << endl;
+  // added to check about the viewport
+  int viewportWidth = (int)this->parentSensor->GetCamera(0)->GetViewportWidth();
+  int viewportHeight = (int)this->parentSensor->GetCamera(0)->GetViewportHeight();
+  cout << "viewportWidth pixels is " << viewportWidth << endl;
+  cout << "viewportHeight pixels is " << viewportHeight << endl;
 
-	// math::Vector3 originCoord;
-	// math::Vector3 direction;
-	// this->parentSensor->GetCamera(0)->GetCameraToViewportRay(200, 200, originCoord, direction);
-	//
-	// cout << "viewportWidth originCoord is " << originCoord << endl;
-	// cout << "viewportWidth direction is " << direction << endl;
-	// double directionx = direction[0];
-	// double directiony = direction[1];
-	// double directionz = direction[2];
+  // math::Vector3 originCoord;
+  // math::Vector3 direction;
+  // this->parentSensor->GetCamera(0)->GetCameraToViewportRay(200, 200, originCoord, direction);
+  //
+  // // cout << "viewportWidth originCoord is " << originCoord << endl;
+  // // cout << "viewportWidth direction is " << direction << endl;
+  // double directionx = direction[0];
+  // double directiony = direction[1];
+  // double directionz = direction[2];
 
-	// create image matrix
-	Mat image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
+  // create image matrix
+  Mat image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
 
 
     // Rectangular region of interest
@@ -120,9 +120,9 @@ void CameraPlugin::OnUpdate()
 
     // For each sub ROI, find vanishing point
     vector<cv::Point> pts;
-		vector<cv::Point> worldPts;
-		vector<cv::Point> imagePts;
-		vector<double> waypointAngles;
+    vector<cv::Point> worldPts;
+    vector<cv::Point> imagePts;
+    vector<double> waypointAngles;
 
     for(size_t i = 0; i < proc_subs.size(); i++)
     {
@@ -144,7 +144,7 @@ void CameraPlugin::OnUpdate()
     {
         double angle = getAngle(imagePts[i].x, imagePts[i].y, imagePts[i-1].x, imagePts[i-1].y, previousAngle);
         previousAngle +=angle;
-        std::cout << "angle " << i <<" is " << angle << '\n';
+        // std::cout << "angle " << i <<" is " << angle << '\n';
         waypointAngles.push_back(angle);
     }
 
@@ -159,9 +159,9 @@ void CameraPlugin::OnUpdate()
 
 double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY, double previousAngle)
 {
-	double tangValue = double(secondX - firstX) / double(firstY - secondY);
-	double angle = atan(tangValue) - previousAngle;
-	return angle;
+  double tangValue = double(secondX - firstX) / double(firstY - secondY);
+  double angle = atan(tangValue) - previousAngle;
+  return angle;
 }
 
 void CameraPlugin::ROI(Mat &mat, int lo, int hi)
@@ -238,16 +238,16 @@ std::vector<cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, mid, originCoord, direction);
 
-    cout << "viewportWidth originCoord is " << originCoord << endl;
-    cout << "viewportWidth direction is " << direction << endl;
+    // cout << "viewportWidth originCoord is " << originCoord << endl;
+    // cout << "viewportWidth direction is " << direction << endl;
 
-		// get the realworld coordinates
+    // get the realworld coordinates
     double prop = - double(originCoord[2])/direction[2];
     double newX = prop * direction[0] + originCoord[0];
     double newY = prop * direction[1] + originCoord[1];
 
-    cout << "realworld X is" << newX << endl;
-    cout << "realworld Y is " << newY << endl;
+    // cout << "realworld X is" << newX << endl;
+    // cout << "realworld Y is " << newY << endl;
 
     std::vector<cv::Point> pts;
     pts.push_back(cv::Point(newX,newY));
