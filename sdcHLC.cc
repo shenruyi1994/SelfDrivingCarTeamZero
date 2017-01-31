@@ -291,10 +291,15 @@ void sdcHLC::UpdatePathDistance() {
 /*
  * Returns the point along the dubins path that the car should be following.
  */
-cv::Point2d sdcHLC::FindDubinsTargetPoint() const {
+cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
   printf("pathdist_: %f\n", pathDist_);
   double lookaheadDistance = ScaledLookaheadDistance();
+
+  if (llc_->BeyondPath(pathDist_ + lookaheadDistance)) {
+    llc_->GenerateNewDubins();
+    pathDist_ = 0;
+  }
   cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_ + lookaheadDistance);
 
   // double distanceToDubins = cv_distance(location, tempTarget);

@@ -19,16 +19,25 @@ void sdcLLC::update() {
 }
 
 sdcLLC::sdcLLC(sdcCar* car): car_(car) {
-  // std::vector<Waypoint> testPoints=;
+  GenerateNewDubins();
+}
+
+bool sdcLLC::BeyondPath(double distance) const {
+  return distance > path_.length;
+}
+
+void sdcLLC::GenerateNewDubins() {
   std::vector<cv::Point> waypoints = dataProcessing::getWaypoints();
   std::vector<double> waypointAngles = dataProcessing::getWaypointAngles();
-  
+
   std::vector<Waypoint> testPoints;
   Waypoint testPoint;
   testPoint.x = 10;
   testPoint.y = 15;
   //testPoint.direction = car_->GetDirection().angle;
   testPoint.direction = PI/2;
+
+  testPoints.push_back(testPoint);
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
@@ -39,12 +48,8 @@ sdcLLC::sdcLLC(sdcCar* car): car_(car) {
    //carPoint.direction = -0.785398;
 
   dubins_ = new dubins();
-
-  testPoints.push_back(testPoint);
   path_ = dubins_->calculateDubins(testPoints, carPoint);
 }
-
-
 
 /*
  * Speeds up the car by the given amount (in m/s) at the given rate

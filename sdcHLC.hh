@@ -46,7 +46,7 @@ namespace gazebo {
     // Dubins path following functions
     void FollowWaypoints();
     void UpdatePathDistance();
-    cv::Point2d FindDubinsTargetPoint() const;
+    cv::Point2d FindDubinsTargetPoint();
     sdcAngle CalculateTurningAngle(const math::Vector2d& point) const;
     double ScaledLookaheadDistance() const;
     void AngleWheelsTowardsTarget(const math::Vector2d& target);

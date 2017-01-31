@@ -16,11 +16,16 @@ namespace gazebo {
   class GAZEBO_VISIBLE sdcLLC {
   public:
     sdcLLC(sdcCar* car);
-    ~sdcLLC() {}
+    ~sdcLLC() {
+      delete dubins_;
+    }
 
     void update();
 
     cv::Point2d GetDubinsPoint(double distance) const;
+    double GetDubinsLength() const { return path_.length; }
+    void GenerateNewDubins();
+    bool BeyondPath(double distance) const;
 
     // Control methods
     void Accelerate(double amt = 1, double rate = 1.0);
