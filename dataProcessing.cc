@@ -29,65 +29,65 @@ double waypointAngle3;
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
-	lidarInfo[pos] = LidarInfo(minAngle, resolution, maxRange, numRays);
+  lidarInfo[pos] = LidarInfo(minAngle, resolution, maxRange, numRays);
 }
 
 // Update the absolute coordinates of the car in the world
 void dataProcessing::UpdateCarPosition(double x, double y, double z) {
-	carX = x;
-	carY = y;
-	carZ = z;
+  carX = x;
+  carY = y;
+  carZ = z;
 }
 
 // Update lidar data
 void dataProcessing::UpdateLidarData(LidarPosition pos, std::vector<double>* newData) {
-	switch (pos) {
-		case NEWFRONT:
-			frontLidarData = newData;
-		break;
+  switch (pos) {
+    case NEWFRONT:
+      frontLidarData = newData;
+    break;
 
-		case NEWBACK:
-			backLidarData = newData;
-		break;
+    case NEWBACK:
+      backLidarData = newData;
+    break;
 
-		default:
-		break;
-	}
-	//std::cout << "Update(Lidar)\n";	// check for update
+    default:
+    break;
+  }
+  //std::cout << "Update(Lidar)\n";  // check for update
 }
 
 void dataProcessing::GetLanePosition() {
-	std::cout << "Get lane position data\n";
+  std::cout << "Get lane position data\n";
 }
 
 // Retrieve lidar data
 std::vector<double>* dataProcessing::GetLidarData(LidarPosition pos) {
-	std::cout << "Get lidar data\n";
-	switch (pos) {
-		case NEWFRONT:
-			return frontLidarData;
-		break;
+  std::cout << "Get lidar data\n";
+  switch (pos) {
+    case NEWFRONT:
+      return frontLidarData;
+    break;
 
-		case NEWBACK:
-			return backLidarData;
-		break;
+    case NEWBACK:
+      return backLidarData;
+    break;
 
-		default:
-		break;
-	}
-	return NULL;
+    default:
+    break;
+  }
+  return NULL;
 }
 
 void dataProcessing::updateWaypoints(std::vector<cv::Point2d> waypoints) {
-	waypoint1 = waypoints[0];
-	waypoint2 = waypoints[1];
-	waypoint3 = waypoints[2];
+  waypoint1 = waypoints[0];
+  waypoint2 = waypoints[1];
+  waypoint3 = waypoints[2];
 }
 
 void dataProcessing::updateWaypointsAngles(std::vector<double> waypointAngles) {
-	waypointAngle1 = waypointAngles[0];
-	waypointAngle2 = waypointAngles[1];
-	waypointAngle3 = waypointAngles[2];
+  waypointAngle1 = waypointAngles[0];
+  waypointAngle2 = waypointAngles[1];
+  waypointAngle3 = waypointAngles[2];
 }
 
 std::array<cv::Point2d, 3> dataProcessing::getWaypoints() {
@@ -95,5 +95,5 @@ std::array<cv::Point2d, 3> dataProcessing::getWaypoints() {
 }
 
 std::array<double, 3> dataProcessing::getWaypointAngles() {
-	return { waypointAngle1, waypointAngle2, waypointAngle3 };
+  return { waypointAngle1, waypointAngle2, waypointAngle3 };
 }

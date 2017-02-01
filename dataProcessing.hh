@@ -17,27 +17,27 @@
 
 namespace gazebo
 {
-	enum LidarPosition {NEWFRONT, NEWBACK};
-	class dataProcessing
-	{
-		public:
-			static void InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays);
-			static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
-			static void GetLanePosition();
-			static std::vector<double>* GetLidarData(LidarPosition pos);
-	  	static std::array<cv::Point2d, 3> getWaypoints();
-			static std::array<double, 3> getWaypointAngles();
-			static void updateWaypoints(std::vector<cv::Point2d> waypoints);
-			static void updateWaypointsAngles(std::vector<double> waypointAngles);
-			static void UpdateCarPosition(double x, double y, double z);
+  enum LidarPosition {NEWFRONT, NEWBACK};
+  class dataProcessing
+  {
+    public:
+      static void InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays);
+      static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
+      static void GetLanePosition();
+      static std::vector<double>* GetLidarData(LidarPosition pos);
+      static std::array<cv::Point2d, 3> getWaypoints();
+      static std::array<double, 3> getWaypointAngles();
+      static void updateWaypoints(std::vector<cv::Point2d> waypoints);
+      static void updateWaypointsAngles(std::vector<double> waypointAngles);
+      static void UpdateCarPosition(double x, double y, double z);
 
-		private:
-			static double carX;
-			static double carY;
-			static double carZ;
-			static std::vector<double>* frontLidarData;
-			static std::vector<double>* backLidarData;
-			static std::map<LidarPosition, LidarInfo> lidarInfo;
-	};
+    private:
+      static double carX;
+      static double carY;
+      static double carZ;
+      static std::vector<double>* frontLidarData;
+      static std::vector<double>* backLidarData;
+      static std::map<LidarPosition, LidarInfo> lidarInfo;
+  };
 }
 #endif
