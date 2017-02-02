@@ -6,7 +6,7 @@
         <link name="chassis">
             <pose>0 0 0.35 0 0 0</pose>
             <inertial>
-                <mass>100.0</mass>
+                <mass>1400.0</mass>
             </inertial>
             <collision name="chassis_collision">
                 <geometry>
@@ -26,7 +26,7 @@
         <!-- FRONT LEFT WHEEL -->
         <link name="front_left_wheel">
             <inertial>
-                <mass>10.0</mass>
+                <mass>35.0</mass>
             </inertial>
             <pose>0.8 0.5 0.3 0 1.57079 1.57079</pose>
             <collision name="front_left_wheel_collision">
@@ -54,7 +54,7 @@
         <link name="front_right_wheel">
             <pose>0.8 -0.5 0.3 0 1.57079 -1.57079</pose>
             <inertial>
-                <mass>10.0</mass>
+                <mass>35.0</mass>
             </inertial>
             <collision name="front_right_wheel_collision">
                 <geometry>
@@ -81,7 +81,7 @@
         <link name="back_right_wheel">
             <pose>-0.87 -0.5 0.3 0 1.57079 -1.57079</pose>
             <inertial>
-                <mass>10.0</mass>
+                <mass>35.0</mass>
             </inertial>
             <collision name="back_right_wheel_collision">
                 <geometry>
@@ -108,7 +108,7 @@
         <link name="back_left_wheel">
             <pose>-0.87 0.5 0.3 0 1.57079 1.57079</pose>
             <inertial>
-                <mass>10.0</mass>
+                <mass>35.0</mass>
             </inertial>
             <collision name="back_left_wheel_collision">
                 <geometry>
