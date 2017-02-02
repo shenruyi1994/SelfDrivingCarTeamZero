@@ -483,7 +483,7 @@ sdcCar::sdcCar() {
   maxCarReverseSpeed_ = -10;
 
   // Set starting speed parameters
-  targetSpeed_ = 6;
+  targetSpeed_ = 1;
 
   // Set starting turning parameters
   steeringAmount_ = 0.0;
