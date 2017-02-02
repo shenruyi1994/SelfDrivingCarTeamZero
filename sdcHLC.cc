@@ -247,9 +247,9 @@ void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(10);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
-  printf("  speed: %f\n", car_->GetSpeed());
-  printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  //printf("  speed: %f\n", car_->GetSpeed());
+  //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
   car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }
@@ -268,8 +268,8 @@ void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
   sdcAngle directionAngle = atan2(numerator, denominator);
 
   // We can't set the wheel angle directly, so instead we set the steering
-  printf("    +++++ directionAngle: %f\n", directionAngle.angle);
-  printf("    +++++ steeringAmount: %f\n", directionAngle.angle * car_->steeringRatio_);
+  //printf("    +++++ directionAngle: %f\n", directionAngle.angle);
+  //printf("    +++++ steeringAmount: %f\n", directionAngle.angle * car_->steeringRatio_);
   // car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
 }
 
@@ -299,7 +299,7 @@ void sdcHLC::UpdatePathDistance() {
  */
 cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
-  printf("pathdist_: %f\n", pathDist_);
+  //printf("pathdist_: %f\n", pathDist_);
   double lookaheadDistance = ScaledLookaheadDistance();
 
   if (llc_->BeyondPath(pathDist_ + lookaheadDistance)) {
