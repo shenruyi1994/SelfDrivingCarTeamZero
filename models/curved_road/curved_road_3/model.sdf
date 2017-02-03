@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="curved_road_3">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>20 20 .1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>20 20 .1</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://curved_road_3/materials/scripts</uri>
+            <uri>model://curved_road_3/materials/textures</uri>
+            <name>curved_road_3</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

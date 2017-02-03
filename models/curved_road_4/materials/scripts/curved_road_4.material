@@ -1,0 +1,15 @@
+material curved_road_4
+{
+	receive_shadows off
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture curve.png
+				scale 1 1
+			}
+		}
+	}
+}
