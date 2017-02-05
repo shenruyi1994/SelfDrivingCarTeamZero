@@ -254,8 +254,8 @@
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
-            <lower>0.00827606</lower>
-            <upper>0.00827606</upper>
+            <lower>0.026738</lower>
+            <upper>0.026738</upper>
           </limit>
           <use_parent_model_frame>1</use_parent_model_frame>
           <dynamics>
@@ -290,8 +290,8 @@
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
-            <lower>0.00827606</lower>
-            <upper>0.00827606</upper>
+            <lower>0.026738</lower>
+            <upper>0.026738</upper>
           </limit>
           <use_parent_model_frame>1</use_parent_model_frame>
           <dynamics>
@@ -1236,98 +1236,98 @@
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
     <state world_name='default'>
-      <sim_time>536 214000000</sim_time>
-      <real_time>0 387056000</real_time>
-      <wall_time>1486333590 951616000</wall_time>
-      <iterations>317</iterations>
+      <sim_time>776 372000000</sim_time>
+      <real_time>0 0</real_time>
+      <wall_time>1486337298 934302000</wall_time>
+      <iterations>0</iterations>
       <model name='Stop Sign'>
-        <pose frame=''>20 -8 -437.104 0 0 -2.14872</pose>
+        <pose frame=''>20 -8 -283050 0 0 -2.14872</pose>
         <link name='link'>
-          <pose frame=''>20 -8 -437.104 0 0 -2.14872</pose>
-          <velocity>0 0 -3.1066 0 -0 0</velocity>
-          <acceleration>0 0 -9.8 0 -0 0</acceleration>
-          <wrench>0 0 -9.8 0 -0 0</wrench>
+          <pose frame=''>20 -8 -283050 0 0 -2.14872</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='car'>
-        <pose frame=''>15.8875 -1.56256 0.041055 -0.045265 0.003371 0.240709</pose>
+        <pose frame=''>10.5569 -3.28653 -0.01241 -0.001525 -0.001681 0.351644</pose>
         <link name='back_left_wheel'>
-          <pose frame=''>14.917 -1.27096 0.354486 1.95984 1.45122 -2.5142</pose>
-          <velocity>-0.138093 -0.050898 0.007278 0.242307 -0.657714 -0.001566</velocity>
-          <acceleration>-0.846572 1.45273 -0.386882 2.46999 0.719807 -2.51791</acceleration>
-          <wrench>-16.9314 29.0547 -7.73765 0 -0 0</wrench>
+          <pose frame=''>9.56733 -3.11654 0.285364 -2.30535 1.56853 -0.382913</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_lidar'>
-          <pose frame=''>14.7191 -1.83073 0.444688 -0.045265 0.003371 0.240708</pose>
-          <velocity>-0.161859 -0.064535 -0.000764 0.145154 0.021092 -0.001149</velocity>
-          <acceleration>-1.07706 1.49595 -0.170733 -1.54021 -1.12442 -0.241592</acceleration>
-          <wrench>-1.07706 1.49595 -0.170733 0 -0 0</wrench>
+          <pose frame=''>9.42954 -3.69952 0.385571 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_right_wheel'>
-          <pose frame=''>15.1564 -2.24092 0.398046 -1.19683 1.4466 -2.52938</pose>
-          <velocity>-0.144425 -0.051661 0.017298 0.246016 -0.688051 -0.002425</velocity>
-          <acceleration>-0.719963 0.414377 32.6067 2.99551 -0.917328 -1.29154</acceleration>
-          <wrench>-14.3993 8.28755 652.133 0 -0 0</wrench>
+          <pose frame=''>9.91177 -4.05534 0.286889 0.832105 1.56852 -0.387042</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='camera::link'>
-          <pose frame=''>17.33 -1.11996 1.93404 -0.072141 0.892102 0.184669</pose>
-          <velocity>-0.130675 -0.278885 -0.000134 0.14531 0.021128 -0.001256</velocity>
-          <acceleration>-2.88051 14.3033 -0.159296 -1.58089 -1.10515 -0.397278</acceleration>
-          <wrench>-2.88051 14.3033 -0.159296 0 -0 0</wrench>
+          <pose frame=''>11.9612 -2.76825 1.89011 -0.002418 0.888317 0.349765</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='chassis'>
-          <pose frame=''>15.8849 -1.5469 0.390695 -0.045265 0.003371 0.240709</pose>
-          <velocity>-0.163142 -0.05568 -0.000323 0.145291 0.021117 -0.001167</velocity>
-          <acceleration>-1.07073 1.40992 -0.179466 -1.77481 -1.14081 -0.51351</acceleration>
-          <wrench>-214.147 281.983 -35.8933 0 -0 0</wrench>
+          <pose frame=''>10.5562 -3.28623 0.337589 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_left_wheel'>
-          <pose frame=''>16.5387 -0.872795 0.350306 1.97143 1.45446 -2.51082</pose>
-          <velocity>-0.136979 -0.049557 0.007302 0.23595 -0.652576 -0.002264</velocity>
-          <acceleration>-1.1497 1.60493 -0.403382 -1.342 0.700451 -0.592676</acceleration>
-          <wrench>-11.497 16.0493 -4.03382 0 -0 0</wrench>
+          <pose frame=''>11.1351 -2.54132 0.288172 -2.30535 1.56853 -0.382913</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_lidar'>
-          <pose frame=''>16.8557 -1.30628 0.437272 -0.045265 0.003371 0.240708</pose>
-          <velocity>-0.162276 -0.061649 2.6e-05 0.145132 0.021096 -0.001117</velocity>
-          <acceleration>-1.15777 1.9939 -0.183355 -1.53188 -1.11411 -0.169852</acceleration>
-          <wrench>-1.15777 1.9939 -0.183355 0 -0 0</wrench>
+          <pose frame=''>11.4949 -2.94175 0.389271 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_right_wheel'>
-          <pose frame=''>16.778 -1.84277 0.393866 -1.18662 1.44969 -2.52738</pose>
-          <velocity>-0.142564 -0.050341 0.017306 0.239712 -0.679219 -0.002536</velocity>
-          <acceleration>-0.908307 1.75553 43.588 -2.79016 -0.561968 -1.35649</acceleration>
-          <wrench>-18.1661 35.1105 871.76 0 -0 0</wrench>
+          <pose frame=''>11.4796 -3.48013 0.289697 0.832105 1.56852 -0.387042</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='gps'>
-          <pose frame=''>15.88 -1.51782 1.04002 -0.045265 0.003371 0.240709</pose>
-          <velocity>-0.149415 -0.150124 -0.00048 0.145292 0.021126 -0.001151</velocity>
-          <acceleration>-1.80571 6.63645 -0.186553 -1.72706 -1.11958 -0.487911</acceleration>
-          <wrench>-1.80571 6.63645 -0.186553 0 -0 0</wrench>
+          <pose frame=''>10.5548 -3.28568 0.987588 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_left_sensors'>
-          <pose frame=''>15.7534 -1.01109 0.415756 -0.045265 0.003371 0.240708</pose>
-          <velocity>-0.162767 -0.062911 -0.081061 0.145235 0.021113 -0.001179</velocity>
-          <acceleration>-1.32769 1.78569 4.19777 -1.58204 -1.11218 -0.352813</acceleration>
-          <wrench>-1.32769 1.78569 4.19777 0 -0 0</wrench>
+          <pose frame=''>10.3667 -2.76985 0.38675 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_right_sensors'>
-          <pose frame=''>16.0156 -2.07824 0.46553 -0.045265 0.003371 0.240708</pose>
-          <velocity>-0.161402 -0.062982 0.080379 0.14521 0.021106 -0.001196</velocity>
-          <acceleration>-0.937255 1.82763 -4.54444 -1.5606 -1.11686 -0.329577</acceleration>
-          <wrench>-0.937255 1.82763 -4.54444 0 -0 0</wrench>
+          <pose frame=''>10.7455 -3.80254 0.388428 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='top_laser'>
-          <pose frame=''>15.8792 -1.51334 1.13992 -0.045265 0.003371 0.240708</pose>
-          <velocity>-0.147319 -0.164583 -0.000504 0.145179 0.021096 -0.001207</velocity>
-          <acceleration>-1.91198 7.29243 -0.187869 -1.54646 -1.12366 -0.310577</acceleration>
-          <wrench>-1.91198 7.29243 -0.187869 0 -0 0</wrench>
+          <pose frame=''>10.5546 -3.28559 1.08759 -0.001525 -0.001681 0.351644</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='curved_road_11'>
-        <pose frame=''>5.54024 47.5148 0 0 0 -2.52155</pose>
+        <pose frame=''>18.7472 50.8415 0 0 0 -3.14117</pose>
         <link name='link'>
-          <pose frame=''>5.54024 47.5148 0 0 0 -2.52155</pose>
+          <pose frame=''>18.7472 50.8415 0 0 0 -3.14117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1378,15 +1378,6 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='curved_road_17'>
-        <pose frame=''>10.2362 13.0191 0 0 0 -0.205111</pose>
-        <link name='link'>
-          <pose frame=''>10.2362 13.0191 0 0 0 -0.205111</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='curved_road_17_clone_0'>
         <pose frame=''>35.9015 8.73735 0 0 -0 0.488477</pose>
         <link name='link'>
@@ -1415,36 +1406,36 @@
         </link>
       </model>
       <model name='curved_road_17_clone_0_clone_clone_clone'>
-        <pose frame=''>32.4055 47.5505 0 0 -0 2.1635</pose>
+        <pose frame=''>32.5171 46.8371 0 0 -0 2.1635</pose>
         <link name='link'>
-          <pose frame=''>32.091 47.4303 0 0 -0 2.1635</pose>
+          <pose frame=''>32.2026 46.7169 0 0 -0 2.1635</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='curved_road_17_clone_0_clone_clone_clone_clone'>
-        <pose frame=''>27.1912 52.4538 0 0 -0 2.63163</pose>
+        <pose frame=''>26.1209 50.6808 0 0 -0 2.68728</pose>
         <link name='link'>
-          <pose frame=''>26.9648 52.2047 0 0 -0 2.63163</pose>
+          <pose frame=''>25.9087 50.4195 0 0 -0 2.68728</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone'>
-        <pose frame=''>18.8669 53.4174 0 0 -0 3.03807</pose>
+      <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone_0'>
+        <pose frame=''>10.7817 -3.13515 0 0 0 -2.86109</pose>
         <link name='link'>
-          <pose frame=''>18.7574 53.0991 0 0 -0 3.03807</pose>
+          <pose frame=''>10.7995 -3.47132 0 0 0 -2.86109</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='curved_road_18'>
-        <pose frame=''>10.7985 0.866953 0 0 0 -0.221952</pose>
+        <pose frame=''>0.997816 -6.03922 0 0 -0 0.127642</pose>
         <link name='link'>
-          <pose frame=''>10.7985 0.866953 0 0 0 -0.221952</pose>
+          <pose frame=''>0.997816 -6.03922 0 0 -0 0.127642</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1460,9 +1451,9 @@
         </link>
       </model>
       <model name='curved_road_4_0'>
-        <pose frame=''>23.4134 3.31385 0 0 -0 0.228046</pose>
+        <pose frame=''>23.7018 3.42856 0 0 -0 0.228046</pose>
         <link name='link'>
-          <pose frame=''>23.4134 3.31385 0 0 -0 0.228046</pose>
+          <pose frame=''>23.7018 3.42856 0 0 -0 0.228046</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1478,9 +1469,9 @@
         </link>
       </model>
       <model name='curved_road_4_0_clone_clone'>
-        <pose frame=''>16.064 51.483 0 0 0 -3.02045</pose>
+        <pose frame=''>-3.00893 37.1453 0 0 0 -2.34553</pose>
         <link name='link'>
-          <pose frame=''>16.064 51.483 0 0 0 -3.02045</pose>
+          <pose frame=''>-3.00893 37.1453 0 0 0 -2.34553</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1496,9 +1487,9 @@
         </link>
       </model>
       <model name='curved_road_4_3'>
-        <pose frame=''>-4.93572 37.7831 0 0 -0 0.839057</pose>
+        <pose frame=''>6.9955 45.7392 0 0 0 -2.70604</pose>
         <link name='link'>
-          <pose frame=''>-4.93572 37.7831 0 0 -0 0.839057</pose>
+          <pose frame=''>6.9955 45.7392 0 0 0 -2.70604</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1516,7 +1507,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>4.1546 5.02201 116.721 0.510854 1.56725 -2.62856</pose>
+        <pose frame=''>-1.35754 2.89545 33.005 0.003867 1.56725 -2.62857</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -1568,7 +1559,7 @@
         <collision name='collision'>
           <geometry>
             <box>
-              <size>10 10 0.05</size>
+              <size>10 10.6041 0.05</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -1586,7 +1577,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>10 10 0.05</size>
+              <size>10 10.6041 0.05</size>
             </box>
           </geometry>
           <material>
@@ -1609,7 +1600,7 @@
         <collision name='collision'>
           <geometry>
             <box>
-              <size>20 10 0.1</size>
+              <size>15.8005 10.7254 0.1</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -1627,7 +1618,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>20 10 0.1</size>
+              <size>15.8005 10.7254 0.1</size>
             </box>
           </geometry>
           <material>
@@ -1889,47 +1880,6 @@
         <gravity>1</gravity>
       </link>
       <pose frame=''>0 -5.52576 0 0 -0 0</pose>
-    </model>
-    <model name='curved_road_17'>
-      <static>1</static>
-      <link name='link'>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>10 10 0.05</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <box>
-              <size>10 10 0.05</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>models/curved_road/materials/scripts</uri>
-              <uri>models/curved_road/materials/textures</uri>
-              <name>curved_road</name>
-            </script>
-          </material>
-        </visual>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <gravity>1</gravity>
-      </link>
-      <pose frame=''>4 -5 0 0 -0 0</pose>
     </model>
     <model name='curved_road_18'>
       <static>1</static>
@@ -2499,7 +2449,48 @@
       <allow_auto_disable>1</allow_auto_disable>
       <pose frame=''>28 56 0 0 -0 2.1744</pose>
     </model>
-    <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone'>
+    <model name='curved_road_4_0_clone_clone'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>20 10.8996 0.1</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>20 10.8996 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>models/curved_road_4/materials/scripts</uri>
+              <uri>models/curved_road_4/materials/textures</uri>
+              <name>curved_road_4</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose frame=''>14.4395 56 0 0 -0 1.77119</pose>
+    </model>
+    <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone_0'>
       <link name='link'>
         <pose frame=''>0.075991 0.327947 0 0 -0 0</pose>
         <self_collide>0</self_collide>
@@ -2508,7 +2499,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>10 10.7927 0.05</size>
+              <size>16.1156 10.1103 0.05</size>
             </box>
           </geometry>
           <material>
@@ -2532,7 +2523,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
-              <size>10 10.7927 0.05</size>
+              <size>16.1156 10.1103 0.05</size>
             </box>
           </geometry>
           <surface>
@@ -2576,48 +2567,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>19 56 0 0 -0 2.61348</pose>
-    </model>
-    <model name='curved_road_4_0_clone_clone'>
-      <static>1</static>
-      <link name='link'>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>20 10.8996 0.1</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <box>
-              <size>20 10.8996 0.1</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>models/curved_road_4/materials/scripts</uri>
-              <uri>models/curved_road_4/materials/textures</uri>
-              <name>curved_road_4</name>
-            </script>
-          </material>
-        </visual>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <gravity>1</gravity>
-      </link>
-      <pose frame=''>14.4395 56 0 0 -0 1.77119</pose>
+      <pose frame=''>10.7817 -3.13515 0 0 -0 -2.86109</pose>
     </model>
   </world>
 </sdf>
