@@ -27,7 +27,7 @@ double waypointAngle2;
 double waypointAngle3;
 std::vector<sdcVisibleObject> objectList;
 bool areNearby = false;
-cv::vec3f objectColor(255, 255, 255);
+float brightness_ = 255;
 
 
 
@@ -113,8 +113,7 @@ bool AreNearbyObjects() {
   return areNearby;
 }
 ObjectType GetObjectType(sdcVisibleObject obj) {
-  float avgColor = getObjectColor(obj);
-  switch (avgColor > 100) {
+  switch (brightness_ > 100) {
     case true:
       return CAR;
     case false:
@@ -125,8 +124,8 @@ ObjectType GetObjectType(sdcVisibleObject obj) {
   return NULL;
 }
 
-void UpdateColor(cv::vec3f color) {
-  objectColor = color;
+void UpdateBrightness(float brightness) {
+  brightness_ = brightness;
 }
 
 void UpdateAreNearbyObjects(bool areNearby) {

@@ -269,7 +269,7 @@ Mat CameraPlugin::preprocess(Mat mat)
 }
 
 ///////////// obstacle code ////////////////
-float CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
+void CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
     std::vector<Point2f> points_in_roi;
     // TODO: This is maybe incorrect, angle code needs debugging
     // Assuming this is in pixels, print to check what output is
@@ -306,12 +306,12 @@ float CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
     float red_avg = red_sum/3;
 
     Vec3f avg_color(blue_avg, green_avg, red_avg);
-
     std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
 
 
     //-- Show detected keypoints
     //imshow("Average sample locations", image); 
+
     float brightness =  (blue_avg + green_avg + red_avg)/3;
-    return brightness;
+    dataProcessing::UpdateBrightness(brightness);
 }

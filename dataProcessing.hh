@@ -33,7 +33,8 @@ namespace gazebo
       static void UpdateCarPosition(double x, double y, double z);
       static std::vector<sdcVisibleObject> GetNearbyObjects();
       static bool AreNearbyObjects();
-      static ObjectType GetObjectType();
+      static ObjectType GetObjectType(sdcVisibleObject obj);
+      static void UpdateBrightness(float brightness);
       static void UpdateAreNearbyObjects(bool areNearby);
       static void UpdateObjectList(sdcVisibleObject obj);
 
