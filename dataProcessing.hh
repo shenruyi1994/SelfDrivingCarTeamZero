@@ -18,6 +18,7 @@
 namespace gazebo
 {
   enum LidarPosition {NEWFRONT, NEWBACK};
+
   class dataProcessing
   {
     public:
@@ -30,6 +31,11 @@ namespace gazebo
       static void updateWaypoints(std::vector<cv::Point2d> waypoints);
       static void updateWaypointsAngles(std::vector<double> waypointAngles);
       static void UpdateCarPosition(double x, double y, double z);
+      static std::vector<sdcVisibleObject> GetNearbyObjects();
+      static bool AreNearbyObjects();
+      static ObjectType GetObjectType();
+      static void UpdateAreNearbyObjects(bool areNearby);
+      static void UpdateObjectList(sdcVisibleObject obj);
 
     private:
       static double carX;

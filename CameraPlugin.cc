@@ -34,6 +34,7 @@ GZ_REGISTER_SENSOR_PLUGIN(CameraPlugin)
 event::ConnectionPtr updateConnection;
 sensors::MultiCameraSensorPtr parentSensor;
 
+Mat image;
 
 void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 {
@@ -77,7 +78,7 @@ void CameraPlugin::OnUpdate()
   // double directionz = direction[2];
 
   // create image matrix
-  Mat image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
+  image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
 
 
     // Rectangular region of interest
@@ -265,4 +266,52 @@ Mat CameraPlugin::preprocess(Mat mat)
     Canny(gray, canny, 128, 255);
 
     return canny;
+}
+
+///////////// obstacle code ////////////////
+float CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
+    std::vector<Point2f> points_in_roi;
+    // TODO: This is maybe incorrect, angle code needs debugging
+    // Assuming this is in pixels, print to check what output is
+    left_edge = visibleObject.getLeftRay().GetLongitudinalDist();
+    right_edge = visibleObject.getRightRay().GetLongitudinalDist();
+
+    //callibrate this based on final camera position/angle
+    int height = (int)this->parentSensor->GetImageHeight(0)/2;
+
+    for (int i = left_edge; i < right_edge; i = i + (right_edge/5)) {
+        cv::Point2f point_to_avg(i, height/2);
+        points_in_roi.push_back(point_to_avg);
+    }
+
+    int avgThickness = 2;
+    int avgLineType = 8;
+    int avgPointThickness = -1;
+    int avgPointRadius = 6;
+    float red_sum, green_sum, blue_sum = 0;
+
+    //get average color of points
+    for (int i = 0; i < points_in_roi.size() - 1; i++) {
+        Vec3b intensity = image.at<cv::Vec3b>(points_in_roi[i].x, 200);
+        blue_sum += intensity.val[0];
+        green_sum += intensity.val[1];
+        red_sum += intensity.val[2];
+        circle(image, points_in_roi[i], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
+    }
+
+    circle(image, points_in_roi[points_in_roi.size() - 1], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
+
+    float blue_avg = blue_sum/3;
+    float green_avg = green_sum/3;
+    float red_avg = red_sum/3;
+
+    Vec3f avg_color(blue_avg, green_avg, red_avg);
+
+    std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
+
+
+    //-- Show detected keypoints
+    //imshow("Average sample locations", image); 
+    float brightness =  (blue_avg + green_avg + red_avg)/3;
+    return brightness;
 }

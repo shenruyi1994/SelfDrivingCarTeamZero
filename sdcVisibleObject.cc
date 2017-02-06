@@ -239,3 +239,11 @@ math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left,
   // double y = (left.GetLongitudinalDist() + right.GetLongitudinalDist()) / 2.;
   return math::Vector2d(x, y);
 }
+
+int getLeftRay() {
+  return left;
+}
+
+int getRightRay() {
+  return right;
+}

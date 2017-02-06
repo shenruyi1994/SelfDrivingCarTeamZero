@@ -25,6 +25,10 @@ cv::Point2d waypoint3;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
+std::vector<sdcVisibleObject> objectList;
+bool areNearby = false;
+cv::vec3f objectColor(255, 255, 255);
+
 
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
@@ -96,4 +100,39 @@ std::array<cv::Point2d, 3> dataProcessing::getWaypoints() {
 
 std::array<double, 3> dataProcessing::getWaypointAngles() {
   return { waypointAngle1, waypointAngle2, waypointAngle3 };
+}
+
+std::vector<sdcVisibleObject> GetNearbyObjects() {
+  if (areNearby) {
+    return objectList;
+  }
+  return NULL;
+}
+
+bool AreNearbyObjects() {
+  return areNearby;
+}
+ObjectType GetObjectType(sdcVisibleObject obj) {
+  float avgColor = getObjectColor(obj);
+  switch (avgColor > 100) {
+    case true:
+      return CAR;
+    case false:
+      return NON_CAR;
+    default:
+    break;
+  }
+  return NULL;
+}
+
+void UpdateColor(cv::vec3f color) {
+  objectColor = color;
+}
+
+void UpdateAreNearbyObjects(bool areNearby) {
+  areNearby = areNearby;
+}
+
+void UpdateObjectList(sdcVisibleObject obj){
+  objectList = obj;
 }
