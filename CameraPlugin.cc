@@ -107,7 +107,7 @@ void CameraPlugin::OnUpdate()
         sub_lo = sub_hi;
     }
 
-     imshow("sub0", subs[0]);
+    imshow("sub0", subs[0]);
     imshow("sub1", subs[1]);
     imshow("sub2", subs[2]);
     // Process each sub ROI

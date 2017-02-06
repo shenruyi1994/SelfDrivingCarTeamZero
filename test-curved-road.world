@@ -254,8 +254,8 @@
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
-            <lower>0.026738</lower>
-            <upper>0.026738</upper>
+            <lower>0.0203718</lower>
+            <upper>0.0203718</upper>
           </limit>
           <use_parent_model_frame>1</use_parent_model_frame>
           <dynamics>
@@ -290,8 +290,8 @@
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
-            <lower>0.026738</lower>
-            <upper>0.026738</upper>
+            <lower>0.0203718</lower>
+            <upper>0.0203718</upper>
           </limit>
           <use_parent_model_frame>1</use_parent_model_frame>
           <dynamics>
@@ -1236,89 +1236,89 @@
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
     <state world_name='default'>
-      <sim_time>776 372000000</sim_time>
+      <sim_time>2 935000000</sim_time>
       <real_time>0 0</real_time>
-      <wall_time>1486337298 934302000</wall_time>
+      <wall_time>1486425052 503021000</wall_time>
       <iterations>0</iterations>
       <model name='Stop Sign'>
-        <pose frame=''>20 -8 -283050 0 0 -2.14872</pose>
+        <pose frame=''>20 -8 -288555 0 0 -2.14872</pose>
         <link name='link'>
-          <pose frame=''>20 -8 -283050 0 0 -2.14872</pose>
+          <pose frame=''>20 -8 -288555 0 0 -2.14872</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='car'>
-        <pose frame=''>10.5569 -3.28653 -0.01241 -0.001525 -0.001681 0.351644</pose>
+        <pose frame=''>17.832 -1.18282 0.091305 -0.037379 -0.009963 0.259117</pose>
         <link name='back_left_wheel'>
-          <pose frame=''>9.56733 -3.11654 0.285364 -2.30535 1.56853 -0.382913</pose>
+          <pose frame=''>16.8575 -0.912633 0.363729 -2.88099 1.53212 -1.05127</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_lidar'>
-          <pose frame=''>9.42954 -3.69952 0.385571 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>16.6645 -1.47684 0.479051 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_right_wheel'>
-          <pose frame=''>9.91177 -4.05534 0.286889 0.832105 1.56852 -0.387042</pose>
+          <pose frame=''>17.1132 -1.87867 0.401098 0.260502 1.53211 -1.05136</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='camera::link'>
-          <pose frame=''>11.9612 -2.76825 1.89011 -0.002418 0.888317 0.349765</pose>
+          <pose frame=''>19.2454 -0.734708 2.00483 -0.058625 0.879186 0.213569</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='chassis'>
-          <pose frame=''>10.5562 -3.28623 0.337589 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>17.8253 -1.17107 0.441044 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_left_wheel'>
-          <pose frame=''>11.1351 -2.54132 0.288172 -2.30535 1.56853 -0.382913</pose>
+          <pose frame=''>18.4717 -0.484755 0.380367 -2.88099 1.53212 -1.05127</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_lidar'>
-          <pose frame=''>11.4949 -2.94175 0.389271 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>18.7909 -0.913173 0.500969 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_right_wheel'>
-          <pose frame=''>11.4796 -3.48013 0.289697 0.832105 1.56852 -0.387042</pose>
+          <pose frame=''>18.7274 -1.45079 0.417735 0.260502 1.53211 -1.05136</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='gps'>
-          <pose frame=''>10.5548 -3.28568 0.987588 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>17.8128 -1.14925 1.09056 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_left_sensors'>
-          <pose frame=''>10.3667 -2.76985 0.38675 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>17.6837 -0.638067 0.470454 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_right_sensors'>
-          <pose frame=''>10.7455 -3.80254 0.388428 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>17.965 -1.70071 0.511559 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='top_laser'>
-          <pose frame=''>10.5546 -3.28559 1.08759 -0.001525 -0.001681 0.351644</pose>
+          <pose frame=''>17.8109 -1.14589 1.19048 -0.037379 -0.009963 0.259117</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1405,28 +1405,28 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='curved_road_17_clone_0_clone_clone_clone'>
-        <pose frame=''>32.5171 46.8371 0 0 -0 2.1635</pose>
+      <model name='curved_road_17_clone_0_clone_clone_clone_clone_0'>
+        <pose frame=''>26.144 50.6937 0 0 -0 2.68728</pose>
         <link name='link'>
-          <pose frame=''>32.2026 46.7169 0 0 -0 2.1635</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='curved_road_17_clone_0_clone_clone_clone_clone'>
-        <pose frame=''>26.1209 50.6808 0 0 -0 2.68728</pose>
-        <link name='link'>
-          <pose frame=''>25.9087 50.4195 0 0 -0 2.68728</pose>
+          <pose frame=''>25.8435 49.7762 0 0 -0 2.71666</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone_0'>
-        <pose frame=''>10.7817 -3.13515 0 0 0 -2.86109</pose>
+        <pose frame=''>9.37076 -3.50725 0 0 0 -2.86109</pose>
         <link name='link'>
-          <pose frame=''>10.7995 -3.47132 0 0 0 -2.86109</pose>
+          <pose frame=''>9.38853 -3.84342 0 0 0 -2.86109</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone_1'>
+        <pose frame=''>32.696 46.9778 0 0 -0 2.18362</pose>
+        <link name='link'>
+          <pose frame=''>32.2216 46.4345 0 0 -0 2.18362</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1507,7 +1507,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>-1.35754 2.89545 33.005 0.003867 1.56725 -2.62857</pose>
+        <pose frame=''>17.435 0.150166 7.97101 0.00387 1.56725 -2.62857</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -2291,164 +2291,6 @@
       </link>
       <pose frame=''>38 36 0 0 -0 0.228046</pose>
     </model>
-    <model name='curved_road_17_clone_0_clone_clone_clone'>
-      <link name='link'>
-        <pose frame=''>0.075991 0.327947 0 0 -0 0</pose>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <box>
-              <size>10 10.7927 0.05</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>models/curved_road/materials/scripts</uri>
-              <uri>models/curved_road/materials/textures</uri>
-              <name>curved_road</name>
-            </script>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <specular>0 0 0 1</specular>
-            <emissive>0 0 0 1</emissive>
-            <shader type='pixel'/>
-          </material>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <transparency>0</transparency>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>10 10.7927 0.05</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-                <max_vel>0.01</max_vel>
-                <min_depth>0</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-        <gravity>1</gravity>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>37 51 0 0 -0 1.44671</pose>
-    </model>
-    <model name='curved_road_17_clone_0_clone_clone_clone_clone'>
-      <link name='link'>
-        <pose frame=''>0.075991 0.327947 0 0 -0 0</pose>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <visual name='visual'>
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <box>
-              <size>10 10.7927 0.05</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>models/curved_road/materials/scripts</uri>
-              <uri>models/curved_road/materials/textures</uri>
-              <name>curved_road</name>
-            </script>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <specular>0 0 0 1</specular>
-            <emissive>0 0 0 1</emissive>
-            <shader type='pixel'/>
-          </material>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <transparency>0</transparency>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>10 10.7927 0.05</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-                <max_vel>0.01</max_vel>
-                <min_depth>0</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+13</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-        <gravity>1</gravity>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>28 56 0 0 -0 2.1744</pose>
-    </model>
     <model name='curved_road_4_0_clone_clone'>
       <static>1</static>
       <link name='link'>
@@ -2568,6 +2410,164 @@
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
       <pose frame=''>10.7817 -3.13515 0 0 -0 -2.86109</pose>
+    </model>
+    <model name='curved_road_17_clone_0_clone_clone_clone_clone_clone_1'>
+      <link name='link'>
+        <pose frame=''>-0.171601 0.700606 0 0 -0 0</pose>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>10 11.6156 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>models/curved_road/materials/scripts</uri>
+              <uri>models/curved_road/materials/textures</uri>
+              <name>curved_road</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0 0 0 1</specular>
+            <emissive>0 0 0 1</emissive>
+            <shader type='pixel'/>
+          </material>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <transparency>0</transparency>
+        </visual>
+        <collision name='collision'>
+          <laser_retro>0</laser_retro>
+          <max_contacts>10</max_contacts>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>10 11.6156 0.05</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+                <fdir1>0 0 0</fdir1>
+                <slip1>0</slip1>
+                <slip2>0</slip2>
+              </ode>
+            </friction>
+            <bounce>
+              <restitution_coefficient>0</restitution_coefficient>
+              <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+              <collide_without_contact>0</collide_without_contact>
+              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+              <collide_bitmask>1</collide_bitmask>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0</min_depth>
+              </ode>
+              <bullet>
+                <split_impulse>1</split_impulse>
+                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+              </bullet>
+            </contact>
+          </surface>
+        </collision>
+        <gravity>1</gravity>
+      </link>
+      <static>1</static>
+      <allow_auto_disable>1</allow_auto_disable>
+      <pose frame=''>32.696 46.9778 0 0 -0 2.18362</pose>
+    </model>
+    <model name='curved_road_17_clone_0_clone_clone_clone_clone_0'>
+      <link name='link'>
+        <pose frame=''>-0.132602 0.956284 0 0 -0 0.02938</pose>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>10 11.7569 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>models/curved_road/materials/scripts</uri>
+              <uri>models/curved_road/materials/textures</uri>
+              <name>curved_road</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0 0 0 1</specular>
+            <emissive>0 0 0 1</emissive>
+            <shader type='pixel'/>
+          </material>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <transparency>0</transparency>
+        </visual>
+        <collision name='collision'>
+          <laser_retro>0</laser_retro>
+          <max_contacts>10</max_contacts>
+          <pose frame=''>0 0 0 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>10 11.7569 0.05</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+                <fdir1>0 0 0</fdir1>
+                <slip1>0</slip1>
+                <slip2>0</slip2>
+              </ode>
+            </friction>
+            <bounce>
+              <restitution_coefficient>0</restitution_coefficient>
+              <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+              <collide_without_contact>0</collide_without_contact>
+              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+              <collide_bitmask>1</collide_bitmask>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0</min_depth>
+              </ode>
+              <bullet>
+                <split_impulse>1</split_impulse>
+                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+              </bullet>
+            </contact>
+          </surface>
+        </collision>
+        <gravity>1</gravity>
+      </link>
+      <static>1</static>
+      <allow_auto_disable>1</allow_auto_disable>
+      <pose frame=''>26.144 50.6937 0 0 -0 2.68728</pose>
     </model>
   </world>
 </sdf>
