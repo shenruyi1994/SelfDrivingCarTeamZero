@@ -20,7 +20,9 @@ const double PI = 3.14159265359;
 /*
  * Default constructor that leaves all parameters at default values
  */
-sdcVisibleObject::sdcVisibleObject() {}
+sdcVisibleObject::sdcVisibleObject() {
+  brightness_ = 0;
+}
 
 /*
  * Visible objects are obstructions detected by Lidar rays. They have estimated

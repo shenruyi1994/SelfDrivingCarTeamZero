@@ -1,15 +1,19 @@
-#include <boost/bind.hpp>
-#include <gazebo/gazebo.hh>
-#include <gazebo/physics/physics.hh>
-#include <gazebo/sensors/sensors.hh>
+#include "sdcVisibleObject.hh"
+
 #include <stdio.h>
 #include <vector>
 #include <map>
 #include <math.h>
 #include <array>
+
+#include <boost/bind.hpp>
+#include <gazebo/gazebo.hh>
+#include <gazebo/physics/physics.hh>
+#include <gazebo/sensors/sensors.hh>
+#include <opencv2/opencv.hpp>
+
 #include "dataProcessing.hh"
 #include "sdcCar.hh"
-#include <opencv2/opencv.hpp>
 
 using namespace gazebo;
 
@@ -27,7 +31,7 @@ double waypointAngle2;
 double waypointAngle3;
 bool areNearby = false;
 float brightness_ = 255;
-std::vector<sdcVisibleObject> dataProcessing::objectList_ = std::vector<sdcVisibleObject>();
+std::vector<sdcVisibleObject*> dataProcessing::objectList_ = std::vector<sdcVisibleObject*>();
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
@@ -100,7 +104,7 @@ std::array<double, 3> dataProcessing::getWaypointAngles() {
   return { waypointAngle1, waypointAngle2, waypointAngle3 };
 }
 
-std::vector<sdcVisibleObject> dataProcessing::GetNearbyObjects() {
+std::vector<sdcVisibleObject*> dataProcessing::GetNearbyObjects() {
   return objectList_;
 }
 
@@ -108,18 +112,14 @@ bool dataProcessing::AreNearbyObjects() {
   return areNearby;
 }
 
-ObjectType dataProcessing::GetObjectType(sdcVisibleObject obj) {
-  return brightness_ > 100 ? CAR_TYPE : NON_CAR_TYPE;
-}
-
-void dataProcessing::UpdateBrightness(float brightness) {
-  brightness_ = brightness;
+ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
+  return obj->GetBrightness() > 100 ? CAR_TYPE : NON_CAR_TYPE;
 }
 
 void dataProcessing::UpdateAreNearbyObjects(bool areNearby) {
   areNearby = areNearby;
 }
 
-void dataProcessing::UpdateObjectList(std::vector<sdcVisibleObject> objs){
+void dataProcessing::UpdateObjectList(std::vector<sdcVisibleObject*> objs){
   objectList_ = objs;
 }
