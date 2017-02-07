@@ -108,10 +108,10 @@ void CameraPlugin::OnUpdate()
         sub_lo = sub_hi;
     }
 
-    //imshow("sub0", subs[0]);
-    //imshow("sub1", subs[1]);
-    //imshow("sub2", subs[2]);
-    // Process each sub ROI
+    imshow("sub0", subs[0]);
+    imshow("sub1", subs[1]);
+    imshow("sub2", subs[2]);
+    //  Process each sub ROI
     vector<Mat> proc_subs;
     for(size_t i = 0; i < subs.size(); i++)
     {
@@ -151,9 +151,9 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
-    //imshow("img", image);
-    //imwrite("waypoints.png", image);
-    //waitKey(4);
+    imshow("img", image);
+    imwrite("waypoints.png", image);
+    waitKey(4);
 
     for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
       updateObjectBrightness(obj);
@@ -313,7 +313,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
 
     //-- Show detected keypoints
-    //imshow("Average sample locations", image);
+    imshow("Average sample locations", image);
 
     visibleObject->SetBrightness((blue_avg + green_avg + red_avg)/3);
 }
