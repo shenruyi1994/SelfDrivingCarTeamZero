@@ -107,9 +107,9 @@ void CameraPlugin::OnUpdate()
         sub_lo = sub_hi;
     }
 
-    imshow("sub0", subs[0]);
-    imshow("sub1", subs[1]);
-    imshow("sub2", subs[2]);
+    //imshow("sub0", subs[0]);
+    //imshow("sub1", subs[1]);
+    //imshow("sub2", subs[2]);
     // Process each sub ROI
     vector<Mat> proc_subs;
     for(size_t i = 0; i < subs.size(); i++)
@@ -150,9 +150,9 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
-    imshow("img", image);
-    imwrite("waypoints.png", image);
-    waitKey(4);
+    //imshow("img", image);
+    //imwrite("waypoints.png", image);
+    //waitKey(4);
 }
 
 double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY,
