@@ -240,10 +240,10 @@ math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left,
   return math::Vector2d(x, y);
 }
 
-int getLeftRay() {
-  return left;
+sdcLidarRay sdcVisibleObject::getLeftRay() const {
+  return left_;
 }
 
-int getRightRay() {
-  return right;
+sdcLidarRay sdcVisibleObject::getRightRay() const {
+  return right_;
 }

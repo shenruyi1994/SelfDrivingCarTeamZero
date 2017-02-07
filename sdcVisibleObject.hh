@@ -34,6 +34,9 @@ namespace gazebo {
     math::Vector2d FitLineToPoints(std::vector<math::Vector2d> points,
                                    math::Vector2d newPoint) const;
 
+    sdcLidarRay getLeftRay() const;
+    sdcLidarRay getRightRay() const;
+
   private:
     sdcLidarRay left_;
     sdcLidarRay right_;
