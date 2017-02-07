@@ -126,7 +126,6 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
     newControls.push_back(temp);
     //printf("\n new control(dist, type), %f, %d", temp.distance, temp.direction);
   }
-  //std::cout << std::endl;
   return newControls;
 }
 

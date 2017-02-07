@@ -7,6 +7,7 @@
 #include "gazebo/transport/transport.hh"
 
 #include "globals.hh"
+#include "dataProcessing.hh"
 #include "sdcBoundingBox.hh"
 #include "sdcBoundingCircle.hh"
 #include "sdcCar.hh"
@@ -59,6 +60,10 @@ void sdcHLC::Drive() {
     return;
   } else {
     lastUpdateTime_ = common::Time(curTime);
+  }
+
+  if (dataProcessing::AreNearbyObjects()) {
+    printf("Watch out for the objects!\n");
   }
 
   FollowWaypoints();

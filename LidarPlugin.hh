@@ -20,11 +20,11 @@ namespace gazebo
 
 		public: virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/);
 		private: void OnUpdate();
-		
+
 		private: sensors::RaySensorPtr parentSensor;
 		private: event::ConnectionPtr updateConnection;
 
-		public: void getVisibleObjects(std::vector<double>* objectRays) {
+		public: void getVisibleObjects(std::vector<double>* objectRays);
 
 	};
 }

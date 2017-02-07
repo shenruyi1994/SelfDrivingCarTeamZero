@@ -1,15 +1,19 @@
-#include <boost/bind.hpp>
-#include <gazebo/gazebo.hh>
-#include <gazebo/physics/physics.hh>
-#include <gazebo/sensors/sensors.hh>
+#include "sdcVisibleObject.hh"
+
 #include <stdio.h>
 #include <vector>
 #include <map>
 #include <math.h>
 #include <array>
+
+#include <boost/bind.hpp>
+#include <gazebo/gazebo.hh>
+#include <gazebo/physics/physics.hh>
+#include <gazebo/sensors/sensors.hh>
+#include <opencv2/opencv.hpp>
+
 #include "dataProcessing.hh"
 #include "sdcCar.hh"
-#include <opencv2/opencv.hpp>
 
 using namespace gazebo;
 
@@ -25,11 +29,9 @@ cv::Point2d waypoint3;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
-std::vector<sdcVisibleObject> objectList;
 bool areNearby = false;
 float brightness_ = 255;
-
-
+std::vector<sdcVisibleObject*> dataProcessing::objectList_ = std::vector<sdcVisibleObject*>();
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
@@ -102,36 +104,22 @@ std::array<double, 3> dataProcessing::getWaypointAngles() {
   return { waypointAngle1, waypointAngle2, waypointAngle3 };
 }
 
-std::vector<sdcVisibleObject> GetNearbyObjects() {
-  if (areNearby) {
-    return objectList;
-  }
-  return NULL;
+std::vector<sdcVisibleObject*> dataProcessing::GetNearbyObjects() {
+  return objectList_;
 }
 
-bool AreNearbyObjects() {
+bool dataProcessing::AreNearbyObjects() {
   return areNearby;
 }
-ObjectType GetObjectType(sdcVisibleObject obj) {
-  switch (brightness_ > 100) {
-    case true:
-      return CAR;
-    case false:
-      return NON_CAR;
-    default:
-    break;
-  }
-  return NULL;
+
+ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
+  return obj->GetBrightness() > 100 ? CAR_TYPE : NON_CAR_TYPE;
 }
 
-void UpdateBrightness(float brightness) {
-  brightness_ = brightness;
-}
-
-void UpdateAreNearbyObjects(bool areNearby) {
+void dataProcessing::UpdateAreNearbyObjects(bool areNearby) {
   areNearby = areNearby;
 }
 
-void UpdateObjectList(sdcVisibleObject obj){
-  objectList = obj;
+void dataProcessing::UpdateObjectList(std::vector<sdcVisibleObject*> objs){
+  objectList_ = objs;
 }
