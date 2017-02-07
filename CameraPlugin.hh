@@ -26,7 +26,7 @@ namespace gazebo
     public: void OnUpdate();
     public: void ROI(cv::Mat &m, int lo, int hi);
     public: cv::Mat preprocess(cv::Mat m);
-    public: float getObjectBrightness(sdcVisibleObject visibleObject);
+    public: void updateObjectBrightness(sdcVisibleObject* visibleObject);
     public: std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
     public: double getAngle(int firstX, int firsty, int secondX, int secondY,
                             double previousAngle);

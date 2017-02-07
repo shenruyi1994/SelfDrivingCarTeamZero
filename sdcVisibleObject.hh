@@ -24,6 +24,8 @@ namespace gazebo {
     double GetEstimatedSpeed() const;
     double GetEstimatedYSpeed() const;
     double GetEstimatedXSpeed() const;
+    double GetBrightness() const { return brightness_; }
+    void SetBrightness(double brightness) { brightness_ = brightness; }
 
     sdcLidarRay Left() const { return left_; };
     sdcLidarRay Right() const { return right_; };
@@ -33,6 +35,9 @@ namespace gazebo {
 
     math::Vector2d FitLineToPoints(std::vector<math::Vector2d> points,
                                    math::Vector2d newPoint) const;
+
+    sdcLidarRay getLeftRay() const;
+    sdcLidarRay getRightRay() const;
 
   private:
     sdcLidarRay left_;
@@ -44,6 +49,7 @@ namespace gazebo {
     static const double UNCERTAINTY_RATIO;
 
     math::Vector2d centerpoint_;
+    double brightness_;
 
     std::vector<math::Vector2d> prevPoints_;
 

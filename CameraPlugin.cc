@@ -154,6 +154,10 @@ void CameraPlugin::OnUpdate()
     //imshow("img", image);
     //imwrite("waypoints.png", image);
     //waitKey(4);
+
+    for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
+      updateObjectBrightness(obj);
+    }
 }
 
 double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY,
@@ -269,12 +273,12 @@ Mat CameraPlugin::preprocess(Mat mat)
 }
 
 ///////////// obstacle code ////////////////
-void CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
+void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::vector<Point2f> points_in_roi;
     // TODO: This is maybe incorrect, angle code needs debugging
     // Assuming this is in pixels, print to check what output is
-    left_edge = visibleObject.getLeftRay().GetLongitudinalDist();
-    right_edge = visibleObject.getRightRay().GetLongitudinalDist();
+    double left_edge = visibleObject->getLeftRay().GetLongitudinalDist();
+    double right_edge = visibleObject->getRightRay().GetLongitudinalDist();
 
     //callibrate this based on final camera position/angle
     int height = (int)this->parentSensor->GetImageHeight(0)/2;
@@ -308,10 +312,8 @@ void CameraPlugin::getObjectBrightness(sdcVisibleObject visibleObject) {
     Vec3f avg_color(blue_avg, green_avg, red_avg);
     std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
 
-
     //-- Show detected keypoints
-    //imshow("Average sample locations", image); 
+    //imshow("Average sample locations", image);
 
-    float brightness =  (blue_avg + green_avg + red_avg)/3;
-    dataProcessing::UpdateBrightness(brightness);
+    visibleObject->SetBrightness((blue_avg + green_avg + red_avg)/3);
 }
