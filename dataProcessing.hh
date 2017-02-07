@@ -11,9 +11,12 @@
 #include <map>
 
 #include <opencv2/opencv.hpp>
-#include "LidarInfo.hh"
-#include "Waypoints.hh"
 
+#include "globals.hh"
+#include "LidarInfo.hh"
+#include "sdcLidarRay.hh"
+#include "sdcVisibleObject.hh"
+#include "Waypoints.hh"
 
 namespace gazebo
 {
@@ -36,7 +39,7 @@ namespace gazebo
       static ObjectType GetObjectType(sdcVisibleObject obj);
       static void UpdateBrightness(float brightness);
       static void UpdateAreNearbyObjects(bool areNearby);
-      static void UpdateObjectList(sdcVisibleObject obj);
+      static void UpdateObjectList(std::vector<sdcVisibleObject> objs);
 
     private:
       static double carX;
@@ -45,6 +48,7 @@ namespace gazebo
       static std::vector<double>* frontLidarData;
       static std::vector<double>* backLidarData;
       static std::map<LidarPosition, LidarInfo> lidarInfo;
+      static std::vector<sdcVisibleObject> objectList_;
   };
 }
 #endif
