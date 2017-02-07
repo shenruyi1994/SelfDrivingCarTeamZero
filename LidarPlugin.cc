@@ -13,6 +13,8 @@ using namespace gazebo;
 // register this plugin
 GZ_REGISTER_SENSOR_PLUGIN(LidarPlugin)
 
+double lidarAngle;
+
 // lidar
 LidarPlugin::LidarPlugin() : SensorPlugin()
 {
@@ -40,6 +42,8 @@ void LidarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
     // Make sure the parent sensor is active.
     this->parentSensor->SetActive(true);
 
+    lidarAngle = GetAngleResolution();
+
 	dataProcessing::InitLidar(NEWFRONT, this->parentSensor->AngleMin().Radian(), this->parentSensor->GetAngleResolution(), this->parentSensor->GetRangeMax(), this->parentSensor->GetRayCount());
 }
 
@@ -48,9 +52,10 @@ void LidarPlugin::OnUpdate()
 	// vector that holds distance for each beam
 	std::vector<double>* rays = new std::vector<double>();
 	for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); i++){
-	  	rays->push_back(this->parentSensor->GetRange(i));				
+	  	rays->push_back(this->parentSensor->GetRange(i));
 	}
-	
+	getVisibleObjects(rays);				
+
 	dataProcessing::UpdateLidarData(NEWFRONT, rays);
 	
 	// For each beam, print out the distance to an object.
@@ -61,4 +66,59 @@ void LidarPlugin::OnUpdate()
 	{
 		std:: cout << "(" << i << ") ";
 	}*/
+}
+
+// I'll go over this with Ruyi and once we decide if it looks okay we'll
+// move it to the main repo and have it return an sdcVisibleObject
+void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
+	sdcLidarRay left, right = new sdcLidarRay();
+	int leftIndex, rightIndex = -1;
+	double minDistance = INT_MAX;
+	bool objectIsDetected = false;
+	std::vector<sdcVisibleObject> objectList;
+
+	for (int i = 0; i < objectRays->size(); i++) {
+		if (!isinf(objectRays->at(i)) && objecinays->at(i) < minDistance) {
+			minDistance = objectRays->at(i);
+		}
+		if (!objectIsDetected && !isinf(objectRays->at(i))) {
+			objectIsDetected = true;
+			leftIndex = i;
+		} else if (objectIsDetected && isinf(objectRays->at(i))) {
+			objectIsDetected = false;
+			rightIndex = i-1;
+
+			sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
+			sdcAngle rightAngle = sdcAngle((rightIndex-320)*lidarAngle);
+
+			sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
+			sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
+
+			sdcVisibleObject object = new sdcVisibleObject(left, right, minDistance);
+			objectList.push_back(object);
+			minDistance = INT_MAX;
+		}
+		
+	}
+	//right side edge case
+	if (objectIsDetected) {
+		sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
+		sdcAngle rightAngle = sdcAngle(lidarAngle*320);
+
+		sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
+		sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
+
+		sdcVisibleObject object = new sdcVisibleObject(left, right, minDistance);
+		objectList.push_back(object);
+	}
+
+	// checking if there are obstacles detected
+	if (objectList){
+		dataProcessing::UpdateAreNearbyObjects(false);
+	} 
+	else
+	{
+		dataProcessing::UpdateAreNearbyObjects(true);
+	}
+	dataProcessing::UpdateObjectList(objectList);
 }

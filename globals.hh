@@ -29,6 +29,8 @@ const double FRONT_OBJECT_COLLISION_WIDTH = CAR_WIDTH + 0.5;
 
 enum Direction { north, south, east, west };
 
+enum ObjectType { CAR, NONCAR };
+
 //The distance between the front and rear wheels
 const double WHEEL_BASE = 1.67;
 

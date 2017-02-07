@@ -23,6 +23,9 @@ namespace gazebo
 		
 		private: sensors::RaySensorPtr parentSensor;
 		private: event::ConnectionPtr updateConnection;
+
+		public: void getVisibleObjects(std::vector<double>* objectRays) {
+
 	};
 }
 #endif

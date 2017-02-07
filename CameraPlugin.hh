@@ -24,12 +24,12 @@ namespace gazebo
   {
     public: virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/);
     public: void OnUpdate();
-      public: void ROI(cv::Mat &m, int lo, int hi);
-      public: cv::Mat preprocess(cv::Mat m);
-      public: std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
-      public: double getAngle(int firstX, int firsty, int secondX, int secondY,
-                              double previousAngle);
-
+    public: void ROI(cv::Mat &m, int lo, int hi);
+    public: cv::Mat preprocess(cv::Mat m);
+    public: float getObjectBrightness(sdcVisibleObject visibleObject);
+    public: std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
+    public: double getAngle(int firstX, int firsty, int secondX, int secondY,
+                            double previousAngle);
     private: sensors::MultiCameraSensorPtr parentSensor;
     private: event::ConnectionPtr updateConnection;
   };
