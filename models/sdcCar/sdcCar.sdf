@@ -702,29 +702,8 @@
                     <near>0.1</near>
                     <far>150</far>
                   </clip>
-                  <save enabled="False">
-                   <path>/Users/selfcar/Desktop/Self-Driving-Comps/comps_camera_recordings/</path>
-                  </save>
                 </camera>
-
-                <!-- <camera name="right">
-                  <pose>0 -0.2 0 0 0 0</pose>
-                  <horizontal_fov>1.047</horizontal_fov>
-                  <image>
-                    <width>640</width>
-                    <height>480</height>
-                  </image>
-                  <clip>
-                    <near>0.1</near>
-                    <far>150</far>
-                  </clip>
-                  <save enabled="False">
-                   <path>/Users/selfcar/Desktop/Self-Driving-Comps/comps_camera_recordings/</path>
-                  </save>
-                </camera> -->
-
                 <plugin name="sdcCameraSensor" filename="build/libcamera.so" />
-
               </sensor>
 
 	      <!--
