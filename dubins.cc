@@ -13,7 +13,7 @@ using namespace gazebo;
 
 dubins::dubins() {
   // scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
-  scalingFactor_ = MIN_TURNING_RADIUS;
+   scalingFactor_ = MIN_TURNING_RADIUS;
 }
 
 //True mod function that does not return negative values
