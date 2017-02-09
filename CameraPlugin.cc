@@ -64,7 +64,7 @@ void CameraPlugin::OnUpdate()
   // added to check about the viewport
   int viewportWidth = (int)this->parentSensor->GetCamera(0)->GetViewportWidth();
   int viewportHeight = (int)this->parentSensor->GetCamera(0)->GetViewportHeight();
-  // cout << "viewportWidth pixels is " << viewportWidth << endl;
+  cout << "viewportWidth pixels is " << viewportWidth << endl;
   // cout << "viewportHeight pixels is " << viewportHeight << endl;
 
   // math::Vector3 originCoord;
@@ -237,6 +237,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
 
     // find x, given y = mid
     int waypoint_x = (mid-n)/m;
+    
     
     if(waypoint_x < 5){
         waypoint_x = mat.cols/2;
