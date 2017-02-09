@@ -152,7 +152,7 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
     imshow("img", image);
-    imwrite("waypoints.png", image);
+    //imwrite("waypoints.png", image);
     waitKey(4);
 
     for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
@@ -237,6 +237,10 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
 
     // find x, given y = mid
     int waypoint_x = (mid-n)/m;
+    
+    if(waypoint_x < 5){
+        waypoint_x = mat.cols/2;
+    }
 
     math::Vector3 originCoord;
     math::Vector3 direction;
