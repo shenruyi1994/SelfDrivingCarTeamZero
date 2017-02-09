@@ -2,7 +2,7 @@
   <world name='default'>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>-36.0849 -70.8809 73.1094 0.764442 1.56054 -2.36782</pose>
+        <pose frame=''>-1.15486 -25.3948 244.602 0.764442 1.56054 -2.36782</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -1015,7 +1015,7 @@
         </axis>
       </joint>
       <link name='camera::link'>
-        <pose frame=''>1.5 0 1.9 0 1.0 0</pose>
+        <pose frame=''>1.5 0 1.9 0 1 0</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <sensor name='camera' type='multicamera'>
@@ -1344,7 +1344,7 @@
     <state world_name='default'>
       <sim_time>0 0</sim_time>
       <real_time>0 0</real_time>
-      <wall_time>1486483747 445520000</wall_time>
+      <wall_time>1486661579 861005000</wall_time>
       <iterations>0</iterations>
       <model name='box1'>
         <pose frame=''>-0.00699 -1.5 0.5 2e-06 -1e-06 -0</pose>
@@ -1376,7 +1376,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='camera::link'>
-          <pose frame=''>-16.9389 -44.7107 1.89992 0 0.890054 0</pose>
+          <pose frame=''>-16.9389 -44.7107 1.89992 0 1.00005 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -1464,7 +1464,7 @@
         <collision name='collision'>
           <geometry>
             <box>
-              <size>120.421 149.977 0.1</size>
+              <size>180.814 149.977 0.1</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -1482,7 +1482,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>120.421 108.849 0.1</size>
+              <size>180.814 108.849 0.1</size>
             </box>
           </geometry>
           <material>
