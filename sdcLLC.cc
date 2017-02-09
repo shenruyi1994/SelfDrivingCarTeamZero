@@ -52,8 +52,7 @@ void sdcLLC::GenerateNewDubins() {
     waypoint.y = rawWaypoints[i].y;
     waypoint.direction = waypointAngles[i];
 
-    //printf("==========\n  ========== waypoint: (%f, %f)",
-      //waypoint.x, waypoint.y);
+    printf("==========\n  ========== waypoint: (%f, %f)", waypoint.x, waypoint.y);
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint));
     startPoint = waypoint;
@@ -187,7 +186,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   // finalPoint.y += path.origin.y;
 
 
-  //printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
+  printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
   cv::Point2d returnP;
   returnP.x = origin.x;
   returnP.y = origin.y;

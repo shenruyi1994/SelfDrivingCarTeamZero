@@ -12,7 +12,8 @@
 using namespace gazebo;
 
 dubins::dubins() {
-  scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
+  // scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
+  scalingFactor_ = MIN_TURNING_RADIUS;
 }
 
 //True mod function that does not return negative values
@@ -171,7 +172,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-  // distance = distance / scalingFactor_;
+   distance = distance / scalingFactor_;
 
   // Calculate each type of dubins path individually
   Path paths[4] = {
