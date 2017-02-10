@@ -48,11 +48,11 @@ void sdcLLC::GenerateNewDubins() {
   Waypoint startPoint = carPoint;
   for (int i = 0; i < 3; i++) {
     Waypoint waypoint;
-    waypoint.x = rawWaypoints[i].x;
-    waypoint.y = rawWaypoints[i].y;
-    waypoint.direction = waypointAngles[i];
+    waypoint.x = rawWaypoints[2-i].x;
+    waypoint.y = rawWaypoints[2-i].y;
+    waypoint.direction = waypointAngles[2-i];
 
-    printf("==========\n  ========== waypoint: (%f, %f)", waypoint.x, waypoint.y);
+    printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint));
     startPoint = waypoint;
