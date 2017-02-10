@@ -252,9 +252,9 @@ void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
-  //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
   car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
 }
@@ -311,7 +311,7 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() {
     llc_->GenerateNewDubins();
     pathDist_ = 0;
   }
-  cv::Point2d tempTarget = llc_->GetDubinsPoint(pathDist_ + lookaheadDistance);
+  cv::Point2d tempTarget = llc_->GetDubinsPoint(lookaheadDistance);
 
   // double distanceToDubins = cv_distance(location, tempTarget);
   // double adjustment = distanceToDubins - lookaheadDistance;
