@@ -472,7 +472,7 @@
               <resolution>0.01</resolution>
             </range>
           </ray>
-          <plugin name='sdcFrontLidarSensor' filename='build/libsdcFrontLidarSensor.so'/>
+          <plugin name='sdcFrontLidarSensor' filename='build/liblidar.so'/>
           <always_on>1</always_on>
           <update_rate>30</update_rate>
           <visualize>1</visualize>
