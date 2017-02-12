@@ -167,7 +167,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   // if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI - dubinsAngle;}
   
   // account for negatives
-  //     if(waypoint.x < 0) { dubinsAngle += PI;}
+       if(waypoint.x < 0) { dubinsAngle += PI;}
 
    // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
