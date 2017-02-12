@@ -14,6 +14,7 @@ using namespace gazebo;
 dubins::dubins() {
   // scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
    scalingFactor_ = MIN_TURNING_RADIUS;
+  //scalingFactor_ = 1;
 }
 
 //True mod function that does not return negative values
@@ -160,12 +161,20 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
-  // printf("\nOur dubins angle is %f\n", dubinsAngle);
+
+  //  if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y >= 0){dubinsAngle = PI-dubinsAngle;}
+  // if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y < 0){dubinsAngle += PI;}
+  // if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI - dubinsAngle;}
+
+
+   printf("\nOur dubins angle is %f\n", dubinsAngle);
 
   // account for negatives
-  if (waypoint.x < 0) { dubinsAngle += PI; }
-
-  // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
+   if(waypoint.x < 0) { dubinsAngle += PI;}
+  //if (waypoint.x < 0 && waypoint.y >= 0) { dubinsAngle += PI/2; }
+  //if (waypoint.x < 0 && waypoint.y < 0) { dubinsAngle += PI; }
+   //if (waypoint.x >= 0 && waypoint.y < 0) { dubinsAngle += 3*PI/2; }
+   printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
   double initDirection = carPoint.direction-dubinsAngle;
   double finalDirection = waypoint.direction-dubinsAngle;
@@ -210,6 +219,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
  */
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
+
   newPos.x = x + sin(theta + dist) - sin(theta);
   newPos.y = y - cos(theta + dist) + cos(theta);
   newPos.z = theta + dist;
@@ -242,6 +252,7 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
  */
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
+
   newPos.x = x + dist * cos(theta);
   newPos.y = y + dist * sin(theta);
   newPos.z = theta;

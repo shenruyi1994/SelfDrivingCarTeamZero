@@ -176,7 +176,6 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
 
   //tempPoint.x = 0;
   //temPoint
-
   //rotate target point around dubins path origin
   //finalPoint.x = origin.x * cos(path.rotationAngle) - origin.y * sin(path.rotationAngle);
   //finalPoint.y = origin.x * sin(path.rotationAngle) + origin.y * cos(path.rotationAngle);
