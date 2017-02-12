@@ -170,24 +170,29 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
     }
   }
 
+
+  cv::Point2d tempPoint;
+  cv::Point2d finalPoint;
   // move target point to the origin of our original dubins path
-  // tempPoint.x = origin.x - path.origin.x;
-  // tempPoint.y = origin.y - path.origin.y;
+   tempPoint.x = origin.x - path.origin.x;
+   tempPoint.y = origin.y - path.origin.y;
 
   //tempPoint.x = 0;
   //temPoint
   //rotate target point around dubins path origin
-  //finalPoint.x = origin.x * cos(path.rotationAngle) - origin.y * sin(path.rotationAngle);
-  //finalPoint.y = origin.x * sin(path.rotationAngle) + origin.y * cos(path.rotationAngle);
+  finalPoint.x = origin.x * cos(path.rotationAngle) - origin.y * sin(path.rotationAngle);
+  finalPoint.y = origin.x * sin(path.rotationAngle) + origin.y * cos(path.rotationAngle);
 
   // scale rotated point back to a place corressponding to its original coords
-  // finalPoint.x += path.origin.x;
+  //finalPoint.x += path.origin.x;
   // finalPoint.y += path.origin.y;
 
 
   printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
-  cv::Point2d returnP;
-  returnP.x = origin.x;
-  returnP.y = origin.y;
-  return returnP;
+  //  cv::Point2d returnP;
+  //returnP.x = origin.x;
+  //returnP.y = origin.y;
+  //return returnP;
+  
+  return finalPoint;
 }
