@@ -156,6 +156,11 @@ void CameraPlugin::OnUpdate()
         waypointAngles.push_back(angle);
     }
 
+    double newAngleOne = waypointAngles[2];
+    double newAngleThree = waypointAngles[0];
+    waypointAngles[0] = newAngleOne;
+    waypointAngles[2] = newAngleThree;
+
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
