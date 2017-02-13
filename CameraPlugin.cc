@@ -99,7 +99,25 @@ void CameraPlugin::OnUpdate()
     double sub_hi;
 
     vector<Mat> subs;
-    for(int i = 0; i < n_sub; i++)
+
+    // --------------------------------------
+    // ORIGINAL 
+    // for(int i = 0; i < n_sub; i++)
+    // {
+    //     Mat sub(rect_roi.size(), rect_roi.type());
+    //     rect_roi.copyTo(sub);
+    //     sub_hi = sub_lo + interval;
+    //     ROI(sub, sub_lo, sub_hi);
+    //     subs.push_back(sub);
+    //     sub_lo = sub_hi;
+    // }
+    // ORIGINAL
+    // -------------------------------------- 
+
+    // --------------------------------------
+    // EDITED ROI III
+
+    for(int i = 0; i < n_sub-1; i++)
     {
         Mat sub(rect_roi.size(), rect_roi.type());
         rect_roi.copyTo(sub);
@@ -108,6 +126,16 @@ void CameraPlugin::OnUpdate()
         subs.push_back(sub);
         sub_lo = sub_hi;
     }
+
+    sub_hi = sub_lo + interval;
+    sub_lo -= 100; 
+    Mat sub(rect_roi.size(), rect_roi.type());
+    rect_roi.copyTo(sub);
+    ROI(sub, sub_lo, sub_hi);
+    subs.push_back(sub);
+
+    // EDITED ROI I
+    // --------------------------------------
 
     //  Process each sub ROI
     vector<Mat> proc_subs;
