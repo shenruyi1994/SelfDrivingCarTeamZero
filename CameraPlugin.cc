@@ -109,16 +109,13 @@ void CameraPlugin::OnUpdate()
         sub_lo = sub_hi;
     }
 
-    //imshow("sub0", subs[0]);
-    //imshow("sub1", subs[1]);
-    //imshow("sub2", subs[2]);
     //  Process each sub ROI
     vector<Mat> proc_subs;
     for(size_t i = 0; i < subs.size(); i++)
     {
         proc_subs.push_back(preprocess(subs[i]));
     }
-
+     
     // For each sub ROI, find vanishing point
     vector<cv::Point2d> pts;
     vector<cv::Point2d> worldPts;
@@ -200,7 +197,7 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
 std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
     vector<Vec2f> lines;
-    HoughLines(mat, lines, 1, PI/180, 38, 0, 0);
+    HoughLines(mat, lines, 1, PI/180, 75, 0, 0);
 
     // inner most lines
     float rho_left = FLT_MAX, theta_left = FLT_MAX;
@@ -209,7 +206,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     for(size_t i = 0; i < lines.size(); i++)
     {
         float rho = lines[i][0], theta = lines[i][1];
-        if((0.15 < theta && theta < 1.54) || (theta > 1.62 && theta < 3.14))
+        if((0.15 < theta && theta < 1.54) || (theta > 1.62 && theta < 3))
         {
             if(theta > PI/2)
             {
@@ -264,7 +261,28 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     if(waypoint_x < 5){
         waypoint_x = mat.cols/2;
     }
-
+    
+    // draw detected lines & waypoints
+    for(size_t i = 0; i < lines.size(); i++)
+    {
+        float rho = lines[i][0], theta = lines[i][1];
+        if((0.15 < theta && theta < 1.54) || (theta > 1.62 && theta < 3))
+        {
+            cv::Point pt1, pt2;
+            double a = cos(theta), b = sin(theta);
+            double x0 = a*rho, y0 = b*rho;
+            pt1.x = cvRound(x0 + 1000*(-b));
+            pt1.y = cvRound(y0 + 1000*(a));
+            pt2.x = cvRound(x0 - 1000*(-b));
+            pt2.y = cvRound(y0 - 1000*(a));
+            line(mat, pt1, pt2, Scalar(128,128,128), 1);
+        }
+    }
+    circle(mat, p1, 2, Scalar(255,255,255), 3);
+    circle(mat, p2, 2, Scalar(255,255,255), 3);
+    imshow("sub" + std::to_string(lo), mat);
+   
+    
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
