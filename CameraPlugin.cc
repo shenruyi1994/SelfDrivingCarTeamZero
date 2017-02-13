@@ -162,7 +162,7 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
     imshow("img", image);
-    //imwrite("waypoints.png", image);
+    imwrite("waypoints.png", image);
     waitKey(4);
 
     for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
