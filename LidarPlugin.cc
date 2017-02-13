@@ -68,8 +68,6 @@ void LidarPlugin::OnUpdate()
 	}*/
 }
 
-// I'll go over this with Ruyi and once we decide if it looks okay we'll
-// move it to the main repo and have it return an sdcVisibleObject
 void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 	sdcLidarRay left = sdcLidarRay(), right = sdcLidarRay();
 	int leftIndex, rightIndex = -1;
