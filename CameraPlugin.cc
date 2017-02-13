@@ -83,7 +83,7 @@ void CameraPlugin::OnUpdate()
 
 
     // Rectangular region of interest
-    double ROI_lo = 0;
+    double ROI_lo = 40;
     double ROI_hi = height;
 
     Mat rect_roi(image.size(), image.type());
@@ -196,14 +196,14 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
 
 std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
-    int roi_ID = lo/160;
+    int roi_ID = lo/150;
     int houghVotes;
     vector<Vec2f> lines;
     
     if(roi_ID == 0)
-        houghVotes = 45;
+        houghVotes = 50;
     else
-        houghVotes = 105;
+        houghVotes = 80;
     HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
@@ -287,6 +287,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     }
     circle(mat, p1, 2, Scalar(255,255,255), 3);
     circle(mat, p2, 2, Scalar(255,255,255), 3);
+    circle(mat, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
     imshow(std::to_string(roi_ID), mat);
    
     
