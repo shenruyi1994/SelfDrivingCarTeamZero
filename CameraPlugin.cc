@@ -128,7 +128,7 @@ void CameraPlugin::OnUpdate()
     }
 
     sub_hi = sub_lo + interval;
-    sub_lo -= 100; 
+    sub_lo -= 220; 
     Mat sub(rect_roi.size(), rect_roi.type());
     rect_roi.copyTo(sub);
     ROI(sub, sub_lo, sub_hi);
