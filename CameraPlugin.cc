@@ -196,8 +196,15 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
 
 std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
+    int roi_ID = lo/160;
+    int houghVotes;
     vector<Vec2f> lines;
-    HoughLines(mat, lines, 1, PI/180, 75, 0, 0);
+    
+    if(roi_ID == 0)
+        houghVotes = 45;
+    else
+        houghVotes = 105;
+    HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
     float rho_left = FLT_MAX, theta_left = FLT_MAX;
@@ -280,7 +287,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     }
     circle(mat, p1, 2, Scalar(255,255,255), 3);
     circle(mat, p2, 2, Scalar(255,255,255), 3);
-    imshow("sub" + std::to_string(lo), mat);
+    imshow(std::to_string(roi_ID), mat);
    
     
     math::Vector3 originCoord;
@@ -309,8 +316,8 @@ Mat CameraPlugin::preprocess(Mat mat)
     cvtColor(mat, gray, CV_BGR2GRAY);
     GaussianBlur(gray, gray, cv::Size(5,5), 0, 0);
 
-    Mat erosion(5, 5, CV_8U, Scalar(1));
-    morphologyEx(gray, morph, MORPH_OPEN, erosion);
+    //Mat erosion(5, 5, CV_8U, Scalar(1));
+    //morphologyEx(gray, morph, MORPH_OPEN, erosion);
 
     Canny(gray, canny, 128, 255);
 
