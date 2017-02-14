@@ -15,7 +15,7 @@ const double STEERING_MARGIN_OF_ERROR = 0.05;
 const int LIDAR_DETECTION_MARGIN_OF_ERROR = 2;
 
 // How fast the car turns each update
-const double STEERING_ADJUSTMENT_RATE = 0.03;
+const double STEERING_ADJUSTMENT_RATE = 0.02;
 
 // How much we can turn the "steering wheel"
 const double STEERING_RANGE = 5 * PI;
