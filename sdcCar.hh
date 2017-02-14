@@ -182,6 +182,7 @@ namespace gazebo {
     sdcAngle GetOrientation() const;
     void GetNSEW();
     double GetMaxSafeTime() const;
+    double GetMinTurningRadius() const;
 
     void SetTargetDirection(sdcAngle direction);
     void SetTargetSteeringAmount(double a);

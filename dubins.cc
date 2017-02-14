@@ -12,9 +12,9 @@
 using namespace gazebo;
 
 dubins::dubins() {
-  // scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
-  // scalingFactor_ = MIN_TURNING_RADIUS;
-  scalingFactor_ = 1;
+
+   scalingFactor_ = MIN_TURNING_RADIUS;
+
 }
 
 //True mod function that does not return negative values
@@ -158,7 +158,8 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
  * Calls functions to calculate each path individually, finds minimum length
  * path assuming unit turning radius,  then scales path to proper length
  */
-Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
+Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
+  scalingFactor_ = minRadius;
   double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
 

@@ -164,7 +164,14 @@ void sdcCar::GetNSEW() {
  * car.
  */
 double sdcCar::GetMaxSafeTime() const {
-  return 1;
+  return GetSpeed() * 2;
+}
+
+/*
+ * Returns the minimum turning radius of the car at a particular speed.
+ */
+double sdcCar::GetMinTurningRadius() const {
+  return MIN_TURNING_RADIUS * sqrt(GetSpeed());
 }
 
 /*
