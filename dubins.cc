@@ -161,21 +161,21 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
   double distance = coord_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
 
-     if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y >= 0){dubinsAngle = PI+dubinsAngle;}
-   if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y < 0){dubinsAngle += PI;}
-   if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI+dubinsAngle;}
-  
+  if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y >= 0){dubinsAngle = PI+dubinsAngle;}
+  if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y < 0){dubinsAngle += PI;}
+  if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI+dubinsAngle;}
+
   // account for negatives
   //if(waypoint.x-carPoint.x < 0) { dubinsAngle += PI;}
 
-   // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
+  // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
-   double initDirection = carPoint.direction-dubinsAngle;
-   double finalDirection = waypoint.direction-dubinsAngle;
+  double initDirection = carPoint.direction-dubinsAngle;
+  double finalDirection = waypoint.direction-dubinsAngle;
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-   distance = distance / scalingFactor_;
+  distance = distance / scalingFactor_;
 
   // Calculate each type of dubins path individually
   Path paths[4] = {
