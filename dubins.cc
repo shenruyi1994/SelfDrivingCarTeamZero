@@ -170,8 +170,8 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
 
    // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
-   double initDirection = mod(carPoint.direction-dubinsAngle,2*PI);
-   double finalDirection = mod(waypoint.direction-dubinsAngle,2*PI);
+   double initDirection = carPoint.direction-dubinsAngle;
+   double finalDirection = waypoint.direction-dubinsAngle;
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
