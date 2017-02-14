@@ -6,10 +6,10 @@
 
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
+#include <opencv2/opencv.hpp>
 
 #include "globals.hh"
 #include "sdcIntersection.hh"
-#include "sdcLLC.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 
@@ -21,6 +21,7 @@ namespace gazebo {
   } CollisionEvent;
 
   class sdcCar;
+  class sdcLLC;
 
   class GAZEBO_VISIBLE sdcHLC {
   public:
