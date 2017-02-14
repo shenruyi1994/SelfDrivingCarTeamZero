@@ -1,14 +1,17 @@
 #ifndef __SDCLLC_HH__
 #define __SDCLLC_HH__
 
+#include <array>
+#include <deque>
+
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
+#include <opencv2/opencv.hpp>
 
 #include "globals.hh"
 #include "Waypoints.hh"
 #include "dubins.hh"
 
-#include <opencv2/opencv.hpp>
 
 //placeholder structs for now
 namespace gazebo {
@@ -36,7 +39,9 @@ namespace gazebo {
     dubins* dubins_;
     std::vector<Path> paths_;
   private:
-
+    std::array<Waypoint, 3> safeWaypoints_;
+    std::array<Waypoint, 3> lastWaypoints_;
+    std::array<std::deque<Waypoint>, 3> recentWaypoints_;
   };
 }
 #endif

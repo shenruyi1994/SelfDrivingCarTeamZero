@@ -1,17 +1,21 @@
 //sdcLLC.hh containsCGAL typedefs and includes - may restructure location
 #include "sdcLLC.hh"
 
+#include <array>
+#include <deque>
+
 #include "gazebo/physics/physics.hh"
 #include "gazebo/transport/transport.hh"
 #include <opencv2/opencv.hpp>
 
 #include "arr_print.h"
+#include "dubins.hh"
 #include "dataProcessing.hh"
 #include "globals.hh"
 #include "sdcCar.hh"
 #include "sdcHLC.hh"
+#include "sdcUtils.hh"
 #include "Waypoints.hh"
-#include "dubins.hh"
 
 using namespace gazebo;
 

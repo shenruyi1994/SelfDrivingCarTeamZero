@@ -255,8 +255,8 @@ void sdcHLC::FollowWaypoints() {
   printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
   printf("  location: (%f, %f)\n", car_->x_, car_->y_);
-  // AngleWheelsTowardsTarget(point_to_math_vec(targetPoint));
-  car_->SetTargetDirection(car_->AngleToTarget(point_to_math_vec(targetPoint)));
+  // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
+  car_->SetTargetDirection(car_->AngleToTarget(to_math_vec(targetPoint)));
 }
 
 /*
@@ -313,7 +313,7 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   }
   cv::Point2d tempTarget = llc_->GetDubinsPoint(lookaheadDistance);
 
-  // double distanceToDubins = cv_distance(location, tempTarget);
+  // double distanceToDubins = coord_distance(location, tempTarget);
   // double adjustment = distanceToDubins - lookaheadDistance;
   // double maxError = 0.1;
   // double tempPathDist = pathDist_;
@@ -321,7 +321,7 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   // // finds a point along the dubins path that is beyond the ideal target distance
   // while (distanceToDubins < lookaheadDistance) {
   //   tempPathDist += adjustment;
-  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
   //   adjustment *= 2;
   // }
   //
@@ -333,7 +333,7 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   //   } else {
   //     tempPathDist += adjustment;
   //   }
-  //   distanceToDubins = cv_distance(location, llc_->GetDubinsPoint(tempPathDist));
+  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
   //   adjustment *= .5;
   // }
 
@@ -707,13 +707,13 @@ double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   sdcBoundingCircle selfCircle = sdcBoundingCircle(
-    math_vec_to_point(GetPositionAtTime(time)),
+    to_point(GetPositionAtTime(time)),
     pythag_thm(car_->width_, car_->length_)
   );
 
   // TODO: figure out how to estimate size of an object
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    math_vec_to_point(obj->GetProjectedPositionAtTime(time)),
+    to_point(obj->GetProjectedPositionAtTime(time)),
     1 // placeholder for above TODO
   );
 

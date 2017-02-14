@@ -6,7 +6,6 @@
 
 #include <opencv2/opencv.hpp>
 
-
 #include "globals.hh"
 #include "Waypoints.hh"
 
