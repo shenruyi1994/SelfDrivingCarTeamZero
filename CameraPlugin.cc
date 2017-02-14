@@ -93,30 +93,27 @@ void CameraPlugin::OnUpdate()
 
     // Create sub ROIs
     int n_sub = 3;
-    double interval = (ROI_hi-ROI_lo)/n_sub;
+    double interval = (ROI_hi-ROI_lo)/2;
+    double lo_increment = interval/2;
 
     double sub_lo = ROI_lo;
     double sub_hi;
 
     vector<Mat> subs;
 
-    // --------------------------------------
-    // ORIGINAL 
-    // for(int i = 0; i < n_sub; i++)
-    // {
-    //     Mat sub(rect_roi.size(), rect_roi.type());
-    //     rect_roi.copyTo(sub);
-    //     sub_hi = sub_lo + interval;
-    //     ROI(sub, sub_lo, sub_hi);
-    //     subs.push_back(sub);
-    //     sub_lo = sub_hi;
-    // }
-    // ORIGINAL
-    // -------------------------------------- 
-
+    for(int i = 0; i < n_sub; i++)
+    {
+        Mat sub(rect_roi.size(), rect_roi.type());
+        rect_roi.copyTo(sub);
+        sub_hi = sub_lo + interval;
+        ROI(sub, sub_lo, sub_hi);
+        subs.push_back(sub);
+        sub_lo += lo_increment;
+    }
+    
     // --------------------------------------
     // EDITED ROI III
-
+    /*
     for(int i = 0; i < n_sub-1; i++)
     {
         Mat sub(rect_roi.size(), rect_roi.type());
@@ -133,7 +130,7 @@ void CameraPlugin::OnUpdate()
     rect_roi.copyTo(sub);
     ROI(sub, sub_lo, sub_hi);
     subs.push_back(sub);
-
+     */
     // EDITED ROI I
     // --------------------------------------
 
@@ -152,7 +149,7 @@ void CameraPlugin::OnUpdate()
 
     for(size_t i = 0; i < proc_subs.size(); i++)
     {
-        int lo = ROI_lo + i * interval;
+        int lo = ROI_lo + i * lo_increment;
         int hi = lo + interval;
 
         std::pair<cv::Point2d, cv::Point> pts = vanishPoint(proc_subs[i], lo);
@@ -224,16 +221,13 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
 
 std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
-    int roi_ID = lo/150;
-    int houghVotes;
+    int roi_ID = lo/130;
+    int houghVotes = 105;
+    if(roi_ID == 0)
+        houghVotes = 52;
+    
     vector<Vec2f> lines;
     
-    if(roi_ID == 0)
-        houghVotes = 50;
-    else if(roi_ID == 1)
-        houghVotes = 85;
-    else
-        houghVotes = 120;
     HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
@@ -347,8 +341,8 @@ Mat CameraPlugin::preprocess(Mat mat)
     cvtColor(mat, gray, CV_BGR2GRAY);
     GaussianBlur(gray, gray, cv::Size(5,5), 0, 0);
 
-    //Mat erosion(5, 5, CV_8U, Scalar(1));
-    //morphologyEx(gray, morph, MORPH_OPEN, erosion);
+    Mat erosion(7, 7, CV_8U, Scalar(1));
+    morphologyEx(gray, morph, MORPH_OPEN, erosion);
 
     Canny(gray, canny, 128, 255);
 
