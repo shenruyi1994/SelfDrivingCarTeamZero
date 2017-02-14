@@ -128,7 +128,7 @@ void CameraPlugin::OnUpdate()
     }
 
     sub_hi = sub_lo + interval;
-    sub_lo -= 100; 
+    sub_lo -= 220; 
     Mat sub(rect_roi.size(), rect_roi.type());
     rect_roi.copyTo(sub);
     ROI(sub, sub_lo, sub_hi);
@@ -229,9 +229,11 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     vector<Vec2f> lines;
     
     if(roi_ID == 0)
-        houghVotes = 30;
+        houghVotes = 50;
+    else if(roi_ID == 1)
+        houghVotes = 85;
     else
-        houghVotes = 30;
+        houghVotes = 120;
     HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
