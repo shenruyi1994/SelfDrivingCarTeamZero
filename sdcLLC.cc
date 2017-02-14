@@ -46,6 +46,7 @@ void sdcLLC::GenerateNewDubins() {
   std::array<cv::Point2d, 3> rawWaypoints = dataProcessing::getWaypoints();
   std::array<double, 3> waypointAngles = dataProcessing::getWaypointAngles();
   Waypoint startPoint = carPoint;
+  double minRadius = car_->GetMinTurningRadius();
   for (int i = 0; i < 3; i++) {
     Waypoint waypoint;
     waypoint.x = rawWaypoints[2-i].x;
@@ -54,7 +55,7 @@ void sdcLLC::GenerateNewDubins() {
 
     printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
-    paths_.push_back(dubins_->calculateDubins(waypoint, startPoint));
+    paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
     startPoint = waypoint;
   }
 }
@@ -149,8 +150,6 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   cv::Point3d origin = cv::Point3d(path.origin);
 
   std::vector<Control> cont = dubins_->pathToControls(path);
-
-  //cv::Point3d origin (0,0,0);
 
   //generates temporary set of controls used to help find a point on the dubins path
   cont = dubinsPointHelper(cont, distance);
