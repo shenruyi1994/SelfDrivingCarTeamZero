@@ -92,7 +92,7 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 			sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
 			sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-			sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance);
+			sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
 			objectList.push_back(object);
 			minDistance = INT_MAX;
 		}
@@ -106,7 +106,7 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 		sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
 		sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-		sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance);
+		sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance, leftIndex, rightIndex);
 		objectList.push_back(object);
 	}
 
