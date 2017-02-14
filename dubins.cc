@@ -1,5 +1,4 @@
 #include "dubins.hh"
-
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <cmath>
