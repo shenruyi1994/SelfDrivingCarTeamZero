@@ -159,13 +159,16 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
+    for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
+        std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
+        if (!obj->getBrightnessDetected()){
+            updateObjectBrightness(obj);
+        }
+    }
+    
     imshow("img", image);
     //imwrite("waypoints.png", image);
     waitKey(4);
-
-    for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
-      updateObjectBrightness(obj);
-    }
 }
 
 double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY,
@@ -302,29 +305,36 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     double left_edge = visibleObject->getLeftRay().GetLateralDist();
     double right_edge = visibleObject->getRightRay().GetLateralDist();
     
+    int rightIndex = 640-visibleObject->getLeftRayIndex();
+    int leftIndex = 640-visibleObject->getRightRayIndex();
+    
     std::cout << "left edge: " << left_edge << " and right edge: " << right_edge << std::endl;
+    std::cout << "left index: " << leftIndex << " and right index: " << rightIndex << std::endl;
     //callibrate this based on final camera position/angle
-    int height = (int)this->parentSensor->GetImageHeight(0)/2;
+//    int height = (int)this->parentSensor->GetImageHeight(0)/2;
+    int height = 50;
+    
+    std::cout << "check 0" << std::endl;
+    
+    // hard code the boundaries
 
-    for (int i = left_edge; i < right_edge; i = i + (right_edge/5)) {
-        cv::Point2f point_to_avg(i, height/2);
+    for (int i = leftIndex; i < rightIndex; i = i + (rightIndex-leftIndex)/5) {
+        cv::Point2f point_to_avg(i, height);
         points_in_roi.push_back(point_to_avg);
     }
 
     int avgThickness = 2;
     int avgLineType = 8;
     int avgPointThickness = -1;
-    int avgPointRadius = 6;
-    int red_sum, green_sum, blue_sum = 0;
+    int avgPointRadius = 2;
+    int sum = 0;
     
     std::cout << "check 1" << std::endl;
 
     //get average color of points
-    for (int i = 0; i < points_in_roi.size() - 1; i++) {
-        Vec3b intensity = image.at<cv::Vec3b>(points_in_roi[i].x, 200);
-        blue_sum += intensity.val[0];
-        green_sum += intensity.val[1];
-        red_sum += intensity.val[2];
+    for (int i = 0; i < points_in_roi.size(); i++) {
+        Vec3b intensity = image.at<cv::Vec3b>(points_in_roi[i].x, height);
+        sum = sum + intensity.val[0]+ intensity.val[1] + intensity.val[2];
         circle(image, points_in_roi[i], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
     }
     
@@ -332,15 +342,17 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
 
     circle(image, points_in_roi[points_in_roi.size() - 1], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
 
-    int blue_avg = (blue_sum/3)%255;
-    int green_avg = (green_sum/3)%255;
-    int red_avg = (red_sum/3)%255;
+//    int blue_avg = (blue_sum/3)%255;
+//    int green_avg = (green_sum/3)%255;
+//    int red_avg = (red_sum/3)%255;
+    int brightness = sum/3/points_in_roi.size();
 
-    Vec3f avg_color(blue_avg, green_avg, red_avg);
-    std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_avg << std::endl;
+    Vec3f avg_color(brightness, brightness, brightness);
+    std::cout << "obstacle color: " << brightness << std::endl;
 
     //-- Show detected keypoints
     imshow("Average sample locations", image);
 
-    visibleObject->SetBrightness((blue_avg + green_avg + red_avg)/3);
+    visibleObject->SetBrightness(brightness);
+    visibleObject->setBrightnessDetected();
 }

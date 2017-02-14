@@ -29,7 +29,7 @@ sdcVisibleObject::sdcVisibleObject() {
  * movement parameters in order to help us predict their motion and track them
  * across multiple sensor readings.
  */
-sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist) {
+sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist, int leftRayIndex, int rightRayIndex) {
   left_ = left;
   right_ = right;
   dist_ = dist;
@@ -43,6 +43,11 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
 
   tracking_ = false;
   brandSpankinNew_ = true;
+  brightnessDetected = false;
+    
+  leftRayIndex_ = leftRayIndex;
+  rightRayIndex_ = rightRayIndex;
+    
 }
 
 /*
@@ -248,4 +253,20 @@ sdcLidarRay sdcVisibleObject::getLeftRay() const {
 
 sdcLidarRay sdcVisibleObject::getRightRay() const {
   return right_;
+}
+
+int sdcVisibleObject::getLeftRayIndex() const{
+    return leftRayIndex_;
+}
+
+int sdcVisibleObject::getRightRayIndex() const{
+    return rightRayIndex_;
+}
+
+void sdcVisibleObject::setBrightnessDetected(){
+    brightnessDetected = true;
+}
+
+bool sdcVisibleObject::getBrightnessDetected() const{
+    return brightnessDetected;
 }

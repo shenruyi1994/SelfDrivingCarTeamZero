@@ -381,10 +381,12 @@ void sdcHLC::Follow() {
   }
 
   // The default object to follow is directly in front of the car, the max range away
+    
+  // Kirsten + Ruyi : QUESTION: we are not using sdcSensorData but dataProcessing to pass lidar data right?
   sdcVisibleObject* tracked = new sdcVisibleObject(
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
-    sdcSensorData::GetLidarMaxRange(FRONT));
+    sdcSensorData::GetLidarMaxRange(FRONT),0,0);
 
   // Already tracking an object, find it again
   if (car_->isTrackingObject_) {
