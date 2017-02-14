@@ -230,8 +230,10 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     
     if(roi_ID == 0)
         houghVotes = 50;
+    else if(roi_ID == 1)
+        houghVotes = 85;
     else
-        houghVotes = 80;
+        houghVotes = 120;
     HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
