@@ -57,6 +57,26 @@ void sdcLLC::GenerateNewDubins() {
     waypoint.y = rawWaypoints[2-i].y;
     waypoint.direction = waypointAngles[2-i];
 
+    // if there isn't a huge jump to this waypoint, then it is probably safe
+    if (coord_distance(rawWaypoints[2-i], lastWaypoints_[i]) < 2) {
+      safeWaypoints_[i] = waypoint;
+    }
+    lastWaypoints_[i] = waypoint;
+
+    int numRecent = 3;
+    for (Waypoint recent : recentWaypoints_[i]) {
+      waypoint.x += recent.x;
+      waypoint.y += recent.y;
+    }
+    waypoint.x *= 1.0f / (numRecent + 1);
+    waypoint.y *= 1.0f / (numRecent + 1);
+
+    // average the last 3 waypoints to provide some buffer against large swings
+    if (recentWaypoints_[i].size() >= numRecent) {
+      recentWaypoints_[i].pop_front();
+    }
+    recentWaypoints_[i].push_back(lastWaypoints_[i]);
+
     printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
@@ -193,6 +213,6 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   returnP.x = origin.x;
   returnP.y = origin.y;
   return returnP;
-  
+
   //return finalPoint;
 }
