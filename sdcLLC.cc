@@ -77,7 +77,7 @@ void sdcLLC::GenerateNewDubins() {
     }
     recentWaypoints_[i].push_back(lastWaypoints_[i]);
 
-    printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
+    //  printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
     startPoint = waypoint;

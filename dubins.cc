@@ -15,7 +15,10 @@ dubins::dubins() {
    scalingFactor_ = MIN_TURNING_RADIUS;
 }
 
-//True mod function that does not return negative values
+/* Positive modulo operator
+ * Intput: two doubles a and b
+ * Output: (a mod b) with posive buffer
+ */ 
 double mod(double a, double b) {
   double ret = fmod(a,b);
   if (ret < 0) { ret += b; }
@@ -128,14 +131,12 @@ Path lrl(double initD, double finalD, double dist) {
   return path;
 }
 
-
-
 /*
- * Converts a Path into a set of Controls, consisting of a turn direction and
- * distance.
+ * Converts a Path into a set of Controls
+ * Input: dubinsPath consisting of path type and segment lengths
+ * Oput: Vector of controls, where a control has a direction (-1, 0, 1) and a distanace 
  */
 std::vector<Control> dubins::pathToControls(Path dubinsPath) {
-
   Control control1, control2, control3;
   control1.direction = dubinsPath.dir1;
   control1.distance = dubinsPath.seg1;
@@ -145,9 +146,11 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 
   control3.direction = dubinsPath.dir3;
   control3.distance = dubinsPath.seg3;
-  // std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
-  // std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
-  // std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
+  /* Print statements for  debugging
+   std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
+   std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
+   std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
+  */
   return std::vector<Control> { control1, control2, control3 };
 }
 
@@ -158,6 +161,14 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
  */
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
   scalingFactor_ = minRadius;
+
+  carPoint.x = 85;
+  carPoint.y = 15;
+  carPoint.direction = PI;
+
+  waypoint.x = 95;
+  waypoint.y = 10;
+  waypoint.direction = PI;
   double distance = coord_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
 
@@ -199,9 +210,9 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
    dubinsPath.origin.z = carPoint.direction;
    dubinsPath.rotationAngle = dubinsAngle;
 
-   // printf("The minimum path is of length: %f\n", dubinsPath.length);
-   // printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
-   // dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
+    printf("The minimum path is of length: %f\n", dubinsPath.length);
+    printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
+    dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
    return dubinsPath;
  }
 
@@ -234,38 +245,33 @@ newPos.z = mod(theta + dist, 2*PI);
 cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
 
-  //dist = dist/MIN_TURNING_RADIUS;
-
-
   newPos.x = x - sin(theta - dist) + sin(theta);
   newPos.y = y + cos(theta - dist) - cos(theta);
   newPos.z = mod(theta - dist,2*PI);
 
-  //dist = dist*MIN_TURNING_RADIUS;
 
-
-  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+  std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
   return newPos;
 }
 
 
-/*
- * Straight turn operator, given an initial waypoint, position, and distance to
- * travel. Returns a point corresponding to a straight 'turn'.
+/* Straight turn operator
+ * Input: Initial wayaypoint (x,y,theta), and dist, where theta
+ *  is initial direction of motion and dist is the distance to apply the turn for.
+ *  travel along a maximum turn. Returns a point corresponding to a straight 'turn'.
+ * Output:
  */
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
 
-  //dist = dist/MIN_TURNING_RADIUS;
-  
   newPos.x = x + dist * cos(theta);
   newPos.y = y + dist * sin(theta);
   newPos.z = mod(theta,2*PI);
 
-  //dist = dist*MIN_TURNING_RADIUS;
+  /* std::cout << "Our new x coord is: " << newPos.x << "/n";
+  std::cout << "Our new y coord is: " << newPos.y << "/n"; 
+  */
 
-  //std::cout << "Our new x coord is: " << newPos.x << "/n";
-  //std::cout << "Our new y coord is: " << newPos.y << "/n";
   return newPos;
 }
