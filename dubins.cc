@@ -61,9 +61,10 @@ Path rsr(double initD, double finalD, double dist) {
   return path;
 }
 
-/*
- * Calculates a dubins path consisting of a right turn, then a straight segment,
- * then a left turn.
+/* --Calculates an rsl dubins path--
+ * Input: Initial direction of motion (radians), final direction of motion (radians), 
+ *   distance between initial point and final point (double)
+ * Output: right segment, straight segment, left segment, dubins path
  */
 Path rsl(double initD, double finalD, double dist) {
   double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
@@ -79,9 +80,10 @@ Path rsl(double initD, double finalD, double dist) {
   return path;
 }
 
-/*
- * Calculates a dubins path consisting of a left turn, then a straight segment,
- * then a right turn.
+/* --Calculates an lsr dubins path--                                                                                         
+ * Input: Initial direction of motion (radians), final direction of motion (radians),
+ *   distance between initial point and final point (double)
+ * Output: left segment, straight segment, right segment dubins path
  */
 Path lsr(double initD, double finalD, double dist) {
   double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
@@ -97,7 +99,11 @@ Path lsr(double initD, double finalD, double dist) {
   return path;
 }
 
-//Calculates a dubins path consisting of a right turn, then a left turn, then a right turn
+/* --Calculates an rsl dubins path--                                                                                          
+ * Input: Initial direction of motion (radians), final direction of motion (radians),                                          
+ *   distance between initial point and final point (double)                                                                   
+ * Output: right segment straight segment left sgment dubins path                                                              
+ */
 Path rlr(double initD, double finalD, double dist) {
   double p = acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(sin(initD)-sin(finalD))));
   double t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
@@ -112,10 +118,10 @@ Path rlr(double initD, double finalD, double dist) {
   return path;
 }
 
-/* Note:: there was a mistake in the paper discribing how to compute the lrl, I
- * did my best to compute the solution, but this section needs to be tested further
- * Calculates a dubins path consisting of a left turn, then a right turn, then
- * a left turn.
+/* --Calculates an lsl dubins path--                                                                                      
+ * Input: Initial direction of motion (radians), final direction of motion (radians),                                          
+ *   distance between initial point and final point (double)                                                                   
+ * Output: left segment, straight segment, left segment dubins path 
  */
 Path lrl(double initD, double finalD, double dist) {
   double p = mod(acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(initD-finalD))),2*PI);
@@ -132,7 +138,7 @@ Path lrl(double initD, double finalD, double dist) {
 }
 
 /*
- * Converts a Path into a set of Controls
+ * --Converts a Path into a set of Controls--
  * Input: dubinsPath consisting of path type and segment lengths
  * Oput: Vector of controls, where a control has a direction (-1, 0, 1) and a distanace 
  */
@@ -146,7 +152,8 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 
   control3.direction = dubinsPath.dir3;
   control3.distance = dubinsPath.seg3;
-  /* Print statements for  debugging
+
+  /* 
    std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
    std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
    std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
@@ -157,7 +164,7 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 /*
  * Main function to calculate a dubins path
  * Calls functions to calculate each path individually, finds minimum length
- * path assuming unit turning radius,  then scales path to proper length
+ * path assuming unit turning radius,then scales path to proper length
  */
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
   scalingFactor_ = minRadius;
@@ -172,12 +179,12 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
   double distance = coord_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
 
+  //rotates angle into quadrant 2
   if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y >= 0){dubinsAngle = PI+dubinsAngle;}
+  //rotates angle to quadrant 3
   if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y < 0){dubinsAngle += PI;}
+  //rotates angle to quadrant 4
   if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI+dubinsAngle;}
-
-  // account for negatives
-  //if(waypoint.x-carPoint.x < 0) { dubinsAngle += PI;}
 
   // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
@@ -254,12 +261,11 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
   return newPos;
 }
 
-
 /* Straight turn operator
  * Input: Initial wayaypoint (x,y,theta), and dist, where theta
  *  is initial direction of motion and dist is the distance to apply the turn for.
  *  travel along a maximum turn. Returns a point corresponding to a straight 'turn'.
- * Output:
+ * Output: new position (x,y,direction of motion) after performing the turn
  */
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
