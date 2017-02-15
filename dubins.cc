@@ -169,13 +169,13 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
   scalingFactor_ = minRadius;
 
-  carPoint.x = 85;
-  carPoint.y = 15;
-  carPoint.direction = PI;
+  // carPoint.x = 85;
+  // carPoint.y = 15;
+  //carPoint.direction = PI;
 
-  waypoint.x = 95;
-  waypoint.y = 10;
-  waypoint.direction = PI;
+  // waypoint.x = 95;
+  // waypoint.y = 10;
+  // waypoint.direction = PI;
   double distance = coord_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
 
@@ -216,9 +216,9 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
    dubinsPath.origin.z = carPoint.direction;
    dubinsPath.rotationAngle = dubinsAngle;
 
-    printf("The minimum path is of length: %f\n", dubinsPath.length);
-    printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
-    dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
+   //printf("The minimum path is of length: %f\n", dubinsPath.length);
+   // printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
+   // dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
    return dubinsPath;
  }
 
@@ -230,14 +230,10 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
 cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist) {
 cv::Point3d newPos;
 
- dist = dist/MIN_TURNING_RADIUS;
 
 newPos.x = x + sin(theta + dist) - sin(theta);
 newPos.y = y - cos(theta + dist) + cos(theta);
 newPos.z = mod(theta + dist, 2*PI);
-
- dist = dist*MIN_TURNING_RADIUS;
-
 
 //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
