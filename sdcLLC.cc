@@ -43,21 +43,42 @@ void sdcLLC::GenerateNewDubins() {
   Waypoint carPoint;
   carPoint.x = carPos.x;
   carPoint.y = carPos.y;
-  carPoint.direction = car_->GetDirection().angle;
+  carPoint.direction = car_->GetOrientation().angle;
   //printf("initDirection  %f", carPoint.direction);
   paths_.clear();
 
   std::array<cv::Point2d, 3> rawWaypoints = dataProcessing::getWaypoints();
   std::array<double, 3> waypointAngles = dataProcessing::getWaypointAngles();
-  Waypoint startPoint = carPoint;
+  Waypoint startPoint;
+  Waypoint waypoint = carPoint;
   double minRadius = car_->GetMinTurningRadius();
   for (int i = 0; i < 3; i++) {
-    Waypoint waypoint;
+    startPoint = waypoint;
     waypoint.x = rawWaypoints[2-i].x;
     waypoint.y = rawWaypoints[2-i].y;
     waypoint.direction = waypointAngles[2-i];
 
-    printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
+    // if there isn't a huge jump to this waypoint, then it is probably safe
+    if (coord_distance(rawWaypoints[2-i], lastWaypoints_[i]) < 2) {
+      safeWaypoints_[i] = waypoint;
+    }
+    lastWaypoints_[i] = waypoint;
+
+    int numRecent = 3;
+    for (Waypoint recent : recentWaypoints_[i]) {
+      waypoint.x += recent.x;
+      waypoint.y += recent.y;
+    }
+    waypoint.x *= 1.0f / (numRecent + 1);
+    waypoint.y *= 1.0f / (numRecent + 1);
+
+    // average the last 3 waypoints to provide some buffer against large swings
+    if (recentWaypoints_[i].size() >= numRecent) {
+      recentWaypoints_[i].pop_front();
+    }
+    recentWaypoints_[i].push_back(lastWaypoints_[i]);
+
+    //  printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
     startPoint = waypoint;
@@ -150,6 +171,10 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
     distance = fmin(distance, paths_[2].length);
   }
 
+  for (int i = 0; i < 3; i++) {
+    printf("========== pathPoint: (%f, %f)\n", paths_[i].origin.x, paths_[i].origin.y);
+  }
+
   math::Vector2d carPos = sdcSensorData::GetPosition();
   cv::Point3d origin = cv::Point3d(path.origin);
 
@@ -172,26 +197,13 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
       break;
     }
   }
-
-  // move target point to the origin of our original dubins path
-  // tempPoint.x = origin.x - path.origin.x;
-  // tempPoint.y = origin.y - path.origin.y;
-
-  //tempPoint.x = 0;
-  //temPoint
-
-  //rotate target point around dubins path origin
-  //finalPoint.x = origin.x * cos(path.rotationAngle) - origin.y * sin(path.rotationAngle);
-  //finalPoint.y = origin.x * sin(path.rotationAngle) + origin.y * cos(path.rotationAngle);
-
-  // scale rotated point back to a place corressponding to its original coords
-  // finalPoint.x += path.origin.x;
-  // finalPoint.y += path.origin.y;
-
+  printf("\n");
 
   printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
-  cv::Point2d returnP;
+    cv::Point2d returnP;
   returnP.x = origin.x;
   returnP.y = origin.y;
   return returnP;
+
+  //return finalPoint;
 }

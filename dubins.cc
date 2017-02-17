@@ -15,7 +15,10 @@ dubins::dubins() {
    scalingFactor_ = MIN_TURNING_RADIUS;
 }
 
-//True mod function that does not return negative values
+/* Positive modulo operator
+ * Intput: two doubles a and b
+ * Output: (a mod b) with posive buffer
+ */ 
 double mod(double a, double b) {
   double ret = fmod(a,b);
   if (ret < 0) { ret += b; }
@@ -58,9 +61,10 @@ Path rsr(double initD, double finalD, double dist) {
   return path;
 }
 
-/*
- * Calculates a dubins path consisting of a right turn, then a straight segment,
- * then a left turn.
+/* --Calculates an rsl dubins path--
+ * Input: Initial direction of motion (radians), final direction of motion (radians), 
+ *   distance between initial point and final point (double)
+ * Output: right segment, straight segment, left segment, dubins path
  */
 Path rsl(double initD, double finalD, double dist) {
   double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) - 2*dist*(sin(initD) + sin(finalD)));
@@ -76,9 +80,10 @@ Path rsl(double initD, double finalD, double dist) {
   return path;
 }
 
-/*
- * Calculates a dubins path consisting of a left turn, then a straight segment,
- * then a right turn.
+/* --Calculates an lsr dubins path--                                                                                         
+ * Input: Initial direction of motion (radians), final direction of motion (radians),
+ *   distance between initial point and final point (double)
+ * Output: left segment, straight segment, right segment dubins path
  */
 Path lsr(double initD, double finalD, double dist) {
   double p = sqrt(dist*dist - 2 + 2*cos(initD-finalD) + 2*dist*(sin(initD) + sin(finalD)));
@@ -94,7 +99,11 @@ Path lsr(double initD, double finalD, double dist) {
   return path;
 }
 
-//Calculates a dubins path consisting of a right turn, then a left turn, then a right turn
+/* --Calculates an rsl dubins path--                                                                                          
+ * Input: Initial direction of motion (radians), final direction of motion (radians),                                          
+ *   distance between initial point and final point (double)                                                                   
+ * Output: right segment straight segment left sgment dubins path                                                              
+ */
 Path rlr(double initD, double finalD, double dist) {
   double p = acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(sin(initD)-sin(finalD))));
   double t = mod(initD-atan((cos(initD)-cos(finalD))/(dist-sin(initD)+sin(finalD)))+(p/2),2*PI);
@@ -109,10 +118,10 @@ Path rlr(double initD, double finalD, double dist) {
   return path;
 }
 
-/* Note:: there was a mistake in the paper discribing how to compute the lrl, I
- * did my best to compute the solution, but this section needs to be tested further
- * Calculates a dubins path consisting of a left turn, then a right turn, then
- * a left turn.
+/* --Calculates an lsl dubins path--                                                                                      
+ * Input: Initial direction of motion (radians), final direction of motion (radians),                                          
+ *   distance between initial point and final point (double)                                                                   
+ * Output: left segment, straight segment, left segment dubins path 
  */
 Path lrl(double initD, double finalD, double dist) {
   double p = mod(acos((1/8)*(6-dist*dist+2*cos(initD-finalD)+2*dist*(initD-finalD))),2*PI);
@@ -128,14 +137,12 @@ Path lrl(double initD, double finalD, double dist) {
   return path;
 }
 
-
-
 /*
- * Converts a Path into a set of Controls, consisting of a turn direction and
- * distance.
+ * --Converts a Path into a set of Controls--
+ * Input: dubinsPath consisting of path type and segment lengths
+ * Oput: Vector of controls, where a control has a direction (-1, 0, 1) and a distanace 
  */
 std::vector<Control> dubins::pathToControls(Path dubinsPath) {
-
   Control control1, control2, control3;
   control1.direction = dubinsPath.dir1;
   control1.distance = dubinsPath.seg1;
@@ -145,25 +152,39 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
 
   control3.direction = dubinsPath.dir3;
   control3.distance = dubinsPath.seg3;
-  // std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
-  // std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
-  // std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
+
+  /* 
+   std::cout << "First, turn " <<  direction1 << " for: " << control1.distance << " timesteps\n";
+   std::cout << "Then, turn " <<  direction2 << " for: " << control2.distance <<" timesteps\n";
+   std::cout << "Finally, turn " << direction3 <<" for: " << control3.distance <<" timesteps\n";
+  */
   return std::vector<Control> { control1, control2, control3 };
 }
 
 /*
  * Main function to calculate a dubins path
  * Calls functions to calculate each path individually, finds minimum length
- * path assuming unit turning radius,  then scales path to proper length
+ * path assuming unit turning radius,then scales path to proper length
  */
 Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
   scalingFactor_ = minRadius;
+
+  // carPoint.x = 85;
+  // carPoint.y = 15;
+  //carPoint.direction = PI;
+
+  // waypoint.x = 95;
+  // waypoint.y = 10;
+  // waypoint.direction = PI;
   double distance = coord_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
-  // printf("\nOur dubins angle is %f\n", dubinsAngle);
 
-  // account for negatives
-  if (waypoint.x < 0) { dubinsAngle += PI; }
+  //rotates angle into quadrant 2
+  if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y >= 0){dubinsAngle = PI+dubinsAngle;}
+  //rotates angle to quadrant 3
+  if(waypoint.x-carPoint.x < 0 && waypoint.y-carPoint.y < 0){dubinsAngle += PI;}
+  //rotates angle to quadrant 4
+  if(waypoint.x-carPoint.x >=0 && waypoint.y-carPoint.y < 0){dubinsAngle = 2*PI+dubinsAngle;}
 
   // printf("\nOur transformed dubins angle is %f\n", dubinsAngle);
 
@@ -172,8 +193,6 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-   distance = distance / scalingFactor_;
-
   // Calculate each type of dubins path individually
   Path paths[4] = {
     lsl(initDirection, finalDirection, distance),
@@ -186,35 +205,37 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
   Path dubinsPath = paths[0];
   for (Path path : paths) {
     if (path.length < dubinsPath.length) {
-      dubinsPath = path;
+        dubinsPath = path;
+      }
     }
-  }
 
-  // Rescales path assuming unit turning radius to proper length
-  dubinsPath *= scalingFactor_;
-  dubinsPath.origin.x = carPoint.x;
-  dubinsPath.origin.y = carPoint.y;
-  dubinsPath.origin.z = carPoint.direction;
-  dubinsPath.rotationAngle = dubinsAngle;
+  //Rescales path assuming unit turning radius to proper length
+   dubinsPath *= scalingFactor_;
+   dubinsPath.origin.x = carPoint.x;
+   dubinsPath.origin.y = carPoint.y;
+   dubinsPath.origin.z = carPoint.direction;
+   dubinsPath.rotationAngle = dubinsAngle;
 
-  // printf("The minimum path is of length: %f\n", dubinsPath.length);
-  // printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
-    // dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
+   //printf("The minimum path is of length: %f\n", dubinsPath.length);
+   // printf("Seg 1 is length: %f, .seg 2 is length: %f, .seg 3 is length: %f\n",
+   // dubinsPath.seg1, dubinsPath.seg2, dubinsPath.seg3);
+   return dubinsPath;
+ }
 
-  return dubinsPath;
-}
-
-/*
- * Left turn operator, given an initial waypoint, position, and distance to
+ /*
+  * Left turn operator, given an initial waypoint, position, and distance to
  * travel. Returns a point corresponding to a maxim left turn.
- */
-cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist) {
-  cv::Point3d newPos;
-  newPos.x = x + sin(theta + dist) - sin(theta);
-  newPos.y = y - cos(theta + dist) + cos(theta);
-  newPos.z = theta + dist;
+  */
 
-  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+cv::Point3d dubins::leftTurn(double x, double y, double theta, double dist) {
+cv::Point3d newPos;
+
+
+newPos.x = x + sin(theta + dist) - sin(theta);
+newPos.y = y - cos(theta + dist) + cos(theta);
+newPos.z = mod(theta + dist, 2*PI);
+
+//std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
   return newPos;
 }
@@ -228,25 +249,30 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
 
   newPos.x = x - sin(theta - dist) + sin(theta);
   newPos.y = y + cos(theta - dist) - cos(theta);
-  newPos.z = theta - dist;
+  newPos.z = mod(theta - dist,2*PI);
 
-  //std::cout << "Our new x coord is: " << newPos.x << "/n";
+
+  std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
   return newPos;
 }
 
-
-/*
- * Straight turn operator, given an initial waypoint, position, and distance to
- * travel. Returns a point corresponding to a straight 'turn'.
+/* Straight turn operator
+ * Input: Initial wayaypoint (x,y,theta), and dist, where theta
+ *  is initial direction of motion and dist is the distance to apply the turn for.
+ *  travel along a maximum turn. Returns a point corresponding to a straight 'turn'.
+ * Output: new position (x,y,direction of motion) after performing the turn
  */
 cv::Point3d dubins::straightTurn(double x, double y, double theta, double dist) {
   cv::Point3d newPos;
+
   newPos.x = x + dist * cos(theta);
   newPos.y = y + dist * sin(theta);
-  newPos.z = theta;
+  newPos.z = mod(theta,2*PI);
 
-  //std::cout << "Our new x coord is: " << newPos.x << "/n";
-  //std::cout << "Our new y coord is: " << newPos.y << "/n";
+  /* std::cout << "Our new x coord is: " << newPos.x << "/n";
+  std::cout << "Our new y coord is: " << newPos.y << "/n"; 
+  */
+
   return newPos;
 }

@@ -305,7 +305,8 @@ void sdcHLC::UpdatePathDistance() {
 cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
   //printf("pathdist_: %f\n", pathDist_);
-  double lookaheadDistance = ScaledLookaheadDistance();
+  // double lookaheadDistance = ScaledLookaheadDistance();
+  double lookaheadDistance = 20;
 
   if (llc_->BeyondPath(pathDist_ + lookaheadDistance)) {
     llc_->GenerateNewDubins();
