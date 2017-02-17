@@ -167,7 +167,9 @@ void CameraPlugin::OnUpdate()
     }
     
     imshow("img", image);
-    //imwrite("waypoints.png", image);
+
+    imwrite("waypoints.png", image);
+
     waitKey(4);
 }
 

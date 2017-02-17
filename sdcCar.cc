@@ -381,11 +381,11 @@ void sdcCar::OnUpdate() {
 
   // Check if the front lidars have been updated, and if they have update
   // the car's list
-  if (frontLidarLastUpdate_ != sdcSensorData::GetLidarLastUpdate(FRONT)) {
+  /*if (frontLidarLastUpdate_ != sdcSensorData::GetLidarLastUpdate(FRONT)) {
     std::vector<sdcVisibleObject*> v = sdcSensorData::GetObjectsInFront();
     UpdateFrontObjects(v);
     frontLidarLastUpdate_ = sdcSensorData::GetLidarLastUpdate(FRONT);
-  }
+  }*/
 
   // Call our Drive function, which is the brain for the car
   hlc_->Drive();

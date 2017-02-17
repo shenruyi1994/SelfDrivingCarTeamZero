@@ -1,4 +1,5 @@
 #include "dubins.hh"
+
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <cmath>
@@ -11,7 +12,7 @@
 using namespace gazebo;
 
 dubins::dubins() {
-   scalingFactor_ = MIN_TURNING_RADIUS;
+  scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
 }
 
 //True mod function that does not return negative values
@@ -155,8 +156,7 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
  * Calls functions to calculate each path individually, finds minimum length
  * path assuming unit turning radius,  then scales path to proper length
  */
-Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
-  scalingFactor_ = minRadius;
+Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
   double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
   // printf("\nOur dubins angle is %f\n", dubinsAngle);
@@ -171,7 +171,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRad
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
-   distance = distance / scalingFactor_;
+  // distance = distance / scalingFactor_;
 
   // Calculate each type of dubins path individually
   Path paths[4] = {
