@@ -60,8 +60,7 @@ void LidarPlugin::OnUpdate()
 
 	// For each beam, print out the distance to an object.
 	// If no object detect, prints out 'inf'
-	/*rays = dataProcessing::GetLidarData(FRONT);
-	std:: cout << "\nLidar Info\n";
+	/*std:: cout << "\nLidar Info\n";
 	for(auto &i : *rays)
 	{
 		std:: cout << "(" << i << ") ";
@@ -74,7 +73,7 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 	double minDistance = INT_MAX;
 	bool objectIsDetected = false;
 	std::vector<sdcVisibleObject*> objectList;
-
+    
 	for (int i = 0; i < objectRays->size(); i++) {
 		if (!isinf(objectRays->at(i)) && objectRays->at(i) < minDistance) {
 			minDistance = objectRays->at(i);
@@ -96,19 +95,23 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 			objectList.push_back(object);
 			minDistance = INT_MAX;
 		}
-
 	}
-	//right side edge case
-	if (objectIsDetected) {
-		sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
-		sdcAngle rightAngle = sdcAngle(lidarAngle*320);
+    
+    //right side edge case
+    if(0 <= leftIndex && leftIndex <= 639 && 0 <= rightIndex && rightIndex <= 639)
+    {
+        if (objectIsDetected) {
+            sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
+            sdcAngle rightAngle = sdcAngle(lidarAngle*320);
 
-		sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
-		sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
+            sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
+            sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-		sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance, leftIndex, rightIndex);
-		objectList.push_back(object);
-	}
+            sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance, leftIndex, rightIndex);
+            objectList.push_back(object);
+        }
+    }
+    
 
 	// checking if there are obstacles detected
 	if (objectList.size() > 0) {
