@@ -172,7 +172,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   }
 
   for (int i = 0; i < 3; i++) {
-    printf("========== pathPoint: (%f, %f)\n", paths_[i].origin.x, paths_[i].origin.y);
+    // printf("========== pathPoint: (%f, %f)\n", paths_[i].origin.x, paths_[i].origin.y);
   }
 
   math::Vector2d carPos = sdcSensorData::GetPosition();
@@ -197,9 +197,11 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
       break;
     }
   }
-  printf("\n");
+  //printf("\n");
 
-  printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
+  // printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
+
+  
     cv::Point2d returnP;
   returnP.x = origin.x;
   returnP.y = origin.y;

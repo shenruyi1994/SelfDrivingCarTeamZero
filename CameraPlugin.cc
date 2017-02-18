@@ -186,9 +186,9 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
 
-    imshow("img", image);
-    imwrite("waypoints.png", image);
-    waitKey(4);
+    //imshow("img", image);
+    //imwrite("waypoints.png", image);
+    //waitKey(4);
 
     for (sdcVisibleObject* obj : dataProcessing::GetNearbyObjects()) {
       updateObjectBrightness(obj);
@@ -312,7 +312,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     circle(mat, p1, 2, Scalar(255,255,255), 3);
     circle(mat, p2, 2, Scalar(255,255,255), 3);
     circle(mat, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
-    imshow(std::to_string(roi_ID), mat);
+    //imshow(std::to_string(roi_ID), mat);
    
     
     math::Vector3 originCoord;
@@ -329,6 +329,10 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 
     // cout << "realworld X is" << newX << endl;
     // cout << "realworld Y is " << newY << endl;
+
+    std::ofstream roadPoints;
+    roadPoints.open("roadPoints.csv", std::ios_base::app);
+    roadPoints << newX << ", " << newY << std::endl;
 
     return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,lo));
     //return cv::Point2d(waypoint_x,mid);
@@ -390,7 +394,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
 
     //-- Show detected keypoints
-    imshow("Average sample locations", image);
+    //imshow("Average sample locations", image);
 
     visibleObject->SetBrightness((blue_avg + green_avg + red_avg)/3);
 }
