@@ -34,11 +34,11 @@ namespace gazebo
       static void updateWaypoints(std::vector<cv::Point2d> waypoints);
       static void updateWaypointsAngles(std::vector<double> waypointAngles);
       static void UpdateCarPosition(double x, double y, double z);
-      static std::vector<sdcVisibleObject*> GetNearbyObjects();
-      static bool AreNearbyObjects();
+      static sdcVisibleObject* GetNearbyObject();
+      static bool IsNearbyObject();
       static ObjectType GetObjectType(const sdcVisibleObject* obj);
-      static void UpdateAreNearbyObjects(bool areNearby);
-      static void UpdateObjectList(std::vector<sdcVisibleObject*> objs);
+      static void UpdateIsNearbyObject(bool isNearby);
+      static void UpdateObject(sdcVisibleObject* obj);
 
     private:
       static double carX;
@@ -47,7 +47,7 @@ namespace gazebo
       static std::vector<double>* frontLidarData;
       static std::vector<double>* backLidarData;
       static std::map<LidarPosition, LidarInfo> lidarInfo;
-      static std::vector<sdcVisibleObject*> objectList_;
+      static sdcVisibleObject* object_;
   };
 }
 #endif

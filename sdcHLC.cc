@@ -62,7 +62,7 @@ void sdcHLC::Drive() {
     lastUpdateTime_ = common::Time(curTime);
   }
 
-  if (dataProcessing::AreNearbyObjects()) {
+  if (dataProcessing::IsNearbyObject()) {
     printf("Watch out for the objects!\n");
   }
 

@@ -54,11 +54,16 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
  * Returns true if the given object is a possible new position of this object
  */
 bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
-  math::Vector2d estPos = EstimateUpdate();
-  double uncertainty = pythag_thm(estPos.x - other->centerpoint_.x,
-                                  estPos.y - other->centerpoint_.y);
+  double new_left_edge = this->getLeftRay().GetLateralDist();
+  double new_right_edge = this->getRightRay().GetLateralDist();
+  
+  double old_left_edge = other->getLeftRay().GetLateralDist();
+  double old_right_edge = other->getRightRay().GetLateralDist();
 
-  return uncertainty * confidence_ < UNCERTAINTY_RATIO;
+  double uncertainty = fabs(new_left_edge - old_left_edge) + fabs(new_right_edge - old_right_edge);
+  
+  std::cout << "uncertainty: " << uncertainty << std::endl;
+  return uncertainty < UNCERTAINTY_RATIO;
 }
 
 /*
