@@ -61,13 +61,27 @@ void sdcHLC::Drive() {
   } else {
     lastUpdateTime_ = common::Time(curTime);
   }
-
+  
+  // Obstacle detected -> maneuver obstacle avoidance
   if (dataProcessing::AreNearbyObjects()) {
     printf("Watch out for the objects!\n");
+    
+    /*
+      
+    */
   }
+  
+  // Obstacle not detected -> keep following waypoints
+  else{
+    FollowWaypoints();
 
-  FollowWaypoints();
+    // Attempts to turn towards the target direction
+    MatchTargetDirection();
 
+    // Attempts to match the target speed
+    MatchTargetSpeed();
+  }
+  
   /*
   // If not in avoidance, check if we should start following the thing
   // in front of us. If following is done, kick out to default state
@@ -142,11 +156,6 @@ void sdcHLC::Drive() {
       // ParallelPark();
       break;
   } */
-
-  // Attempts to turn towards the target direction
-  MatchTargetDirection();
-  // Attempts to match the target speed
-  MatchTargetSpeed();
 }
 
 /*
