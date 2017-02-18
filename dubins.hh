@@ -51,7 +51,7 @@ class GAZEBO_VISIBLE dubins {
     dubins();
     ~dubins() {}
 
-    Path calculateDubins(Waypoint waypoint, Waypoint carPoint);
+    Path calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius);
     std::vector<Control> pathToControls(Path);
     cv::Point3d leftTurn(double, double, double, double);
     cv::Point3d rightTurn(double, double, double, double);

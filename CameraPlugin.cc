@@ -35,6 +35,7 @@ event::ConnectionPtr updateConnection;
 sensors::MultiCameraSensorPtr parentSensor;
 
 Mat image;
+vector<Point2d> sidePoints;
 
 void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 {
@@ -82,8 +83,8 @@ void CameraPlugin::OnUpdate()
 
 
     // Rectangular region of interest
-    double ROI_lo = height/9;
-    double ROI_hi = height/1.02;
+    double ROI_lo = 0;
+    double ROI_hi = height;
 
     Mat rect_roi(image.size(), image.type());
     image.copyTo(rect_roi);
@@ -108,10 +109,10 @@ void CameraPlugin::OnUpdate()
         sub_lo = sub_hi;
     }
 
-     imshow("sub0", subs[0]);
-    imshow("sub1", subs[1]);
-    imshow("sub2", subs[2]);
-    // Process each sub ROI
+    //imshow("sub0", subs[0]);
+    //imshow("sub1", subs[1]);
+    //imshow("sub2", subs[2]);
+    //  Process each sub ROI
     vector<Mat> proc_subs;
     for(size_t i = 0; i < subs.size(); i++)
     {
@@ -135,6 +136,13 @@ void CameraPlugin::OnUpdate()
 
         circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
     }
+    
+    // print out side points
+    for(size_t i = 0; i < sidePoints.size(); i++)
+    {
+        circle(image, sidePoints[i], 2, Scalar(0,0,255), 3);
+    }
+    sidePoints.clear();
 
     cv::Point originaPoint = cv::Point2d(320,400);
     imagePts.push_back(originaPoint);
@@ -161,7 +169,9 @@ void CameraPlugin::OnUpdate()
     
     
     imshow("img", image);
+
     imwrite("waypoints.png", image);
+
     waitKey(4);
 }
 
@@ -189,7 +199,7 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
     }
 }
 
-std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
+std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
     vector<Vec2f> lines;
     HoughLines(mat, lines, 1, PI/180, 38, 0, 0);
@@ -201,7 +211,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     for(size_t i = 0; i < lines.size(); i++)
     {
         float rho = lines[i][0], theta = lines[i][1];
-        if((0.1 < theta && theta < 1.5) || (theta > 1.62 && theta < 3.14))
+        if((0.15 < theta && theta < 1.54) || (theta > 1.62 && theta < 3.14))
         {
             if(theta > PI/2)
             {
@@ -230,7 +240,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     double b2 = rho_right/sin(theta_right);
 
     // find intersection of two equations
-    double x = (b1-b2)/(a2-a1);
+    /*double x = (b1-b2)/(a2-a1);
     double y = a1 * x + b1;
 
     double x2 = mat.cols/2;
@@ -239,13 +249,27 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     // y = mx + n, x = (y-n)/m
     double m = (y2-y)/(x2-x);
     double n = -m*x+y;
+    
+    int waypoint_x = (lo-n)/m;*/
 
     // find x, given y = mid
-    int waypoint_x = (mid-n)/m;
+    int waypoint_x1 = (lo-b1)/a1;
+    int waypoint_x2 = (lo-b2)/a2;
+    
+    cv::Point2d p1 = cv::Point2d(waypoint_x1, lo);
+    cv::Point2d p2 = cv::Point2d(waypoint_x2, lo);
+    sidePoints.push_back(p1);
+    sidePoints.push_back(p2);
+    
+    int waypoint_x = (waypoint_x1+waypoint_x2)/2;
+    
+    if(waypoint_x < 5){
+        waypoint_x = mat.cols/2;
+    }
 
     math::Vector3 originCoord;
     math::Vector3 direction;
-    this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, mid, originCoord, direction);
+    this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
 
     // cout << "viewportWidth originCoord is " << originCoord << endl;
     // cout << "viewportWidth direction is " << direction << endl;
@@ -258,7 +282,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int mid)
     // cout << "realworld X is" << newX << endl;
     // cout << "realworld Y is " << newY << endl;
 
-    return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,mid));
+    return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,lo));
     //return cv::Point2d(waypoint_x,mid);
 }
 
@@ -317,7 +341,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::cout << "obstacle color: " << brightness << std::endl;
 
     //-- Show detected keypoints
-    //imshow("Average sample locations", image);
+    imshow("Average sample locations", image);
 
     visibleObject->SetBrightness(brightness);
     visibleObject->setBrightnessDetected();

@@ -680,10 +680,7 @@
 
         <!-- CAMERA -->
         <link name='camera::link'>
-              <pose>1.5 0 1.9 0 0.89 0</pose>
-
-              <self_collide>0</self_collide>
-              <kinematic>0</kinematic>
+              <pose>3.0 0 1.9 0 1.0 0</pose>
 
               <sensor name='camera' type='multicamera'>
                 <always_on>1</always_on>
@@ -693,7 +690,7 @@
 
                 <camera name="left">
                   <pose>0 0 0 0 0 0</pose>
-                  <horizontal_fov>2.0944</horizontal_fov>
+                  <horizontal_fov>2</horizontal_fov>
                   <image>
                     <width>640</width>
                     <height>480</height>
@@ -702,29 +699,8 @@
                     <near>0.1</near>
                     <far>150</far>
                   </clip>
-                  <save enabled="False">
-                   <path>/Users/selfcar/Desktop/Self-Driving-Comps/comps_camera_recordings/</path>
-                  </save>
                 </camera>
-
-                <!-- <camera name="right">
-                  <pose>0 -0.2 0 0 0 0</pose>
-                  <horizontal_fov>1.047</horizontal_fov>
-                  <image>
-                    <width>640</width>
-                    <height>480</height>
-                  </image>
-                  <clip>
-                    <near>0.1</near>
-                    <far>150</far>
-                  </clip>
-                  <save enabled="False">
-                   <path>/Users/selfcar/Desktop/Self-Driving-Comps/comps_camera_recordings/</path>
-                  </save>
-                </camera> -->
-
                 <plugin name="sdcCameraSensor" filename="build/libcamera.so" />
-
               </sensor>
 
 	      <!--

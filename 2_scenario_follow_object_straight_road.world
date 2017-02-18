@@ -30,6 +30,11 @@
       <background>0.7 0.7 0.7 1</background>
       <shadows>1</shadows>
     </scene>
+
+    <include>
+	<uri>/models/sdcCar</uri>
+    </include>
+
     <model name='car'>
       <link name='chassis'>
         <pose frame=''>0 0 0.35 0 -0 0</pose>
@@ -1185,6 +1190,7 @@
         <gps>gps</gps>
       </plugin>
     </model>
+>>>>>>> 771d4118c4cc81c8d85e1ef0e87d1f19c904f552
     <model name='ground_plane'>
       <static>1</static>
       <link name='link'>
