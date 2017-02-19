@@ -156,8 +156,9 @@ std::vector<Control> dubins::pathToControls(Path dubinsPath) {
  * Calls functions to calculate each path individually, finds minimum length
  * path assuming unit turning radius,  then scales path to proper length
  */
-Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint) {
-  double distance = waypoint_distance(waypoint, carPoint)/scalingFactor_;
+Path dubins::calculateDubins(Waypoint waypoint, Waypoint carPoint, double minRadius) {
+  scalingFactor_ = minRadius;
+  double distance = coord_distance(waypoint, carPoint) / scalingFactor_;
   double dubinsAngle = atan((waypoint.y - carPoint.y) / (waypoint.x - carPoint.x));
   // printf("\nOur dubins angle is %f\n", dubinsAngle);
 

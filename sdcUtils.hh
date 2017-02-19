@@ -21,27 +21,11 @@ T pythag_thm(T x, T y) {
 }
 
 /*
- * Returns the distance between two cv::Point2d objects, using the pythag_thm
- * function.
+ * Computes the distance between two points. The passed in types must each have
+ * the public numeric fields x and y.
  */
-double cv_distance(const cv::Point2d& p1, const cv::Point2d& p2) {
-  return pythag_thm(p1.x - p2.x, p1.y - p2.y);
-}
-
-/*
- * Returns the distance between two gazebo::math::Vector2d objects, using the
- * pythag_thm function.
- */
-double vec_distance(const gazebo::math::Vector2d& p1,
-                      const gazebo::math::Vector2d& p2) {
-  return pythag_thm(p1.x - p2.x, p1.y - p2.y);
-}
-
-/*
- * Returns the distance between two Waypoint instances, using the
- * pythag_thm function.
- */
-double waypoint_distance(const Waypoint& p1, const Waypoint& p2) {
+template<typename T1, typename T2>
+double coord_distance(const T1& p1, const T2& p2) {
   return pythag_thm(p1.x - p2.x, p1.y - p2.y);
 }
 
@@ -144,14 +128,16 @@ cv::Vec<T, 2> normalized(cv::Vec<T, 2> vec) {
 /*
  * Converts a math::Vector2d to a cv::Point2d
  */
-cv::Point2d math_vec_to_point(const gazebo::math::Vector2d& vec) {
+template<typename T>
+cv::Point2d to_point(const T& vec) {
   return cv::Point2d(vec.x, vec.y);
 }
 
 /*
  * Converts a cv::Point2d to a math::Vector2d
  */
-gazebo::math::Vector2d point_to_math_vec(const cv::Point2d& point) {
+template<typename T>
+gazebo::math::Vector2d to_math_vec(const T& point) {
   return gazebo::math::Vector2d(point.x, point.y);
 }
 
