@@ -29,9 +29,9 @@ cv::Point2d waypoint3;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
-bool areNearby = false;
+bool isNearby_ = false;
 float brightness_ = 255;
-std::vector<sdcVisibleObject*> dataProcessing::objectList_ = std::vector<sdcVisibleObject*>();
+sdcVisibleObject* dataProcessing::object_;
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
@@ -104,22 +104,23 @@ std::array<double, 3> dataProcessing::getWaypointAngles() {
   return { waypointAngle1, waypointAngle2, waypointAngle3 };
 }
 
-std::vector<sdcVisibleObject*> dataProcessing::GetNearbyObjects() {
-  return objectList_;
+sdcVisibleObject* dataProcessing::GetNearbyObject() {
+  return object_;
 }
 
-bool dataProcessing::AreNearbyObjects() {
-  return areNearby;
+bool dataProcessing::IsNearbyObject() {
+  return isNearby_;
 }
 
 ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
   return obj->GetBrightness() > 100 ? CAR_TYPE : NON_CAR_TYPE;
 }
 
-void dataProcessing::UpdateAreNearbyObjects(bool areNearby) {
-  areNearby = areNearby;
+void dataProcessing::UpdateIsNearbyObject(bool isNearby) {
+  isNearby_ = isNearby;
+  // printf("WE ARE HERE\n");
 }
 
-void dataProcessing::UpdateObjectList(std::vector<sdcVisibleObject*> objs){
-  objectList_ = objs;
+void dataProcessing::UpdateObject(sdcVisibleObject* obj){
+  object_ = obj;
 }

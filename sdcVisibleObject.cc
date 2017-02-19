@@ -29,7 +29,7 @@ sdcVisibleObject::sdcVisibleObject() {
  * movement parameters in order to help us predict their motion and track them
  * across multiple sensor readings.
  */
-sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist) {
+sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist, int leftRayIndex, int rightRayIndex) {
   left_ = left;
   right_ = right;
   dist_ = dist;
@@ -43,17 +43,29 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
 
   tracking_ = false;
   brandSpankinNew_ = true;
+  brightnessDetected = false;
+    
+  leftRayIndex_ = leftRayIndex;
+  rightRayIndex_ = rightRayIndex;
 }
 
 /*
  * Returns true if the given object is a possible new position of this object
  */
 bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
-  math::Vector2d estPos = EstimateUpdate();
-  double uncertainty = pythag_thm(estPos.x - other->centerpoint_.x,
-                                  estPos.y - other->centerpoint_.y);
+  // printf("CP1\n");
+  double new_left_edge = this->getLeftRay().GetLateralDist();
+  double new_right_edge = this->getRightRay().GetLateralDist();
+  // printf("CP2\n");
+  
+  double old_left_edge = other->getLeftRay().GetLateralDist();
+  double old_right_edge = other->getRightRay().GetLateralDist();
+  // printf("CP3\n");
 
-  return uncertainty * confidence_ < UNCERTAINTY_RATIO;
+  double uncertainty = fabs(new_left_edge - old_left_edge) + fabs(new_right_edge - old_right_edge);
+  
+  std::cout << "uncertainty: " << uncertainty << std::endl;
+  return uncertainty < UNCERTAINTY_RATIO;
 }
 
 /*
@@ -248,4 +260,20 @@ sdcLidarRay sdcVisibleObject::getLeftRay() const {
 
 sdcLidarRay sdcVisibleObject::getRightRay() const {
   return right_;
+}
+
+int sdcVisibleObject::getLeftRayIndex() const{
+    return leftRayIndex_;
+}
+
+int sdcVisibleObject::getRightRayIndex() const{
+    return rightRayIndex_;
+}
+
+void sdcVisibleObject::setBrightnessDetected(){
+    brightnessDetected = true;
+}
+
+bool sdcVisibleObject::getBrightnessDetected() const{
+    return brightnessDetected;
 }

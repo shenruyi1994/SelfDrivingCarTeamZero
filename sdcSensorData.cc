@@ -295,7 +295,9 @@ std::vector<sdcVisibleObject*> sdcSensorData::GetObjectsInFront() {
             // If either the checked angles or distance fall outside the margins, the rays are looking at a new object
             if (!((curAngle - prevAngle).WithinMargin(angleMargin) && fabs(curDist - prevDist) < distMargin)) {
                 // Record the object just found
-                objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
+                
+                // Kirsten + Ruyi: here we are passing in 0,0 assuming we never call this file.
+                objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist,0,0));
                 ignorePrev = true;
             }
         } else {
@@ -310,7 +312,7 @@ std::vector<sdcVisibleObject*> sdcSensorData::GetObjectsInFront() {
     }
 
     // Since objects are recorded on the trailing end of the loop, this will make sure the last object is properly added
-    objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist));
+    objectList.push_back(new sdcVisibleObject(sdcLidarRay(objMinAngle, objFirstDist), sdcLidarRay(prevAngle, prevDist), objMinDist,0,0));
     return objectList;
 }
 

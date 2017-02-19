@@ -61,9 +61,8 @@ void sdcHLC::Drive() {
   } else {
     lastUpdateTime_ = common::Time(curTime);
   }
-  
-  // Obstacle detected -> maneuver obstacle avoidance
-  if (dataProcessing::AreNearbyObjects()) {
+
+  if (dataProcessing::IsNearbyObject()) {
     printf("Watch out for the objects!\n");
     
     /*
@@ -391,10 +390,12 @@ void sdcHLC::Follow() {
   }
 
   // The default object to follow is directly in front of the car, the max range away
+
+  // Kirsten + Ruyi : QUESTION: we are not using sdcSensorData but dataProcessing to pass lidar data right?
   sdcVisibleObject* tracked = new sdcVisibleObject(
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
     sdcLidarRay(0, sdcSensorData::GetLidarMaxRange(FRONT)),
-    sdcSensorData::GetLidarMaxRange(FRONT));
+    sdcSensorData::GetLidarMaxRange(FRONT),0,0);
 
   // Already tracking an object, find it again
   if (car_->isTrackingObject_) {
@@ -650,17 +651,42 @@ void sdcHLC::Avoidance() {
 //////////////////////////////////////////
 //////////////////////////////////////////
 
+void sdcHLC::DecideAvoidanceStrategy(const sdcVisibleObject* obj) {
+  bool isCar = dataProcessing::GetObjectType(obj) == CAR_TYPE;
+
+  if (roadState_ == STOP_16 && car_->GetSpeed() < 0.1) {
+    roadState_ = WAIT_16;
+  }
+
+  // TODO: if the speed difference is small, then we should approach rather
+  // than stop. This is only relevant if we also deal with moving obstacles.
+  if (isCar && CanStopBeforeObject(obj)) {
+    roadState_ = STOP_16;
+  } else {
+    roadState_ = AVOID_16;
+  }
+}
+
 /*
- * Returns the first object encountered that is on a collision course with
- * the car, or NULL if no such object exists.
+ * Returns true if the car is able to stop before hitting the object.
+ * Uses the equation d = v^2 / 20
  */
-sdcVisibleObject* sdcHLC::CheckNearbyObjectsForCollision() const {
+bool sdcHLC::CanStopBeforeObject(const sdcVisibleObject* obj) const {
+  return obj->Dist() > sqrt(car_->GetSpeed()) / 20;
+}
+
+/*
+ * Sets dangerousObj_ to the first object encountered that is on a collision
+ * course with the car, or NULL if no such object exists.
+ */
+void sdcHLC::CheckNearbyObjectsForCollision() {
   for (sdcVisibleObject* obj : car_->frontObjects_) {
     if (IsObjectOnCollisionCourse(obj)) {
-      return obj;
+      dangerousObj_ = obj;
+      return;
     }
   }
-  return NULL;
+  dangerousObj_ = NULL;
 }
 
 /*
