@@ -160,12 +160,15 @@ void CameraPlugin::OnUpdate()
     dataProcessing::updateWaypointsAngles(waypointAngles);
     
     if (dataProcessing::IsNearbyObject()) {
+        // printf("CPCheck1\n");
         sdcVisibleObject* obj = dataProcessing::GetNearbyObject();
+        // printf("CPCheck2\n");
         std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
         if (!obj->getBrightnessDetected()){
               updateObjectBrightness(obj);
         }
     }
+    // printf("CPCheck0\n");
     
     
     imshow("img", image);
