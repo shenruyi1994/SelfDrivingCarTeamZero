@@ -110,7 +110,6 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 		dataProcessing::UpdateIsNearbyObject(true);
         sdcVisibleObject* oldObject = dataProcessing::GetNearbyObject();
         if (!object->IsSameObject(oldObject)) {
-          printf("---------------updating object bc it's different----------------\n");
           dataProcessing::UpdateObject(object);
         }
 	}
