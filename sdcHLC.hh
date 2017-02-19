@@ -108,8 +108,13 @@ namespace gazebo {
 
     // The different sub-states within the ROAD metastate
     enum RoadState {
-      ENTER_16, EXIT_16, FOLLOW_16, APPROACH_16, STOP_16, WAIT_16,
-      PASS_16, AVOID_16, RETURN_16
+      FOLLOW_16, // follow waypoints
+      APPROACH_16, // avoidance maneuvers
+      STOP_16, // emergency stop behind an obstacle
+      WAIT_16, // wait behind a stopped car
+      PASS_16, // pass a stopped car
+      AVOID_16, // avoidance maneuvers, or going around an obstacles
+      RETURN_16 // return to our lane after passing
     };
 
     // ================================================
