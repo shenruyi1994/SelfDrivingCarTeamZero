@@ -680,7 +680,7 @@
 
         <!-- CAMERA -->
         <link name='camera::link'>
-              <pose>3.0 0 1.9 0 1.0 0</pose>
+              <pose>3.0 0 1.9 0 0.9 0</pose>
 
               <sensor name='camera' type='multicamera'>
                 <always_on>1</always_on>
@@ -690,7 +690,7 @@
 
                 <camera name="left">
                   <pose>0 0 0 0 0 0</pose>
-                  <horizontal_fov>2</horizontal_fov>
+                  <horizontal_fov>1.9</horizontal_fov>
                   <image>
                     <width>640</width>
                     <height>480</height>

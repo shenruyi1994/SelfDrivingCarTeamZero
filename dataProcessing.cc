@@ -118,6 +118,7 @@ ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
 
 void dataProcessing::UpdateIsNearbyObject(bool isNearby) {
   isNearby_ = isNearby;
+  // printf("WE ARE HERE\n");
 }
 
 void dataProcessing::UpdateObject(sdcVisibleObject* obj){

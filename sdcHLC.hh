@@ -64,7 +64,9 @@ namespace gazebo {
     void ParallelPark();
 
     // Collision detection/avoidance functions
-    sdcVisibleObject* CheckNearbyObjectsForCollision() const;
+    void CheckNearbyObjectsForCollision();
+    void DecideAvoidanceStrategy(const sdcVisibleObject* obj);
+    bool CanStopBeforeObject(const sdcVisibleObject* obj) const;
     bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
     bool DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const;
     double DoMaximumRadiiCollide(const sdcVisibleObject* obj) const;
@@ -102,14 +104,19 @@ namespace gazebo {
     // ================================================
     // 2016 states
     // ================================================
-    enum MetaStates {
+    enum MetaState {
       START_16, FINISH_16, ROAD_16, INTERSECTION_16, PARKING_16
     };
 
     // The different sub-states within the ROAD metastate
-    enum RoadStates {
-      ENTER_16, EXIT_16, FOLLOW_16, APPROACH_16, STOP_16, WAIT_16,
-      PASS_16, AVOID_16, RETURN_16
+    enum RoadState {
+      FOLLOW_16, // follow waypoints
+      APPROACH_16, // avoidance maneuvers
+      STOP_16, // emergency stop behind an obstacle
+      WAIT_16, // wait behind a stopped car
+      PASS_16, // pass a stopped car
+      AVOID_16, // avoidance maneuvers, or going around an obstacles
+      RETURN_16 // return to our lane after passing
     };
 
     // ================================================
@@ -147,6 +154,12 @@ namespace gazebo {
     // The current state of the car
     CarState DEFAULT_STATE;
     CarState currentState_;
+
+    // Current state of the car, 2016 version
+    MetaState metaState_;
+    RoadState roadState_;
+
+    sdcVisibleObject* dangerousObj_;
 
     //dijkstra's stuff
     std::vector<int> unvisited_;
