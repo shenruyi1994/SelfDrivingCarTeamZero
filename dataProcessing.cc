@@ -13,7 +13,9 @@
 #include <opencv2/opencv.hpp>
 
 #include "dataProcessing.hh"
+#include "sdcLidarRay.hh"
 #include "sdcCar.hh"
+#include "sdcSensorData.hh"
 
 using namespace gazebo;
 
@@ -29,6 +31,11 @@ cv::Point2d waypoint3;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
+double prev_x;
+double prev_y;
+double cur_x;
+double cur_y;
+math::Vector2d unitVector;
 bool isNearby_ = false;
 float brightness_ = 255;
 sdcVisibleObject* dataProcessing::object_;
@@ -125,12 +132,91 @@ void dataProcessing::UpdateObject(sdcVisibleObject* obj){
   object_ = obj;
 }
 
+// Update car's current and previous positions and
+// compute a unit vector of the car's direction
+void dataProcessing::UpdateCarDirection(){
+  math::Vector2d pos = sdcSensorData::GetPosition();
+  double x_coord = pos[0];
+  double y_coord = pos[1];
+  
+  if(prev_x == 0 && prev_y == 0 && cur_x == 0 && cur_y == 0){
+    cur_x = x_coord;
+    cur_y = y_coord;
+  }else{
+    prev_x = cur_x;
+    prev_y = cur_y;
+    cur_x = x_coord;
+    cur_y = y_coord;
+    ComputeUnitVector(prev_x, prev_y, cur_x, cur_y);
+  }
+}
+
+void dataProcessing::ComputeUnitVector(double prev_x, double prev_y, double cur_x, double cur_y){
+  double dx = cur_x - prev_x;
+  double dy = cur_y - prev_y;
+  double mag = GetVectorMagnitude(dx, dy);
+  double unit_dx = dx/mag;
+  double unit_dy = dy/mag;
+  unitVector = math::Vector2d(unit_dx, unit_dy);
+}
+
+double dataProcessing::FindAngle(double lat_dist, double long_dist){
+  return atan(lat_dist/long_dist);
+}
+
+double dataProcessing::GetVectorMagnitude(double x, double y){
+  return std::sqrt(x*x + y*y);
+}
+
+math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double long_dist, double angle){
+  double mag = GetVectorMagnitude(lat_dist, long_dist);
+  
+  // rotate by a given angle
+  double x_rot = unitVector[0]*cos(-angle) - unitVector[1]*sin(-angle);
+  double y_rot = unitVector[0]*sin(-angle) + unitVector[1]*cos(-angle);
+  
+  // scale by magnitude
+  double x_scaled = x_rot * mag;
+  double y_scaled = y_rot * mag;
+  
+  // now take the width of the car into account (how many ever unit vectors you want)
+  double x_orthogonal = x_scaled - unitVector[0] * long_dist;
+  double y_orthogonal = y_scaled - unitVector[1] * long_dist;
+  double mag_orthogonal = GetVectorMagnitude(x_orthogonal, y_orthogonal);
+  
+  x_orthogonal += x_orthogonal/mag_orthogonal * 1.2;
+  y_orthogonal += y_orthogonal/mag_orthogonal * 1.2;
+  
+  // add orthogonal and its perpendicular vectors together
+  double newX = x_orthogonal + unitVector[0] * long_dist;
+  double newY = y_orthogonal + unitVector[1] * long_dist;
+  
+  return math::Vector2d(newX, newY);
+  return math::Vector2d(x_scaled, y_scaled);
+}
+
 std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
+  sdcVisibleObject* object = GetNearbyObject();
+  sdcLidarRay left = object->getLeftRay();
+  sdcLidarRay right = object->getRightRay();
+  
+  double left_lat = left.GetLateralDist(), left_long = left.GetLongitudinalDist();
+  double right_lat = right.GetLateralDist(), right_long = right.GetLongitudinalDist();
+  double left_angle = FindAngle(left_lat, left_long);
+  double right_angle = FindAngle(right_lat, right_long);
+  
+  math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
+  math::Vector2d right_vector = ComputeObstacleVector(right_lat, right_long, right_angle);
+  
+  //std::cout << "Left Vector: (" << left_vector[0] << "," << left_vector[1] << ")\n";
+  //std::cout << "Right Vector: (" << right_vector[0] << "," << right_vector[1] << ")\n";
+  
+  cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
+  cv::Point2d rightP = cv::Point2d(cur_x+right_vector[0], cur_y+right_vector[1]);
 
-  sdcVisibleObject*  object = GetNearbyObject();
-  cv::Point2d leftP;
-  cv::Point2d rightP;
-
+  std::cout << "Left Point: " << cur_x+left_vector[0] << "," << cur_y+left_vector[1] << std::endl;
+  std::cout << "Right Point: " << cur_x+right_vector[0] << "," << cur_y+right_vector[1] << std::endl;
+  std::cout << "Current Point: " << cur_x << ", " << cur_y << std::endl;
+  std::cout << std::endl;
   return std::make_pair(leftP, rightP);
-
 }

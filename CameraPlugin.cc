@@ -326,7 +326,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
- 
+  
     // cout << "viewportWidth originCoord is " << originCoord << endl;
     // cout << "viewportWidth direction is " << direction << endl;
 
@@ -394,7 +394,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     int brightness = sum/3/points_in_roi.size();
 
     Vec3f avg_color(brightness, brightness, brightness);
-    std::cout << "obstacle color: " << brightness << std::endl;
+    //std::cout << "obstacle color: " << brightness << std::endl;
 
     //-- Show detected keypoints
     imshow("Average sample locations", image);

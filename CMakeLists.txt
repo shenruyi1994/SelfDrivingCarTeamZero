@@ -84,7 +84,7 @@ add_library(LidarInfo SHARED LidarInfo.cc)
 target_link_libraries(LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(data SHARED dataProcessing.cc)
-target_link_libraries(data LidarInfo sdcVisibleObject sdcLidarRay ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(data LidarInfo sdcVisibleObject sdcLidarRay sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(lidar SHARED LidarPlugin.cc)
 target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})

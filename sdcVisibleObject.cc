@@ -12,8 +12,6 @@
 #include "sdcUtils.hh"
 #include <opencv2/opencv.hpp>
 
-
-
 using namespace gazebo;
 
 // How far off our estimates can be before we assume we're seeing a differnt object

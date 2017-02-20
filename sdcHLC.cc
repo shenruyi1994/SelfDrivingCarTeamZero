@@ -64,23 +64,17 @@ void sdcHLC::Drive() {
   }
 
   if (dataProcessing::IsNearbyObject()) {
-    printf("Watch out for the objects!\n");
-    
-    /*
-      
-    */
+    Avoidance();
   }
   
   // Obstacle not detected -> keep following waypoints
-  else{
-    FollowWaypoints();
+  FollowWaypoints();
 
-    // Attempts to turn towards the target direction
-    MatchTargetDirection();
+  // Attempts to turn towards the target direction
+  MatchTargetDirection();
 
-    // Attempts to match the target speed
-    MatchTargetSpeed();
-  }
+  // Attempts to match the target speed
+  MatchTargetSpeed();
   
   /*
   // If not in avoidance, check if we should start following the thing
@@ -163,6 +157,7 @@ void sdcHLC::Drive() {
  * to turn and by how much, as well as turning the actual wheel
  */
 void sdcHLC::MatchTargetDirection() {
+  dataProcessing::UpdateCarDirection();
   sdcAngle directionAngleChange = car_->GetDirection() - car_->targetDirection_;
   // If the car needs to turn, set the target steering amount
   if (!directionAngleChange.WithinMargin(DIRECTION_MARGIN_OF_ERROR)) {
@@ -261,9 +256,9 @@ void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
-  printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
   car_->SetTargetDirection(car_->AngleToTarget(to_math_vec(targetPoint)));
 }
@@ -475,18 +470,10 @@ void sdcHLC::Follow() {
  * of the car
  */
 void sdcHLC::Avoidance() {
-  // If there's nothing in front of the car and it's not in the middle
-  // of a navigation operation, exit the avoidance state
-  if (car_->frontObjects_.size() == 0 && !car_->trackingNavWaypoint_) {
-    currentState_ = DEFAULT_STATE;
-    currentAvoidanceState_ = notAvoiding;
-    return;
-  }
-
   std::pair<cv::Point2d, cv::Point2d> obstacle = dataProcessing::getObstacleCoords();
 
   //Waypoint avoidPoint = Waypoint(obstacle.second.x, obstacle.second.y, car_->GetDirection());
-  Waypoint avoidPoint;
+  /*Waypoint avoidPoint;
   Waypoint carPoint;
   carPoint.x = car_->x_;
   carPoint.y = car_->y_;
@@ -495,169 +482,7 @@ void sdcHLC::Avoidance() {
   llc_->dubins_->calculateDubins(avoidPoint, carPoint, MIN_TURNING_RADIUS);
 
   steeringAngles.push_back(car_->GetDirection().angle);
-  
-
-  // Get lists of objects that are moving quickly towards us,
-  // and objects that are close to us
-  std::vector<sdcVisibleObject*> fastObjects, furiousObjects;
-  if (car_->frontObjects_.size() > 0) {
-    for (int i = 0; i < car_->frontObjects_.size(); i++) {
-      if (car_->IsObjectTooFast(car_->frontObjects_[i])) {
-        fastObjects.push_back(car_->frontObjects_[i]);
-      }
-      if (car_->IsObjectTooFurious(car_->frontObjects_[i])) {
-        furiousObjects.push_back(car_->frontObjects_[i]);
-      }
-    }
-  }
-
-  // For emergency swerve, check which side the object is coming from so
-  // we can go away from it
-  bool isObjectOnRight = true;
-
-  // Objects moving relatively quickly towards the car are the highest priority. If any
-  // of these exist, react accordingly
-  if (fastObjects.size() > 0) {
-    bool setState = false;
-    for (int i = 0; i < fastObjects.size(); i++) {
-      // If the object is moving faster than the car is, or the car is moving significantly faster than the object,
-      // try and swerve as there isn't enough time to stop
-      double objSpeed = sqrt(
-        pow(fastObjects[i]->GetEstimatedXSpeed(), 2)
-        + pow(fastObjects[i]->GetEstimatedYSpeed() - car_->GetSpeed(), 2));
-
-      if (objSpeed > car_->GetSpeed()
-          || car_->GetSpeed() > objSpeed + 4) {
-        currentAvoidanceState_ = emergencySwerve;
-        if (fastObjects[i]->GetCenterPoint().x < 0) {
-          isObjectOnRight = false;
-        }
-        setState = true;
-        break;
-      }
-    }
-
-    // If the state hasn't been set to swerve, the car should be able to stop and thus
-    // avoid a collision
-    if (!setState) {
-      currentAvoidanceState_ = emergencyStop;
-    }
-  } else if (furiousObjects.size() > 0) {
-    // There are objects very close to the car, but not necessarily in danger of running into
-    // it. Try and navigate around them
-    currentAvoidanceState_ = navigation;
-  } else if (currentAvoidanceState_ != navigation
-      && currentAvoidanceState_ != emergencyStop) {
-    // No dangerous objects were found, and the car is not in the middle of navigating around
-    // objects in front of it. Exit to default state
-    currentAvoidanceState_ = notAvoiding;
-    currentState_ = DEFAULT_STATE;
-    return;
-  }
-
-  switch(currentAvoidanceState_) {
-    // Stop, hard.
-    case emergencyStop:
-      llc_->Stop();
-      car_->SetBrakeRate(10);
-      break;
-
-    // Make an emergency turn and attempt to accelerate past
-    // the incoming danger
-    case emergencySwerve:
-      if (isObjectOnRight) {
-        car_->SetTargetDirection(car_->GetOrientation() + PI/4);
-      } else {
-        car_->SetTargetDirection(car_->GetOrientation() - PI/4);
-      }
-      car_->SetTargetSpeed(10);
-      car_->SetAccelRate(10);
-      break;
-
-    // Carefully maneuver around perceived obstacles
-    case navigation:
-    {
-      // Set the target speed very low, and if the car is moving
-      // sufficiently slowly increase the rate we can turn
-      car_->SetTargetSpeed(1);
-      if (car_->GetSpeed() < 2) {
-        car_->SetTurningLimit(30.0);
-      }
-
-      // The car is currently driving to a custom waypoint that was already determined
-      // to be a safe target. Keep moving towards it
-      if (car_->trackingNavWaypoint_) {
-        sdcAngle targetAngle = car_->AngleToTarget(car_->navWaypoint_);
-        car_->SetTargetDirection(targetAngle);
-
-        if (car_->GetDistance(car_->navWaypoint_) < 1) {
-          car_->trackingNavWaypoint_ = false;
-          car_->SetTurningLimit(10.0);
-        }
-      } else {
-        // At this point, need to find a gap in the objects presented ahead of the car and
-        // begin driving towards it
-        double maxWidth = -1;
-        double dist = 0;
-        double prevDist = 0;
-        sdcAngle targetAngle = car_->GetOrientation();
-
-        // If there isn't an object directly in front of us, we can safely drive forward
-        if (!car_->ObjectDirectlyAhead()) {
-          car_->navWaypoint_ = math::Vector2d(car_->x_ + cos(car_->GetOrientation().angle) * 4, car_->y_ + sin(car_->GetOrientation().angle) * 4);
-          car_->trackingNavWaypoint_ = true;
-          break;
-        }
-
-        // Loop through all objects in front of the car, find the space with the largest width
-        // and store the point between them
-        math::Vector2d prevPoint = math::Vector2d(car_->frontObjects_[0]->Right().GetLateralDist() + FRONT_OBJECT_COLLISION_WIDTH + 0.2, car_->frontObjects_[0]->Right().GetLongitudinalDist());
-        // Angle closest to 0 that it's safe to drive through
-        double bestMargin = 2 * PI;
-        math::Vector2d curPoint;
-        for (int i = 0; i < car_->frontObjects_.size(); i++) {
-          curPoint = car_->frontObjects_[i]->Right().GetAsPoint();
-          if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH) {
-            // Point is on our left
-            if (curPoint.x < 0) {
-              math::Vector2d newPoint = math::Vector2d(prevPoint.x - FRONT_OBJECT_COLLISION_WIDTH/2., prevPoint.y);
-              sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
-              if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
-                bestMargin = newAngle.FindMargin(sdcAngle(0)).angle;
-                car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
-              }
-            }
-            // Point is on our right
-            else {
-              math::Vector2d newPoint = math::Vector2d(curPoint.x + FRONT_OBJECT_COLLISION_WIDTH/2., curPoint.y);
-              sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
-              if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
-                bestMargin = newAngle.FindMargin(sdcAngle(0)).angle;
-                car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
-              }
-            }
-          }
-          prevPoint = car_->frontObjects_[i]->Left().GetAsPoint();
-        }
-        curPoint = math::Vector2d(prevPoint.x, 0);
-        if (curPoint.Distance(prevPoint) > FRONT_OBJECT_COLLISION_WIDTH + 0.2) {
-          math::Vector2d newPoint = math::Vector2d(prevPoint.x - FRONT_OBJECT_COLLISION_WIDTH/2., prevPoint.y);
-          sdcAngle newAngle = atan2(newPoint.x, newPoint.y);
-          if (newAngle.FindMargin(sdcAngle(0)) < bestMargin) {
-            car_->navWaypoint_ = math::Vector2d(car_->x_ + cos((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)), car_->y_ + sin((newAngle + car_->GetOrientation()).angle)*newPoint.Distance(math::Vector2d(0,0)));
-          }
-        }
-
-        car_->trackingNavWaypoint_ = true;
-      }
-      break;
-    }
-
-    case notAvoiding: // fall through
-    default:
-      currentState_ = DEFAULT_STATE;
-      break;
-  }
+  */
 }
 
 //////////////////////////////////////////
