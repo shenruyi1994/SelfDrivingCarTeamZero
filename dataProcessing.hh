@@ -39,6 +39,7 @@ namespace gazebo
       static ObjectType GetObjectType(const sdcVisibleObject* obj);
       static void UpdateIsNearbyObject(bool isNearby);
       static void UpdateObject(sdcVisibleObject* obj);
+    static std::pair<cv::Point2d, cv::Point2d> getObstacleCoords();
 
     private:
       static double carX;

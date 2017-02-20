@@ -270,7 +270,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
-
+ 
     // cout << "viewportWidth originCoord is " << originCoord << endl;
     // cout << "viewportWidth direction is " << direction << endl;
 
@@ -346,3 +346,5 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     visibleObject->SetBrightness(brightness);
     visibleObject->setBrightnessDetected();
 }
+
+

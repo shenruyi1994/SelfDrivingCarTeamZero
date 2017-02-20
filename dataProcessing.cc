@@ -123,3 +123,13 @@ void dataProcessing::UpdateIsNearbyObject(bool isNearby) {
 void dataProcessing::UpdateObject(sdcVisibleObject* obj){
   object_ = obj;
 }
+
+std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
+
+  sdcVisibleObject*  object = GetNearbyObject();
+  cv::Point2d leftP;
+  cv::Point2d rightP;
+
+  return std::make_pair(leftP, rightP);
+
+}

@@ -10,6 +10,9 @@
 #include "sdcAngle.hh"
 #include "sdcLidarRay.hh"
 #include "sdcUtils.hh"
+#include <opencv2/opencv.hpp>
+
+
 
 using namespace gazebo;
 
@@ -275,3 +278,4 @@ void sdcVisibleObject::setBrightnessDetected(){
 bool sdcVisibleObject::getBrightnessDetected() const{
     return brightnessDetected;
 }
+

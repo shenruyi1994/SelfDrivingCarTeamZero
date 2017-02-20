@@ -15,8 +15,9 @@
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
 #include "sdcRotatedBoundingBox.hh"
-#include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
+
+
 
 using namespace gazebo;
 
@@ -473,6 +474,20 @@ void sdcHLC::Avoidance() {
     return;
   }
 
+  std::pair<cv::Point2d, cv::Point2d> obstacle = dataProcessing::getObstacleCoords();
+
+  //Waypoint avoidPoint = Waypoint(obstacle.second.x, obstacle.second.y, car_->GetDirection());
+  Waypoint avoidPoint;
+  Waypoint carPoint;
+  carPoint.x = car_->x_;
+  carPoint.y = car_->y_;
+  carPoint.direction = car_->GetDirection().angle;
+
+  llc_->dubins_->calculateDubins(avoidPoint, carPoint, MIN_TURNING_RADIUS);
+
+  steeringAngles.push_back(car_->GetDirection().angle);
+  
+
   // Get lists of objects that are moving quickly towards us,
   // and objects that are close to us
   std::vector<sdcVisibleObject*> fastObjects, furiousObjects;
@@ -777,7 +792,8 @@ sdcAngle sdcHLC::GetAngleAtTime(double time) const {
  */
 std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
     sdcVisibleObject* obj, math::Vector2d collision) {
-  return NULL;
+
+    return NULL;
 }
 
 /*

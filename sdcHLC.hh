@@ -52,6 +52,8 @@ namespace gazebo {
     double ScaledLookaheadDistance() const;
     void AngleWheelsTowardsTarget(const math::Vector2d& target);
 
+    std::vector<double> steeringAngles; 
+
     // Driving algorithms
     void LanedDriving();
     void GridTurning(int turn);

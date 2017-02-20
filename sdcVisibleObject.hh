@@ -4,6 +4,8 @@
 #include <gazebo/common/common.hh>
 #include "sdcAngle.hh"
 #include "sdcLidarRay.hh"
+#include <opencv2/opencv.hpp>
+
 
 namespace gazebo {
   class sdcVisibleObject {
@@ -38,7 +40,7 @@ namespace gazebo {
 
     sdcLidarRay getLeftRay() const;
     sdcLidarRay getRightRay() const;
-      
+
     int getLeftRayIndex() const;
     int getRightRayIndex() const;
       
