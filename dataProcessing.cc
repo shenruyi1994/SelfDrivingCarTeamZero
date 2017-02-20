@@ -19,7 +19,7 @@ using namespace gazebo;
 
 double dataProcessing::carX = 0;
 double dataProcessing::carY = 0;
-double dataProcessing::carZ = 0;
+double dataProcessing::carYaw = 0;
 std::vector<double>* dataProcessing::frontLidarData = new std::vector<double>();
 std::vector<double>* dataProcessing::backLidarData = new std::vector<double>();
 std::map<LidarPosition, LidarInfo> dataProcessing::lidarInfo = std::map<LidarPosition, LidarInfo>();
@@ -39,10 +39,16 @@ void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolu
 }
 
 // Update the absolute coordinates of the car in the world
-void dataProcessing::UpdateCarPosition(double x, double y, double z) {
+void dataProcessing::UpdateGPS(double x, double y, double z) {
   carX = x;
   carY = y;
-  carZ = z;
+  carYaw = z;
+//  std::cout << "The car's position is: " << carX << ", " << carY << std::endl;
+//  std::cout << "The car's yaw is: " << carYaw << std::endl;
+}
+
+cv::Point2d dataProcessing::GetCarLocation() {
+  return cv::Point2d(carX, carY);
 }
 
 // Update lidar data
