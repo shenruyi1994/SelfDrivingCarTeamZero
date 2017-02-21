@@ -110,7 +110,7 @@ void CameraPlugin::OnUpdate()
         subs.push_back(sub);
         sub_lo += lo_increment;
     }
-    
+
     // --------------------------------------
     // EDITED ROI III
     /*
@@ -125,7 +125,7 @@ void CameraPlugin::OnUpdate()
     }
 
     sub_hi = sub_lo + interval;
-    sub_lo -= 220; 
+    sub_lo -= 220;
     Mat sub(rect_roi.size(), rect_roi.type());
     rect_roi.copyTo(sub);
     ROI(sub, sub_lo, sub_hi);
@@ -140,7 +140,7 @@ void CameraPlugin::OnUpdate()
     {
         proc_subs.push_back(preprocess(subs[i]));
     }
-     
+
     // For each sub ROI, find vanishing point
     vector<cv::Point2d> pts;
     vector<cv::Point2d> worldPts;
@@ -158,7 +158,7 @@ void CameraPlugin::OnUpdate()
 
         circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
     }
-    
+
     // print out side points
     for(size_t i = 0; i < sidePoints.size(); i++)
     {
@@ -169,11 +169,9 @@ void CameraPlugin::OnUpdate()
     cv::Point originaPoint = cv::Point2d(320,400);
     imagePts.push_back(originaPoint);
 
-    double previousAngle = 0;
     for(int i = 3; i > 0; i--)
     {
-        double angle = getAngle(imagePts[i].x, imagePts[i].y, imagePts[i-1].x, imagePts[i-1].y, previousAngle);
-        previousAngle += angle;
+        double angle = getAngle(worldPts[i].x, worldPts[i].y, worldPts[i-1].x, worldPts[i-1].y);
         // std::cout << "angle " << i <<" is " << angle << '\n';
         waypointAngles.push_back(angle);
     }
@@ -195,11 +193,18 @@ void CameraPlugin::OnUpdate()
     }
 }
 
-double CameraPlugin::getAngle(int firstX, int firstY, int secondX, int secondY,
-                              double previousAngle)
+double CameraPlugin::getAngle(double firstX, double firstY, double secondX, double secondY)
 {
-  double tangValue = (double)(secondX - firstX) / (double)(firstY - secondY);
-  double angle = atan(tangValue) - previousAngle;
+  double angle = atan((secondX - firstX) / (firstY - secondY));
+
+  if (secondX - firstX < 0 && secondY - firstY >= 0)
+    angle = PI - angle;
+  //rotates angle to quadrant 3
+  else if (secondX - firstX < 0 && secondY - firstY < 0)
+    angle += PI;
+  //rotates angle to quadrant 4
+  else if (secondX - firstX >= 0 && secondY - firstY < 0)
+    angle = 2*PI - angle;
   return angle;
 }
 
@@ -225,9 +230,9 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     int houghVotes = 105;
     if(roi_ID == 0)
         houghVotes = 52;
-    
+
     vector<Vec2f> lines;
-    
+
     HoughLines(mat, lines, 1, PI/180, houghVotes, 0, 0);
 
     // inner most lines
@@ -275,24 +280,24 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     // y = mx + n, x = (y-n)/m
     double m = (y2-y)/(x2-x);
     double n = -m*x+y;
-    
+
     int waypoint_x = (lo-n)/m;*/
 
     // find x, given y = mid
     int waypoint_x1 = (lo-b1)/a1;
     int waypoint_x2 = (lo-b2)/a2;
-    
+
     cv::Point2d p1 = cv::Point2d(waypoint_x1, lo);
     cv::Point2d p2 = cv::Point2d(waypoint_x2, lo);
     sidePoints.push_back(p1);
     sidePoints.push_back(p2);
-    
+
     int waypoint_x = (waypoint_x1+waypoint_x2)/2;
-    
+
     if(waypoint_x < 5){
         waypoint_x = mat.cols/2;
     }
-    
+
     // draw detected lines & waypoints
     for(size_t i = 0; i < lines.size(); i++)
     {
@@ -313,8 +318,8 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     circle(mat, p2, 2, Scalar(255,255,255), 3);
     circle(mat, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
     imshow(std::to_string(roi_ID), mat);
-   
-    
+
+
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
