@@ -194,8 +194,8 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   double x_width = 0;
   double y_width = 0;
   if (mag_orthogonal != 0){
-    x_width = x_orthogonal/mag_orthogonal * 1.65;
-    y_width = y_orthogonal/mag_orthogonal * 1.65;
+    x_width = x_orthogonal/mag_orthogonal * 1.8;
+    y_width = y_orthogonal/mag_orthogonal * 1.8;
   }
   
   if(angle >= 0){
