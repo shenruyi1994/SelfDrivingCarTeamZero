@@ -167,7 +167,7 @@ void dataProcessing::ComputeUnitVector(double prev_x, double prev_y, double cur_
 }
 
 double dataProcessing::FindAngle(double lat_dist, double long_dist){
-  return atan(lat_dist/long_dist);
+  return (long_dist != 0) ? atan(lat_dist/long_dist) : PI/2.0;
 }
 
 double dataProcessing::GetVectorMagnitude(double x, double y){
