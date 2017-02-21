@@ -261,7 +261,7 @@ void sdcHLC::FollowWaypoints() {
   //printf("  speed: %f\n", car_->GetSpeed());
   //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
-  car_->SetTargetDirection(car_->AngleToTarget(to_math_vec(targetPoint)));
+  car_->SetTargetPoint(targetPoint);
 }
 
 /*
