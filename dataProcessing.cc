@@ -155,8 +155,12 @@ void dataProcessing::ComputeUnitVector(double prev_x, double prev_y, double cur_
   double dx = cur_x - prev_x;
   double dy = cur_y - prev_y;
   double mag = GetVectorMagnitude(dx, dy);
-  double unit_dx = dx/mag;
-  double unit_dy = dy/mag;
+  double unit_dx = 0;
+  double unit_dy = 0;
+  if(mag != 0){
+    unit_dx = dx/mag;
+    unit_dy = dy/mag;
+  }
   unitVector = math::Vector2d(unit_dx, unit_dy);
 }
 
@@ -184,39 +188,41 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   double y_orthogonal = y_scaled - unitVector[1] * long_dist;
   double mag_orthogonal = GetVectorMagnitude(x_orthogonal, y_orthogonal);
   
-  x_orthogonal += x_orthogonal/mag_orthogonal * 1.65;
-  y_orthogonal += y_orthogonal/mag_orthogonal * 1.65;
+  double x_width = x_orthogonal/mag_orthogonal * 1.65;
+  double y_width = y_orthogonal/mag_orthogonal * 1.65;
+  
+  
+  if(angle >= 0){
+    x_orthogonal -= x_width;
+    y_orthogonal -= y_width;
+  }else{
+    x_orthogonal += x_width;
+    y_orthogonal += y_width;
+  }
   
   // add orthogonal and its perpendicular vectors together
   double newX = x_orthogonal + unitVector[0] * long_dist;
   double newY = y_orthogonal + unitVector[1] * long_dist;
   
   return math::Vector2d(newX, newY);
-  return math::Vector2d(x_scaled, y_scaled);
 }
 
 std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
   sdcVisibleObject* object = GetNearbyObject();
   sdcLidarRay left = object->getLeftRay();
-  sdcLidarRay right = object->getRightRay();
   
   double left_lat = left.GetLateralDist(), left_long = left.GetLongitudinalDist();
   double left_angle = FindAngle(left_lat, left_long);
-  double right_lat = right.GetLateralDist(), right_long = right.GetLongitudinalDist();
-  double right_angle = FindAngle(right_lat, right_long);
   
   math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
-  math::Vector2d right_vector = ComputeObstacleVector(right_lat, right_long, right_angle);
-  
-  //std::cout << "Left Vector: (" << left_vector[0] << "," << left_vector[1] << ")\n";
-  //std::cout << "Right Vector: (" << right_vector[0] << "," << right_vector[1] << ")\n";
   
   cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
-  cv::Point2d rightP = cv::Point2d(cur_x+right_vector[0], cur_y+right_vector[1]);
-
-  //std::cout << "Left Point: " << cur_x+left_vector[0] << "," << cur_y+left_vector[1] << std::endl;
-  //std::cout << "Right Point: " << cur_x+right_vector[0] << "," << cur_y+right_vector[1] << std::endl;
-  //std::cout << "Current Point: " << cur_x << ", " << cur_y << std::endl;
-  //std::cout << std::endl;
+  cv::Point2d rightP;
+  
+  std::cout << "Angle: " << left_angle << std::endl;
+  std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
+  std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
+  std::cout << std::endl;
+  
   return std::make_pair(leftP, rightP);
 }

@@ -65,7 +65,7 @@ bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
 
   double uncertainty = fabs(new_left_edge - old_left_edge) + fabs(new_right_edge - old_right_edge);
   
-  std::cout << "uncertainty: " << uncertainty << std::endl;
+  //std::cout << "uncertainty: " << uncertainty << std::endl;
   return uncertainty < UNCERTAINTY_RATIO;
 }
 
