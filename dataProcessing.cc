@@ -184,8 +184,8 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   double y_orthogonal = y_scaled - unitVector[1] * long_dist;
   double mag_orthogonal = GetVectorMagnitude(x_orthogonal, y_orthogonal);
   
-  x_orthogonal += x_orthogonal/mag_orthogonal * 1.2;
-  y_orthogonal += y_orthogonal/mag_orthogonal * 1.2;
+  x_orthogonal += x_orthogonal/mag_orthogonal * 1.65;
+  y_orthogonal += y_orthogonal/mag_orthogonal * 1.65;
   
   // add orthogonal and its perpendicular vectors together
   double newX = x_orthogonal + unitVector[0] * long_dist;
@@ -201,8 +201,8 @@ std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
   sdcLidarRay right = object->getRightRay();
   
   double left_lat = left.GetLateralDist(), left_long = left.GetLongitudinalDist();
-  double right_lat = right.GetLateralDist(), right_long = right.GetLongitudinalDist();
   double left_angle = FindAngle(left_lat, left_long);
+  double right_lat = right.GetLateralDist(), right_long = right.GetLongitudinalDist();
   double right_angle = FindAngle(right_lat, right_long);
   
   math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
@@ -214,9 +214,9 @@ std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
   cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
   cv::Point2d rightP = cv::Point2d(cur_x+right_vector[0], cur_y+right_vector[1]);
 
-  std::cout << "Left Point: " << cur_x+left_vector[0] << "," << cur_y+left_vector[1] << std::endl;
-  std::cout << "Right Point: " << cur_x+right_vector[0] << "," << cur_y+right_vector[1] << std::endl;
-  std::cout << "Current Point: " << cur_x << ", " << cur_y << std::endl;
-  std::cout << std::endl;
+  //std::cout << "Left Point: " << cur_x+left_vector[0] << "," << cur_y+left_vector[1] << std::endl;
+  //std::cout << "Right Point: " << cur_x+right_vector[0] << "," << cur_y+right_vector[1] << std::endl;
+  //std::cout << "Current Point: " << cur_x << ", " << cur_y << std::endl;
+  //std::cout << std::endl;
   return std::make_pair(leftP, rightP);
 }

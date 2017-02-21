@@ -55,6 +55,7 @@ sdcHLC::~sdcHLC() {
  * request from Gazebo
  */
 void sdcHLC::Drive() {
+  dataProcessing::UpdateCarDirection();
   common::Time curTime = car_->model_->GetWorld()->GetSimTime();
   if (curTime.Double() - lastUpdateTime_.Double() < .01) {
     UpdatePathDistance();
