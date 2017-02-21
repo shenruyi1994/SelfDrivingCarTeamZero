@@ -390,7 +390,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::cout << "obstacle color: " << blue_avg << ", " << green_avg << ", " << red_sum << std::endl;
 
     //-- Show detected keypoints
-    imshow("Average sample locations", image);
+    //imshow("Average sample locations", image);
 
     visibleObject->SetBrightness((blue_avg + green_avg + red_avg)/3);
 }

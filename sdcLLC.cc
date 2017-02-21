@@ -51,9 +51,7 @@ void sdcLLC::GenerateNewDubins() {
   carPoint.y = carPos.y;
   carPoint.direction = car_->GetOrientation().angle;
 
-  if(carPoint.direction > PI/2 && carPoint.direction < 3*PI/2){
-    carPoint.x -=1;
-}
+
   //printf("initDirection  %f", carPoint.direction);
   paths_.clear();
 
@@ -89,6 +87,11 @@ void sdcLLC::GenerateNewDubins() {
     recentWaypoints_[i].push_back(lastWaypoints_[i]);
 
     //  printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
+
+    if(carPoint.direction > PI/2 && carPoint.direction < 3*PI/2){
+
+      waypoint.y += 0.5;
+    }
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
     startPoint = waypoint;
