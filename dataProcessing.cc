@@ -157,6 +157,8 @@ void dataProcessing::ComputeUnitVector(double prev_x, double prev_y, double cur_
   double mag = GetVectorMagnitude(dx, dy);
   double unit_dx = 0;
   double unit_dy = 0;
+  
+  // check for division by 0
   if(mag != 0){
     unit_dx = dx/mag;
     unit_dy = dy/mag;
@@ -188,9 +190,13 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   double y_orthogonal = y_scaled - unitVector[1] * long_dist;
   double mag_orthogonal = GetVectorMagnitude(x_orthogonal, y_orthogonal);
   
-  double x_width = x_orthogonal/mag_orthogonal * 1.65;
-  double y_width = y_orthogonal/mag_orthogonal * 1.65;
-  
+  // check for division by 0
+  double x_width = 0;
+  double y_width = 0;
+  if (mag_orthogonal != 0){
+    x_width = x_orthogonal/mag_orthogonal * 1.65;
+    y_width = y_orthogonal/mag_orthogonal * 1.65;
+  }
   
   if(angle >= 0){
     x_orthogonal -= x_width;
