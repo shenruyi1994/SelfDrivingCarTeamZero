@@ -286,6 +286,10 @@ void sdcCar::SetTargetDirection(sdcAngle direction) {
   targetDirection_ = direction;
 }
 
+void sdcCar::SetTargetPoint(cv::Point2d targetPoint) {
+  SetTargetDirection(AngleToTarget(to_math_vec(targetPoint)));
+}
+
 /*
  * Sets a target steering amount for the steering wheel
  */
