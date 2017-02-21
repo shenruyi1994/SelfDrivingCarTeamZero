@@ -42,6 +42,7 @@
 #include "sdcHLC.hh"
 #include "sdcIntersection.hh"
 #include "sdcSensorData.hh"
+#include "sdcUtils.hh"
 #include "sdcWaypoint.hh"
 
 using namespace gazebo;
