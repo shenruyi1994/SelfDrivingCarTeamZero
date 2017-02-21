@@ -88,11 +88,6 @@ void sdcLLC::GenerateNewDubins() {
 
     //  printf("========== waypoint: (%f, %f)\n", waypoint.x, waypoint.y);
 
-    if(carPoint.direction > PI/2 && carPoint.direction < 3*PI/2){
-
-      waypoint.y += 0.8;
-    }
-
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
     startPoint = waypoint;
   }
@@ -207,7 +202,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
       break;
     case 1:
        origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
-      
+
       break;
     }
   }

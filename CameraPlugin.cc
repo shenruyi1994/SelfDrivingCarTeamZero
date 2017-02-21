@@ -171,7 +171,7 @@ void CameraPlugin::OnUpdate()
 
     for(int i = 3; i > 0; i--)
     {
-        double angle = getAngle(worldPts[i].x, worldPts[i].y, worldPts[i-1].x, worldPts[i-1].y);
+        double angle = getAngle(worldPts[i], worldPts[i-1]);
         // std::cout << "angle " << i <<" is " << angle << '\n';
         waypointAngles.push_back(angle);
     }
@@ -193,17 +193,17 @@ void CameraPlugin::OnUpdate()
     }
 }
 
-double CameraPlugin::getAngle(double firstX, double firstY, double secondX, double secondY)
+double CameraPlugin::getAngle(const cv::Point2d& p1, const cv::Point2d& p2)
 {
-  double angle = atan((secondX - firstX) / (firstY - secondY));
+  double angle = atan((p2.x - p1.x) / (p1.y - p2.y));
 
-  if (secondX - firstX < 0 && secondY - firstY >= 0)
+  if (p2.x - p1.x < 0 && p2.y - p1.y >= 0)
     angle = PI - angle;
   //rotates angle to quadrant 3
-  else if (secondX - firstX < 0 && secondY - firstY < 0)
+  else if (p2.x - p1.x < 0 && p2.y - p1.y < 0)
     angle += PI;
   //rotates angle to quadrant 4
-  else if (secondX - firstX >= 0 && secondY - firstY < 0)
+  else if (p2.x - p1.x >= 0 && p2.y - p1.y < 0)
     angle = 2*PI - angle;
   return angle;
 }
