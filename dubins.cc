@@ -251,8 +251,7 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
   newPos.y = y + cos(theta - dist) - cos(theta);
   newPos.z = mod(theta - dist,2*PI);
 
-
-  std::cout << "Our new x coord is: " << newPos.x << "/n";
+  //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";
   return newPos;
 }

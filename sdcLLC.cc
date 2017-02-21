@@ -19,6 +19,12 @@
 
 using namespace gazebo;
 
+double mod(double a, double b) {
+  double ret = fmod(a,b);
+  if (ret < 0) { ret += b; }
+  return ret;
+}
+
 void sdcLLC::update() {
   if (car_->model_->GetWorld()->GetSimTime().Double() < 0.2) {
     GenerateNewDubins();
@@ -44,6 +50,10 @@ void sdcLLC::GenerateNewDubins() {
   carPoint.x = carPos.x;
   carPoint.y = carPos.y;
   carPoint.direction = car_->GetOrientation().angle;
+
+  if(carPoint.direction > PI/2 && carPoint.direction < 3*PI/2){
+    carPoint.x -=1;
+}
   //printf("initDirection  %f", carPoint.direction);
   paths_.clear();
 
@@ -193,11 +203,12 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
       origin = dubins_->straightTurn(origin.x, origin.y, origin.z, it->distance);
       break;
     case 1:
-      origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
+       origin = dubins_->rightTurn(origin.x, origin.y, origin.z, it->distance);
+      
       break;
     }
   }
-  printf("\n");
+  //printf("\n");
 
   printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
     cv::Point2d returnP;

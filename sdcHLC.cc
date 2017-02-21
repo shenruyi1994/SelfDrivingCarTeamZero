@@ -252,7 +252,7 @@ void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
-  printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  printf("targetPoint: (3%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
   printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
