@@ -90,7 +90,7 @@ void sdcLLC::GenerateNewDubins() {
 
     if(carPoint.direction > PI/2 && carPoint.direction < 3*PI/2){
 
-      waypoint.y += 0.5;
+      waypoint.y += 0.8;
     }
 
     paths_.push_back(dubins_->calculateDubins(waypoint, startPoint, minRadius));
