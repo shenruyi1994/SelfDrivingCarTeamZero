@@ -503,7 +503,7 @@ sdcCar::sdcCar() {
   targetSteeringAmount_ = 0.0;
   targetDirection_ = sdcAngle(0);
   turningLimit_ = 20.0;
-  targetSpeed_ = 1;
+  targetSpeed_ = 100;
 
   // Booleans for the car's actions
   turning_ = false;

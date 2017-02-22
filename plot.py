@@ -9,7 +9,6 @@ def read_datafile(file_name):
 
 targetPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/targetPoints.csv')
 locationPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/locationPoints.csv')
-##roadPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/roadPoints.csv')
 
 
 x= targetPoints[:,0]
@@ -35,6 +34,7 @@ x1 = locationPoints[:,0]
 y1 = locationPoints[:,1]
 
 ax2.plot(x1,y1, c='b', label='car Points')
+
 
 ##ax3 = fig.add_subplot(111)
 
