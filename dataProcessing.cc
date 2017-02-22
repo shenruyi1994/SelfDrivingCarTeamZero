@@ -225,10 +225,10 @@ cv::Point2d dataProcessing::getObstacleCoords(){
   
   cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
   
-  std::cout << "Angle: " << left_angle << std::endl;
-  std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
-  std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
-  std::cout << std::endl;
+  //std::cout << "Angle: " << left_angle << std::endl;
+  //std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
+  //std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
+  //std::cout << std::endl;
   
   return leftP;
 }

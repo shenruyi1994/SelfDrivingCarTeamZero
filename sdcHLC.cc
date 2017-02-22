@@ -69,19 +69,18 @@ void sdcHLC::Drive() {
 
   if (dataProcessing::IsNearbyObject()) {
     AVOIDANCE_STATE = true;
-    Avoidance();
   } else {
     AVOIDANCE_STATE = false;
-    
-    // Obstacle not detected -> keep following waypoints
-    FollowWaypoints();
-
-    // Attempts to turn towards the target direction
-    MatchTargetDirection();
-
-    // Attempts to match the target speed
-    MatchTargetSpeed();
   }
+  
+  // Obstacle not detected -> keep following waypoints
+  FollowWaypoints();
+  
+  // Attempts to turn towards the target direction
+  MatchTargetDirection();
+
+  // Attempts to match the target speed
+  MatchTargetSpeed();
   
   /*
   // If not in avoidance, check if we should start following the thing
@@ -262,10 +261,14 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
 void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
   cv::Point2d targetPoint;
-  if (AVOIDANCE_STATE)
+  if (AVOIDANCE_STATE){
     targetPoint = dataProcessing::getObstacleCoords();
-  else
+    printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
+  } else {
     targetPoint = FindDubinsTargetPoint();
+    printf("DRIVING STATE\n");
+  }
+    
   //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
   //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
@@ -483,7 +486,8 @@ void sdcHLC::Avoidance() {
   // get a target point to the left side of an obstacle
   cv::Point2d obstacle = dataProcessing::getObstacleCoords();
   
-  /*Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
+  /*
+  Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
   Waypoint carPoint;
   carPoint.x = car_->x_;
   carPoint.y = car_->y_;
