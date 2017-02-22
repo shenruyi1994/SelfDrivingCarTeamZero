@@ -9,7 +9,6 @@ def read_datafile(file_name):
 
 targetPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/targetPoints.csv')
 locationPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/locationPoints.csv')
-roadPoints = read_datafile('/Users/awr/Desktop/SelfDrivingCarTeamZero/roadPoints.csv')
 
 
 x= targetPoints[:,0]
@@ -36,16 +35,17 @@ y1 = locationPoints[:,1]
 
 ax2.plot(x1,y1, c='b', label='car Points')
 
-ax3 = fig.add_subplot(111)
 
-ax3.set_title("Gazebo road path")
-ax3.set_xlabel('Gazebo x coords')
-ax3.set_ylabel('Gazebo y coords')
+##ax3 = fig.add_subplot(111)
 
-x2 = roadPoints[:,0]
-y2 = roadPoints[:,1]
+##ax3.set_title("Gazebo road path")
+##ax3.set_xlabel('Gazebo x coords')
+##ax3.set_ylabel('Gazebo y coords')
 
-ax3.plot(x2,y2, c='g', label='road Points')
+##x2 = roadPoints[:,0]
+##y2 = roadsPoints[:,1]
+
+##ax3.plot(x2,y2, c='g', label='road Points')
 
 leg = ax1.legend()
 
