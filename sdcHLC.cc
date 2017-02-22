@@ -249,7 +249,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(3);
+  car_->SetTargetSpeed(5);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
   printf("targetPoint: (3%f, %f)\n", targetPoint.x, targetPoint.y);
@@ -257,6 +257,18 @@ void sdcHLC::FollowWaypoints() {
   printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
   car_->SetTargetPoint(targetPoint);
+
+
+
+  /*  uncomment to track path of car for plot.py
+  std::ofstream targetPoints;
+  targetPoints.open("targetPoints.csv", std::ios_base::app);
+  targetPoints << targetPoint.x << ", " << targetPoint.y << std::endl;
+
+  std::ofstream locationPoints;
+  locationPoints.open("locationPoints.csv", std::ios_base::app);
+  locationPoints << car_->x_ << ", " << car_->y_ << std::endl;
+  */
 }
 
 /*
