@@ -19,6 +19,11 @@
 
 using namespace gazebo;
 
+
+/* Positive modulo operator
+ * Input: two doubles
+ * Output: (a mod b) with positive buffer 
+*/
 double mod(double a, double b) {
   double ret = fmod(a,b);
   if (ret < 0) { ret += b; }
@@ -44,6 +49,9 @@ bool sdcLLC::BeyondPath(double distance) const {
   return distance > totalPathLength;
 }
 
+/*
+ * Master function to generate a new dubins path between the sdcCar   
+ */
 void sdcLLC::GenerateNewDubins() {
   math::Vector2d carPos = sdcSensorData::GetPosition();
   Waypoint carPoint;
@@ -138,8 +146,14 @@ void sdcLLC::StopReverse() {
   car_->reversing_ = false;
 }
 
-//Helper function for calculating our dubins point
-//Given a distance to travel and input controls corresponding to a dubins path, output controls coresponding to travel a given distance along the path
+
+
+/*
+ * Input: Controls corresponding to dubinsPath, lookahead distance
+ * Output: Dubins path concatonated and lookahead distance 
+ *
+*/
+
 std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double distance) {
 
   std::vector<Control>::iterator it;
@@ -162,7 +176,10 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
   return newControls;
 }
 
-// Finds a point along our dubins path at a specified distance
+/* 
+ * Input: 'Lookahead' distance along path
+ * Output: (x,y) coords of point that lies input distance along our current dubins path
+ */
 cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   GenerateNewDubins();
   Path path;
@@ -206,9 +223,6 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
       break;
     }
   }
-  //printf("\n");
-
-  // printf("(x,y,theta): (%f, %f, %f)\n", origin.x, origin.y, origin.z);
 
   
     cv::Point2d returnP;
@@ -216,5 +230,4 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
   returnP.y = origin.y;
   return returnP;
 
-  //return finalPoint;
 }
