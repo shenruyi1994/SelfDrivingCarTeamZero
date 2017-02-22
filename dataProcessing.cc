@@ -213,22 +213,22 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   return math::Vector2d(newX, newY);
 }
 
-std::pair<cv::Point2d, cv::Point2d> dataProcessing::getObstacleCoords(){
+cv::Point2d dataProcessing::getObstacleCoords(){
   sdcVisibleObject* object = GetNearbyObject();
   sdcLidarRay left = object->getLeftRay();
   
-  double left_lat = left.GetLateralDist(), left_long = left.GetLongitudinalDist();
+  double left_lat = left.GetLateralDist();
+  double left_long = left.GetLongitudinalDist();
   double left_angle = FindAngle(left_lat, left_long);
   
   math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
   
   cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
-  cv::Point2d rightP;
   
   std::cout << "Angle: " << left_angle << std::endl;
   std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
   std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
   std::cout << std::endl;
   
-  return std::make_pair(leftP, rightP);
+  return leftP;
 }

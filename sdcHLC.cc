@@ -471,8 +471,11 @@ void sdcHLC::Follow() {
  * of the car
  */
 void sdcHLC::Avoidance() {
-  std::pair<cv::Point2d, cv::Point2d> obstacle = dataProcessing::getObstacleCoords();
+  // get a target point to the left side of an obstacle
+  cv::Point2d obstacle = dataProcessing::getObstacleCoords();
 
+  
+  
   //Waypoint avoidPoint = Waypoint(obstacle.second.x, obstacle.second.y, car_->GetDirection());
   /*Waypoint avoidPoint;
   Waypoint carPoint;
