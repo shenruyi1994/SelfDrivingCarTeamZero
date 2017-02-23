@@ -52,14 +52,14 @@ namespace gazebo {
     double ScaledLookaheadDistance() const;
     void AngleWheelsTowardsTarget(const math::Vector2d& target);
 
-    std::vector<double> steeringAngles; 
+    std::vector<double> steeringAngles;
 
     // Driving algorithms
     void LanedDriving();
     void GridTurning(int turn);
     void WaypointDriving(std::vector<sdcWaypoint> waypoints);
     void Follow();
-    void Avoidance();
+    void AvoidObstacle();
     void PerpendicularPark();
     void ParallelPark();
 

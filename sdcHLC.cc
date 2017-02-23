@@ -18,13 +18,9 @@
 #include "Waypoints.hh"
 
 
-
 using namespace gazebo;
 
 std::vector<sdcWaypoint> WAYPOINT_VEC;
-
-// FOR TESTING
-bool AVOIDANCE_STATE = bool();
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
@@ -32,6 +28,8 @@ sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   // Initialize state enums
   DEFAULT_STATE = WAYPOINT;
   currentState_ = DEFAULT_STATE;
+
+  roadState_ = FOLLOW_16;
 
   currentPerpendicularState_ = backPark;
   currentParallelState_ = rightBack;
@@ -68,18 +66,37 @@ void sdcHLC::Drive() {
   }
 
   if (dataProcessing::IsNearbyObject()) {
-    AVOIDANCE_STATE = true;
+    roadState_ = AVOID_16;
   } else {
-    AVOIDANCE_STATE = false;
+    roadState_ = FOLLOW_16;
   }
 
-  // Obstacle not detected -> keep following waypoints
-  FollowWaypoints();
+  switch (roadState_) {
+    case WAIT_16:
+      // increment timer, pass eventually
+      break;
 
-  // Attempts to turn towards the target direction
+    case PASS_16:
+      // pass a car that we've been waiting behind, similar to AVOID_16 in that
+      // we need to find a point to the side ang get around it
+      break;
+
+    case STOP_16: // break hard
+      car_->SetTargetSpeed(0);
+      car_->SetBrakeRate(10);
+      break;
+
+    case AVOID_16:
+      AvoidObstacle();
+      break;
+
+    case FOLLOW_16: // fall through, follow waypoints with no obstacle
+    default:
+      FollowWaypoints();
+  }
+
+  // Attempt to turn towards the target direction and match target speed
   MatchTargetDirection();
-
-  // Attempts to match the target speed
   MatchTargetSpeed();
 
   /*
@@ -260,20 +277,15 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  */
 void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
-  cv::Point2d targetPoint;
-  if (AVOIDANCE_STATE){
-    targetPoint = dataProcessing::getObstacleCoords();
-    printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
-  } else {
-    targetPoint = FindDubinsTargetPoint();
-    printf("DRIVING STATE\n");
-  }
 
-  //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
-  //printf("  speed: %f\n", car_->GetSpeed());
-  //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
-  // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
+  cv::Point2d targetPoint = FindDubinsTargetPoint();
+  printf("DRIVING STATE\n");
   car_->SetTargetPoint(targetPoint);
+
+  // printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
+  // printf("  speed: %f\n", car_->GetSpeed());
+  // printf("  location: (%f, %f)\n", car_->x_, car_->y_);
+  // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
 
   /*  uncomment to track path of car for plot.py
   std::ofstream targetPoints;
@@ -492,10 +504,14 @@ void sdcHLC::Follow() {
  * for stopping and one for swerving. Also provides a navigation case for maneuvering around objects in front
  * of the car
  */
-void sdcHLC::Avoidance() {
+void sdcHLC::AvoidObstacle() {
   // get a target point to the left side of an obstacle
   cv::Point2d obstacle = dataProcessing::getObstacleCoords();
 
+  cv::Point2d targetPoint = dataProcessing::getObstacleCoords();
+  printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
+
+  car_->SetTargetPoint(targetPoint);
   /*
   Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
   Waypoint carPoint;
