@@ -89,7 +89,10 @@ void sdcHLC::Drive() {
     case AVOID_16:
       AvoidObstacle();
       break;
-
+    
+    case RETURN_16:
+      break;
+      
     case FOLLOW_16: // fall through, follow waypoints with no obstacle
     default:
       FollowWaypoints();
