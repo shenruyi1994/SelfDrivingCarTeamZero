@@ -12,7 +12,7 @@
 using namespace gazebo;
 
 dubins::dubins() {
-   scalingFactor_ = MIN_TURNING_RADIUS;
+  scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
 }
 
 /* Positive modulo operator
@@ -196,6 +196,8 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint startPoint, double minR
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
+  // distance = distance / scalingFactor_;
+
   // Calculate each type of dubins path individually
   Path paths[4] = {
     lsl(initDirection, finalDirection, distance),
@@ -251,8 +253,6 @@ cv::Point3d dubins::rightTurn(double x, double y, double theta, double dist) {
   newPos.x = x - sin(theta - dist) + sin(theta);
   newPos.y = y + cos(theta - dist) - cos(theta);
   newPos.z = mod(theta - dist,2*PI);
-
-
 
   //std::cout << "Our new x coord is: " << newPos.x << "/n";
   //std::cout << "Our new y coord is: " << newPos.y << "/n";

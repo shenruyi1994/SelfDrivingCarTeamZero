@@ -4,12 +4,14 @@
 #include <gazebo/common/common.hh>
 #include "sdcAngle.hh"
 #include "sdcLidarRay.hh"
+#include <opencv2/opencv.hpp>
+
 
 namespace gazebo {
   class sdcVisibleObject {
   public:
     sdcVisibleObject();
-    sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist);
+    sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double dist, int leftRayIndex, int rightRayIndex);
 
     bool IsSameObject(sdcVisibleObject* other) const;
     math::Vector2d EstimateUpdate() const;
@@ -39,12 +41,20 @@ namespace gazebo {
     sdcLidarRay getLeftRay() const;
     sdcLidarRay getRightRay() const;
 
+    int getLeftRayIndex() const;
+    int getRightRayIndex() const;
+      
+    void setBrightnessDetected();
+    bool getBrightnessDetected() const;
+
   private:
     sdcLidarRay left_;
     sdcLidarRay right_;
     double dist_;
     double lineSlope_;
     double lineIntercept_;
+    int leftRayIndex_;
+    int rightRayIndex_;
 
     static const double UNCERTAINTY_RATIO;
 
@@ -60,6 +70,7 @@ namespace gazebo {
 
     bool tracking_;
     bool brandSpankinNew_;
+    bool brightnessDetected;
 
     math::Vector2d GetCenterPoint(sdcLidarRay left, sdcLidarRay right,
                                   double dist) const;

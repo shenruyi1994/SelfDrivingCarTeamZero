@@ -26,6 +26,8 @@ LidarPlugin::~LidarPlugin()
 
 void LidarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
     // Get the parent sensor.
+
+	// printf("GH1\n");
     this->parentSensor =
       boost::dynamic_pointer_cast<sensors::RaySensor>(_sensor);
 
@@ -49,35 +51,28 @@ void LidarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
 
 void LidarPlugin::OnUpdate()
 {
+	// printf("GH2\n");
 	// vector that holds distance for each beam
 	std::vector<double>* rays = new std::vector<double>();
 	for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); i++){
 	  	rays->push_back(this->parentSensor->GetRange(i));
 	}
+  
 	getVisibleObjects(rays);
-
 	dataProcessing::UpdateLidarData(NEWFRONT, rays);
 
-	// For each beam, print out the distance to an object.
-	// If no object detect, prints out 'inf'
-	/*rays = dataProcessing::GetLidarData(FRONT);
-	std:: cout << "\nLidar Info\n";
-	for(auto &i : *rays)
-	{
-		std:: cout << "(" << i << ") ";
-	}*/
 }
 
-// I'll go over this with Ruyi and once we decide if it looks okay we'll
-// move it to the main repo and have it return an sdcVisibleObject
 void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 	sdcLidarRay left = sdcLidarRay(), right = sdcLidarRay();
 	int leftIndex, rightIndex = -1;
 	double minDistance = INT_MAX;
 	bool objectIsDetected = false;
-	std::vector<sdcVisibleObject*> objectList;
+    sdcVisibleObject* object;
 
-	for (int i = 0; i < objectRays->size(); i++) {
+    // printf("GH3\n");
+      
+	for (int i = 0; i < 640; i++) {
 		if (!isinf(objectRays->at(i)) && objectRays->at(i) < minDistance) {
 			minDistance = objectRays->at(i);
 		}
@@ -85,7 +80,6 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 			objectIsDetected = true;
 			leftIndex = i;
 		} else if (objectIsDetected && isinf(objectRays->at(i))) {
-			objectIsDetected = false;
 			rightIndex = i-1;
 
 			sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
@@ -94,29 +88,46 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 			sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
 			sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-			sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance);
-			objectList.push_back(object);
-			minDistance = INT_MAX;
+		    object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
+			break;
 		}
-
 	}
-	//right side edge case
-	if (objectIsDetected) {
-		sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
-		sdcAngle rightAngle = sdcAngle(lidarAngle*320);
+    
+    // printf("GH4\n");
+    //right side edge case
+    if(0 <= leftIndex && leftIndex <= 639 && rightIndex == -1)
+    {
+    	rightIndex = 639;
+        if (objectIsDetected) {
+            sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
+            sdcAngle rightAngle = sdcAngle(320 * lidarAngle);
 
-		sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
-		sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
+            sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
+            sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-		sdcVisibleObject* object = new sdcVisibleObject(left, right, minDistance);
-		objectList.push_back(object);
-	}
+            object = new sdcVisibleObject(left, right, minDistance, leftIndex, rightIndex);
+        }
+    }
 
+    // printf("GH5\n");
 	// checking if there are obstacles detected
-	if (objectList.size() > 0) {
-		dataProcessing::UpdateAreNearbyObjects(false);
+	if (!objectIsDetected) {
+		dataProcessing::UpdateIsNearbyObject(false);
+		// printf("GH6\n");
+        dataProcessing::UpdateObject(object);
+        // printf("GH7\n");
 	} else {
-		dataProcessing::UpdateAreNearbyObjects(true);
+		if (dataProcessing::IsNearbyObject()){
+			sdcVisibleObject* oldObject = dataProcessing::GetNearbyObject();
+	        // printf("GH8\n");
+	        if (!object->IsSameObject(oldObject)) {
+	          dataProcessing::UpdateObject(object);
+	          // printf("GH9\n");
+        	}
+		} else {
+			// printf("GH10\n");
+			dataProcessing::UpdateIsNearbyObject(true);
+			dataProcessing::UpdateObject(object);
+		}
 	}
-	dataProcessing::UpdateObjectList(objectList);
 }

@@ -462,7 +462,7 @@
               <resolution>0.01</resolution>
             </range>
           </ray>
-          <plugin name='sdcFrontLidarSensor' filename='build/libsdcFrontLidarSensor.so'/>
+          <plugin name='sdcFrontLidarSensor' filename='build/liblidar.so'/>
           <always_on>1</always_on>
           <update_rate>30</update_rate>
           <visualize>1</visualize>
@@ -1005,7 +1005,7 @@
         </axis>
       </joint>
       <link name='camera::link'>
-        <pose frame=''>3 0 1.9 0 1 0</pose>
+        <pose frame=''>3 0 2 0 1 0</pose>
         <sensor name='camera' type='multicamera'>
           <always_on>1</always_on>
           <update_rate>30</update_rate>

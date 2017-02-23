@@ -43,3 +43,10 @@ double sdcLidarRay::GetLongitudinalDist() {
 gazebo::math::Vector2d sdcLidarRay::GetAsPoint() {
     return gazebo::math::Vector2d(this->GetLateralDist(), this->GetLongitudinalDist());
 }
+
+/*
+ * Returns the angle of a lidar ray
+ */
+double sdcLidarRay::GetAngle(){
+    return this->angle.angle;
+}

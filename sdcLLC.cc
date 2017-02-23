@@ -22,7 +22,7 @@ using namespace gazebo;
 
 /* Positive modulo operator
  * Input: two doubles
- * Output: (a mod b) with positive buffer 
+ * Output: (a mod b) with positive buffer
 */
 double mod(double a, double b) {
   double ret = fmod(a,b);
@@ -50,7 +50,7 @@ bool sdcLLC::BeyondPath(double distance) const {
 }
 
 /*
- * Master function to generate a new dubins path between the sdcCar   
+ * Master function to generate a new dubins path between the sdcCar
  */
 void sdcLLC::GenerateNewDubins() {
   math::Vector2d carPos = sdcSensorData::GetPosition();
@@ -150,7 +150,7 @@ void sdcLLC::StopReverse() {
 
 /*
  * Input: Controls corresponding to dubinsPath, lookahead distance
- * Output: Dubins path concatonated and lookahead distance 
+ * Output: Dubins path concatonated and lookahead distance
  *
 */
 
@@ -176,7 +176,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
   return newControls;
 }
 
-/* 
+/*
  * Input: 'Lookahead' distance along path
  * Output: (x,y) coords of point that lies input distance along our current dubins path
  */
@@ -224,8 +224,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
     }
   }
 
-  
-    cv::Point2d returnP;
+  cv::Point2d returnP;
   returnP.x = origin.x;
   returnP.y = origin.y;
   return returnP;
