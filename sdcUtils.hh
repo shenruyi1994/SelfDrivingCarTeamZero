@@ -64,29 +64,9 @@ cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
   float s = sin(angle);
   float c = cos(angle);
 
-  // rotate point by angle about the origin
+  // rotate point by angle about the origin, and translate back
   point.x = point.x * c - point.y * s;
   point.y = point.x * s + point.y * c;
-
-  return point;
-}
-/*
- * Returns a point rotated about the origin by angle.
- */
-template<typename T_1, typename T_2, typename T_3>
-T_1 rotate_generic(T_1& point, const T_2& axis, T_3 angle) {
-  static_assert(std::is_arithmetic<T_3>::value,
-                "rotatePoint only accepts Points with numeric values");
-  float s = sin(angle);
-  float c = cos(angle);
-
-  // translate point to rotate about the origin
-  point.x = point.x - axis.x;
-  point.y = point.y - axis.y;
-
-  // rotate point by angle about the origin, and translate back
-  point.x = (point.x * c - point.y * s) + axis.x;
-  point.y = (point.x * s + point.y * c) + axis.y;
 
   return point;
 }

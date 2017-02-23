@@ -2,7 +2,7 @@
   <world name='default'>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>57.7802 13.9081 14.0554 -1.17877 1.56758 1.95879</pose>
+        <pose frame=''>40.4265 16.4101 71.324 -1.17878 1.56758 1.95878</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -30,11 +30,14 @@
       <background>0.7 0.7 0.7 1</background>
       <shadows>1</shadows>
     </scene>
+<<<<<<< HEAD
 
     <include>
 	<uri>/models/sdcCar</uri>
     </include>
 
+=======
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
     <model name='car'>
       <link name='chassis'>
         <pose frame=''>0 0 0.35 0 -0 0</pose>
@@ -477,8 +480,11 @@
               <resolution>0.01</resolution>
             </range>
           </ray>
+<<<<<<< HEAD
           <plugin name='sdcFrontLidarSensor' filename='build/liblidar.so'/>
-
+=======
+          <plugin name='sdcFrontLidarSensor' filename='build/libsdcFrontLidarSensor.so'/>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
           <always_on>1</always_on>
           <update_rate>30</update_rate>
           <visualize>1</visualize>
@@ -1021,10 +1027,13 @@
         </axis>
       </joint>
       <link name='camera::link'>
+<<<<<<< HEAD
         <pose frame=''>1.5 0 1.9 0 0.89 0</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
-
+=======
+        <pose frame=''>3 0 1.9 0 0.9 0</pose>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
         <sensor name='camera' type='multicamera'>
           <always_on>1</always_on>
           <update_rate>30</update_rate>
@@ -1032,8 +1041,11 @@
           <topic>comps_car_camera</topic>
           <camera name='left'>
             <pose frame=''>0 0 0 0 -0 0</pose>
+<<<<<<< HEAD
             <horizontal_fov>2.0944</horizontal_fov>
-
+=======
+            <horizontal_fov>1.9</horizontal_fov>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
             <image>
               <width>640</width>
               <height>480</height>
@@ -1042,13 +1054,19 @@
               <near>0.1</near>
               <far>150</far>
             </clip>
+<<<<<<< HEAD
             <save enabled='0'>
               <path>/Users/selfcar/Desktop/Self-Driving-Comps/comps_camera_recordings/</path>
             </save>
           </camera>
           <plugin name='sdcCameraSensor' filename='build/libcamera.so'/>
         </sensor>
-
+=======
+          </camera>
+          <plugin name='sdcCameraSensor' filename='build/libcamera.so'/>
+        </sensor>
+        <self_collide>0</self_collide>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
         <inertial>
           <inertia>
             <ixx>1</ixx>
@@ -1060,6 +1078,10 @@
           </inertia>
           <mass>1</mass>
         </inertial>
+<<<<<<< HEAD
+=======
+        <kinematic>0</kinematic>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
         <gravity>1</gravity>
       </link>
       <joint name='camera' type='revolute'>
@@ -1194,7 +1216,10 @@
         <gps>gps</gps>
       </plugin>
     </model>
-
+<<<<<<< HEAD
+>>>>>>> 771d4118c4cc81c8d85e1ef0e87d1f19c904f552
+=======
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
     <model name='ground_plane'>
       <static>1</static>
       <link name='link'>
@@ -1298,79 +1323,82 @@
     <state world_name='default'>
       <sim_time>0 0</sim_time>
       <real_time>0 0</real_time>
-      <wall_time>1487402504 155473000</wall_time>
-
+<<<<<<< HEAD
+      <wall_time>1487299953 480640000</wall_time>
+=======
+      <wall_time>1487193748 474216000</wall_time>
+>>>>>>> 06da5212b47b931fe4d14bcf00f379f660fbf55b
       <iterations>0</iterations>
       <model name='car'>
-        <pose frame=''>60 11.0369 0.013856 0 -0 0</pose>
+        <pose frame=''>44.3712 11.0369 0.013856 0 -0 3.13022</pose>
         <link name='back_left_wheel'>
-          <pose frame=''>59.13 11.5369 0.313856 0 1.57079 1.57079</pose>
+          <pose frame=''>45.2355 10.527 0.313856 0 1.57079 -1.58217</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_lidar'>
-          <pose frame=''>58.8 11.0369 0.413856 0 -0 0</pose>
+          <pose frame=''>45.5712 11.0232 0.413856 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='back_right_wheel'>
-          <pose frame=''>59.13 10.5369 0.313856 0 1.57079 -1.57079</pose>
+          <pose frame=''>45.2469 11.5269 0.313856 -0 1.57079 1.55943</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='camera::link'>
-          <pose frame=''>63 11.0369 1.91386 0 0.9 0</pose>
+          <pose frame=''>41.3714 11.071 1.91386 0 0.9 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='chassis'>
-          <pose frame=''>60 11.0369 0.363856 0 -0 0</pose>
+          <pose frame=''>44.3712 11.0369 0.363856 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_left_wheel'>
-          <pose frame=''>60.8 11.5369 0.313856 0 1.57079 1.57079</pose>
+          <pose frame=''>43.5656 10.546 0.313856 0 1.57079 -1.58217</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_lidar'>
-          <pose frame=''>61 11.0369 0.413856 0 -0 0</pose>
+          <pose frame=''>43.3713 11.0482 0.413856 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='front_right_wheel'>
-          <pose frame=''>60.8 10.5369 0.313856 0 1.57079 -1.57079</pose>
+          <pose frame=''>43.577 11.5459 0.313856 -0 1.57079 1.55943</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='gps'>
-          <pose frame=''>60 11.0369 1.01386 0 -0 0</pose>
+          <pose frame=''>44.3712 11.0369 1.01386 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_left_sensors'>
-          <pose frame=''>60 11.5869 0.413856 0 -0 0</pose>
+          <pose frame=''>44.365 10.4869 0.413856 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='side_right_sensors'>
-          <pose frame=''>60 10.4869 0.413856 0 -0 0</pose>
+          <pose frame=''>44.3775 11.5868 0.413856 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='top_laser'>
-          <pose frame=''>60 11.0369 1.11386 0 -0 0</pose>
+          <pose frame=''>44.3712 11.0369 1.11386 0 -0 3.13022</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>

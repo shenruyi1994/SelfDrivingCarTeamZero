@@ -36,32 +36,6 @@ struct Path {
     this->length *= n;
     return *this;
   }
-
-  Path& operator +=(cv::Point2d p) {
-    origin.x += p.x;
-    origin.y += p.y;
-    return *this;
-  }
-
-  Path& operator -=(cv::Point2d p) {
-    origin.x -= p.x;
-    origin.y -= p.y;
-    return *this;
-  }
-
-  Path& operator +=(cv::Point3d p) {
-    origin.x += p.x;
-    origin.y += p.y;
-    origin.z = fmod(origin.z + p.z, 2 * PI);
-    return *this;
-  }
-
-  Path& operator -=(cv::Point3d p) {
-    origin.x -= p.x;
-    origin.y -= p.y;
-    origin.z = fmod(origin.z + 2*PI - p.z, 2 * PI);
-    return *this;
-  }
 };
 
 //Control where first is steering direction(min = -1, straight = 0, max = 1), and second # of timesteps to apply steering direction

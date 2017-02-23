@@ -28,7 +28,8 @@ namespace gazebo
     public: cv::Mat preprocess(cv::Mat m);
     public: void updateObjectBrightness(sdcVisibleObject* visibleObject);
     public: std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
-    public: double getAngle(const cv::Point2d& p1, const cv::Point2d& p2);
+    public: double getAngle(int firstX, int firsty, int secondX, int secondY,
+                            double previousAngle);
     private: sensors::MultiCameraSensorPtr parentSensor;
     private: event::ConnectionPtr updateConnection;
   };
