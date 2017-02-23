@@ -66,22 +66,22 @@ void sdcHLC::Drive() {
   } else {
     lastUpdateTime_ = common::Time(curTime);
   }
-  
+
   if (dataProcessing::IsNearbyObject()) {
     AVOIDANCE_STATE = true;
   } else {
     AVOIDANCE_STATE = false;
   }
-  
+
   // Obstacle not detected -> keep following waypoints
   FollowWaypoints();
-  
+
   // Attempts to turn towards the target direction
   MatchTargetDirection();
 
   // Attempts to match the target speed
   MatchTargetSpeed();
-  
+
   /*
   // If not in avoidance, check if we should start following the thing
   // in front of us. If following is done, kick out to default state
@@ -268,12 +268,22 @@ void sdcHLC::FollowWaypoints() {
     targetPoint = FindDubinsTargetPoint();
     printf("DRIVING STATE\n");
   }
-    
+
   //printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
   //printf("  speed: %f\n", car_->GetSpeed());
   //printf("  location: (%f, %f)\n", car_->x_, car_->y_);
   // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
   car_->SetTargetPoint(targetPoint);
+
+  /*  uncomment to track path of car for plot.py
+  std::ofstream targetPoints;
+  targetPoints.open("targetPoints.csv", std::ios_base::app);
+  targetPoints << targetPoint.x << ", " << targetPoint.y << std::endl;
+
+  std::ofstream locationPoints;
+  locationPoints.open("locationPoints.csv", std::ios_base::app);
+  locationPoints << car_->x_ << ", " << car_->y_ << std::endl;
+  */
 }
 
 /*
@@ -322,8 +332,8 @@ void sdcHLC::UpdatePathDistance() {
 cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
   //printf("pathdist_: %f\n", pathDist_);
-  // double lookaheadDistance = ScaledLookaheadDistance();
-  double lookaheadDistance = 20;
+  //  double lookaheadDistance = ScaledLookaheadDistance();
+    double lookaheadDistance = 20;
 
   if (llc_->BeyondPath(pathDist_ + lookaheadDistance)) {
     llc_->GenerateNewDubins();
@@ -485,7 +495,7 @@ void sdcHLC::Follow() {
 void sdcHLC::Avoidance() {
   // get a target point to the left side of an obstacle
   cv::Point2d obstacle = dataProcessing::getObstacleCoords();
-  
+
   /*
   Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
   Waypoint carPoint;
