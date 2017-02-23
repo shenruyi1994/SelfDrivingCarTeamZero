@@ -42,6 +42,7 @@
 #include "sdcHLC.hh"
 #include "sdcIntersection.hh"
 #include "sdcSensorData.hh"
+#include "sdcUtils.hh"
 #include "sdcWaypoint.hh"
 
 using namespace gazebo;
@@ -286,6 +287,10 @@ void sdcCar::SetTargetDirection(sdcAngle direction) {
   targetDirection_ = direction;
 }
 
+void sdcCar::SetTargetPoint(cv::Point2d targetPoint) {
+  SetTargetDirection(AngleToTarget(to_math_vec(targetPoint)));
+}
+
 /*
  * Sets a target steering amount for the steering wheel
  */
@@ -498,7 +503,7 @@ sdcCar::sdcCar() {
   targetSteeringAmount_ = 0.0;
   targetDirection_ = sdcAngle(0);
   turningLimit_ = 20.0;
-  targetSpeed_ = 1;
+  targetSpeed_ = 100;
 
   // Booleans for the car's actions
   turning_ = false;

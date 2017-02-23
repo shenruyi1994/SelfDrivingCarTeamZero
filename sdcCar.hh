@@ -185,6 +185,7 @@ namespace gazebo {
     double GetMinTurningRadius() const;
 
     void SetTargetDirection(sdcAngle direction);
+    void SetTargetPoint(cv::Point2d targetPoint);
     void SetTargetSteeringAmount(double a);
     void SetSteeringAmount(double a);
     void SetTargetSpeed(double s);
