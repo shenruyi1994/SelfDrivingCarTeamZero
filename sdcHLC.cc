@@ -62,25 +62,40 @@ void sdcHLC::Drive() {
     lastUpdateTime_ = common::Time(curTime);
   }
 
-  if (dataProcessing::IsNearbyObject()) {
-    printf("Watch out for the objects!\n");
-    
-    /*
-      
-    */
+  CheckNearbyObjectsForCollision();
+  if (dangerousObj_ != NULL) {
+    DecideAvoidanceStrategy(dangerousObj_);
   }
-  
-  // Obstacle not detected -> keep following waypoints
-  else{
-    FollowWaypoints();
 
-    // Attempts to turn towards the target direction
-    MatchTargetDirection();
-
-    // Attempts to match the target speed
-    MatchTargetSpeed();
+  switch (roadState_) {
+    case APPROACH_16:
+      // here we should slow the car down
+      break;
+    case STOP_16:
+      // stop behind an object in front of the car
+      car_->SetTargetSpeed(0);
+      break;
+    case WAIT_16:
+      // here we should wait for the car in front to move
+      break;
+    case PASS_16:
+      // here we should move over a lane and begin following waypoints again
+      break;
+    case RETURN_16:
+      // like PASS_16, except we move over one lane to the right rather than left
+    case AVOID_16:
+      // avoidance maneuvers
+      break;
+    case FOLLOW_16: // fall through
+    default:
+      FollowWaypoints();
   }
-  
+
+  // Attempts to turn towards the target direction
+  MatchTargetDirection();
+  // Attempts to match the target speed
+  MatchTargetSpeed();
+
   /*
   // If not in avoidance, check if we should start following the thing
   // in front of us. If following is done, kick out to default state
