@@ -55,7 +55,7 @@ add_library(sdcBackLidarSensor SHARED sdcBackLidarSensor.cc)
 target_link_libraries(sdcBackLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcGpsSensor SHARED sdcGpsSensor.cc)
-target_link_libraries(sdcGpsSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(sdcGpsSensor data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcCameraSensor SHARED sdcCameraSensor.cc)
 target_link_libraries(sdcCameraSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})

@@ -12,7 +12,7 @@
 using namespace gazebo;
 
 dubins::dubins() {
-   scalingFactor_ = MIN_TURNING_RADIUS;
+  scalingFactor_ = 2 * MIN_TURNING_RADIUS * PI;
 }
 
 /* Positive modulo operator
@@ -179,6 +179,7 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint startPoint, double minR
   double distance = coord_distance(waypoint, startPoint)/scalingFactor_;
   double dubinsAngle = atan(fabs((waypoint.y - startPoint.y) / (waypoint.x - startPoint.x)));
 
+
   //rotates angle into quadrant 2
   if (waypoint.x - startPoint.x < 0 && waypoint.y - startPoint.y >= 0)
     dubinsAngle = PI - dubinsAngle;
@@ -196,6 +197,8 @@ Path dubins::calculateDubins(Waypoint waypoint, Waypoint startPoint, double minR
 
   // Scale our distance, so we calculate dubins path length assuming a unit
   // minimum turning radius
+  // distance = distance / scalingFactor_;
+
   // Calculate each type of dubins path individually
   Path paths[4] = {
     lsl(initDirection, finalDirection, distance),
