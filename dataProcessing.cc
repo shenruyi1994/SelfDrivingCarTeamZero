@@ -232,3 +232,7 @@ cv::Point2d dataProcessing::getObstacleCoords(){
   
   return leftP;
 }
+
+math::Vector2d dataProcessing::getCarVector(){
+  return unitVector;
+}

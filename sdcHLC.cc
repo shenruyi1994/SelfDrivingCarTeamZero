@@ -24,7 +24,7 @@ using namespace gazebo;
 std::vector<sdcWaypoint> WAYPOINT_VEC;
 
 // FOR TESTING
-bool AVOIDANCE_STATE;
+bool AVOIDANCE_STATE = bool();
 
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
@@ -66,7 +66,7 @@ void sdcHLC::Drive() {
   } else {
     lastUpdateTime_ = common::Time(curTime);
   }
-
+  
   if (dataProcessing::IsNearbyObject()) {
     AVOIDANCE_STATE = true;
   } else {

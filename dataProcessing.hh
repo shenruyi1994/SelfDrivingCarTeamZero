@@ -45,7 +45,8 @@ namespace gazebo
       static double FindAngle(double lat_dist, double long_dist);
       static math::Vector2d ComputeObstacleVector(double lat_dist, double long_dist, double angle);
       static double GetVectorMagnitude(double x, double y);
-    
+      static math::Vector2d getCarVector();
+        
     private:
       static double carX;
       static double carY;
