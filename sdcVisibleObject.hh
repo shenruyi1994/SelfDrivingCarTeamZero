@@ -49,6 +49,9 @@ namespace gazebo {
     void setBrightnessDetected();
     bool getBrightnessDetected() const;
 
+    void updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex);
+
+
   private:
     sdcLidarRay left_;
     sdcLidarRay right_;

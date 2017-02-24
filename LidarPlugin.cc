@@ -57,7 +57,7 @@ void LidarPlugin::OnUpdate()
 	for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); i++){
 	  	rays->push_back(this->parentSensor->GetRange(i));
 	}
-  
+
 	getVisibleObjects(rays);
 	dataProcessing::UpdateLidarData(NEWFRONT, rays);
 
@@ -71,7 +71,7 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
     sdcVisibleObject* object;
 
     // printf("GH3\n");
-      
+
 	for (int i = 0; i < 640; i++) {
 		if (!isinf(objectRays->at(i)) && objectRays->at(i) < minDistance) {
 			minDistance = objectRays->at(i);
@@ -88,11 +88,11 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 			sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
 			sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-		    object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
+		  object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
 			break;
 		}
 	}
-    
+
     // printf("GH4\n");
     //right side edge case
     if(0 <= leftIndex && leftIndex <= 639 && rightIndex == -1)
@@ -123,7 +123,11 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 	        if (!object->IsSameObject(oldObject)) {
 	          dataProcessing::UpdateObject(object);
 	          // printf("GH9\n");
-        	}
+        	} else {
+            // update the old object with new information
+            oldObject->updateInfo(left, right, leftIndex, rightIndex);
+            dataProcessing::UpdateObject(oldObject); // this might not be needed
+          }
 		} else {
 			// printf("GH10\n");
 			dataProcessing::UpdateIsNearbyObject(true);

@@ -45,7 +45,7 @@ sdcVisibleObject::sdcVisibleObject(sdcLidarRay right, sdcLidarRay left, double d
   tracking_ = false;
   brandSpankinNew_ = true;
   brightnessDetected = false;
-    
+
   leftRayIndex_ = leftRayIndex;
   rightRayIndex_ = rightRayIndex;
 }
@@ -58,13 +58,13 @@ bool sdcVisibleObject::IsSameObject(sdcVisibleObject* other) const {
   double new_left_edge = this->getLeftRay().GetLateralDist();
   double new_right_edge = this->getRightRay().GetLateralDist();
   // printf("CP2\n");
-  
+
   double old_left_edge = other->getLeftRay().GetLateralDist();
   double old_right_edge = other->getRightRay().GetLateralDist();
   // printf("CP3\n");
 
   double uncertainty = fabs(new_left_edge - old_left_edge) + fabs(new_right_edge - old_right_edge);
-  
+
   //std::cout << "uncertainty: " << uncertainty << std::endl;
   return uncertainty < UNCERTAINTY_RATIO;
 }
@@ -279,3 +279,9 @@ bool sdcVisibleObject::getBrightnessDetected() const{
     return brightnessDetected;
 }
 
+void sdcVisibleObject::updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex){
+  left_ = newLeft;
+  right_ = newRight;
+  leftRayIndex_ = newLeftIndex;
+  rightRayIndex_ = newRightIndex;
+}
