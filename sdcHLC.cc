@@ -74,6 +74,7 @@ void sdcHLC::Drive() {
   switch (roadState_) {
     case WAIT_16:
       // increment timer, pass eventually
+      car_->SetTargetSpeed(0);
       break;
 
     case PASS_16:
@@ -575,44 +576,44 @@ void sdcHLC::CheckNearbyObjectsForCollision() {
  * Checks if the object is on a collision course with the car.
  */
 bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
-  if (DoMaximumBoundingBoxesCollide(obj)) {
-    double possibleCollisionTime = DoMaximumRadiiCollide(obj);
-    return possibleCollisionTime != -1
-      && DoAccurateVehicleShapesCollide(obj, possibleCollisionTime);
-  }
-  return false;
+  double possibleCollisionTime = DoMaximumRadiiCollide(obj);
+  return possibleCollisionTime != -1
+    && DoAccurateVehicleShapesCollide(obj, possibleCollisionTime);
 }
 
-/*
- * Checks if the most pessimistic bounding boxes collide; that
- */
-bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
-  double maxTime = car_->GetMaxSafeTime();
-  math::Vector2d futureCarPos = GetPositionAtTime(maxTime);
-  math::Vector2d futureObjPos = obj->GetProjectedPositionAtTime(maxTime);
-
-  sdcBoundingBox carRect = sdcBoundingBox(
-    fmin(car_->x_, futureCarPos.x),
-    fmin(car_->y_, futureCarPos.y),
-    fmax(car_->x_, futureCarPos.x),
-    fmax(car_->y_, futureCarPos.y));
-  sdcBoundingBox objRect = sdcBoundingBox(
-    fmin(obj->GetCenterPoint().x, futureObjPos.x),
-    fmin(obj->GetCenterPoint().y, futureObjPos.y),
-    fmax(obj->GetCenterPoint().x, futureObjPos.x),
-    fmax(obj->GetCenterPoint().y, futureObjPos.y));
-
-  return carRect.DoesIntersect(objRect);
-}
+// /*
+//  * Checks if the most pessimistic bounding boxes collide; that
+//  */
+// bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
+//   double maxTime = car_->GetMaxSafeTime();
+//   math::Vector2d futureCarPos = GetPositionAtTime(maxTime);
+//   math::Vector2d futureObjPos = obj->GetProjectedPositionAtTime(maxTime);
+//
+//   sdcBoundingBox carRect = sdcBoundingBox(
+//     fmin(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmin(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmax(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmax(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle));
+//
+//   // TODO: determine the
+//   sdcBoundingBox objRect = sdcBoundingBox(
+//     fmin(obj->GetCenterPoint().x, futureObjPos.x),
+//     fmin(obj->GetCenterPoint().y, futureObjPos.y),
+//     fmax(obj->GetCenterPoint().x, futureObjPos.x),
+//     fmax(obj->GetCenterPoint().y, futureObjPos.y));
+//
+//   return carRect.DoesIntersect(objRect);
+// }
 
 /*
  * Returns true if the distance between the car and the dangerous object is
  * ever within (max_radius_car + max_radius_obj) along their projected paths.
  */
 double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
-  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
-    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100)) {
-      return ((double)i) / 100;
+  int numTests = 20;
+  for (int i = 0; i < car_->GetMaxSafeTime() * numTests; i++) {
+    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / numTests)) {
+      return ((double)i) / numTests;
     }
   }
   return -1;
@@ -629,10 +630,18 @@ bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
     pythag_thm(car_->width_, car_->length_)
   );
 
-  // TODO: figure out how to estimate size of an object
+  // TODO: uncomment these when Kirsten finishes GetLeftPos() and GetRightPos()
+  // cv::Point2d objLeft = obj->GetLeftPos();
+  // cv::Point2d objRight = obj->GetRightPos();
+  // cv::Point2d objCenter = cv::Point2d((objLeft.x + objRight.x) / 2,
+  //                                     (objLeft.y + objRight.y) / 2);
+  cv::Point2d objRight = cv::Point2d(1,0);
+  cv::Point2d objCenter = cv::Point2d(0,0);
+
+  // TODO: add doesIntersect(sdcBoundingCircle) method to sdcRotatedBoundingBox
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    to_point(obj->GetProjectedPositionAtTime(time)),
-    1 // placeholder for above TODO
+    objCenter,
+    coord_distance(objCenter, objRight)
   );
 
   return selfCircle.DoesIntersect(objCircle);
@@ -645,8 +654,9 @@ bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
  */
 bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj,
                                             double possibleCollisionTime) const {
-  for (int i = possibleCollisionTime * 100; i < (possibleCollisionTime + 10) * 100; i++) {
-    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100)) {
+  int numTests = 20;
+  for (int i = possibleCollisionTime * numTests; i < (possibleCollisionTime + 10) * numTests; i++) {
+    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / numTests)) {
       return true;
     }
   }
@@ -659,42 +669,47 @@ bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj,
  */
 bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
                                                   double time) const {
-  math::Vector2d selfPos = GetPositionAtTime(time);
+  cv::Point2d selfPos = GetPositionAtTime(time);
   sdcRotatedBoundingBox selfBox = sdcRotatedBoundingBox(
-    selfPos.x - car_->width_ / 2, selfPos.y + car_->width_ / 2,
-    car_->width_, car_->width_,
+    cv::Point2d(car_->x_, car_->y_),
+    car_->width_ * 1.2, car_->length_ * 1.2,
     GetAngleAtTime(time).angle
   );
 
   // TODO: figure out a way to estimate the shape of an sdcVisibleObject
-  return false;
+  //    Possible solution: pretend obstacle is a circle, and use
+  //    sdcBoundingCircle to estimate it
+
+  // TODO: uncomment these when Kirsten finishes GetLeftPos() and GetRightPos()
+  // cv::Point2d objLeft = obj->GetLeftPos();
+  // cv::Point2d objRight = obj->GetRightPos();
+  // cv::Point2d objCenter = cv::Point2d((objLeft.x + objRight.x) / 2,
+  //                                     (objLeft.y + objRight.y) / 2);
+  cv::Point2d objRight = cv::Point2d(1,0);
+  cv::Point2d objCenter = cv::Point2d(0,0);
+
+  // TODO: add doesIntersect(sdcBoundingCircle) method to sdcRotatedBoundingBox
+  sdcBoundingCircle objCircle = sdcBoundingCircle(
+    objCenter,
+    coord_distance(objCenter, objRight)
+  );
+  return selfBox.DoesIntersect(objCircle);
 }
 
 /*
- * TODO: figure out how this will work. For now it is a placeholder, but will
- * eventually be based on the dubins path created by the LLC.
+ * Returns the projected position of the car at the given time.
  */
-math::Vector2d sdcHLC::GetPositionAtTime(double time) const {
-  return math::Vector2d(0, 0);
+cv::Point2d sdcHLC::GetPositionAtTime(double time) const {
+  double distance = car_->GetSpeed() * time;
+  return llc_->GetDubinsPoint(distance, false);
 }
 
 /*
- * TODO: figure out how this will work. For now it is a placeholder, but will
- * eventually be based on the dubins path created by the LLC.
+ * Returns the projected angle of the car at the given time.
  */
 sdcAngle sdcHLC::GetAngleAtTime(double time) const {
-  return sdcAngle(0);
-}
-
-/*
- * Generates a new path for the car, given an object and a collision location
- * on a previous path
- * TODO: integrate this with the dubins path algorithms
- */
-std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
-    sdcVisibleObject* obj, math::Vector2d collision) {
-
-    return NULL;
+  double distance = car_->GetSpeed() * time;
+  return llc_->GetDubinsAngle(distance, false);
 }
 
 /*
