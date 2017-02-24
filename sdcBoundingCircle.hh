@@ -5,7 +5,6 @@
 
 #include "sdcAngle.hh"
 #include "sdcBoundingShape.hh"
-#include "sdcBoundingBox.hh"
 
 namespace gazebo {
   class sdcBoundingCircle: public sdcBoundingShape {
@@ -16,7 +15,7 @@ namespace gazebo {
     sdcBoundingCircle(const cv::Point2d& center, double radius):
       center(center), radius(radius) {}
 
-    bool DoesIntersect(const sdcBoundingCircle& box) const;
+    bool DoesIntersect(const sdcBoundingCircle& circle) const;
 
     cv::Point2d center;
     double radius;
