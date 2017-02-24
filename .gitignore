@@ -1,2 +1,7 @@
 build/
 waypoints.png
+
+roadPoints.csv
+targetPoints.csv
+locationPoints.csv
+
