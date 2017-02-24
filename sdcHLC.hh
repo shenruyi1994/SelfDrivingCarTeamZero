@@ -79,10 +79,12 @@ namespace gazebo {
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(sdcVisibleObject* obj,
                                                     math::Vector2d collision);
     math::Vector2d GetPositionAtTime(double time) const;
+    Waypoint GetCarPoint();
     sdcAngle GetAngleAtTime(double time) const;
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
 
+    void StoreAvoidancePath();
 
   private:
     sdcCar* car_;
@@ -160,6 +162,8 @@ namespace gazebo {
     RoadState roadState_;
 
     sdcVisibleObject* dangerousObj_;
+
+    std::vector<Waypoint> avoidancePath_; 
 
     //dijkstra's stuff
     std::vector<int> unvisited_;

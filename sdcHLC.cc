@@ -1614,6 +1614,23 @@ void sdcHLC::removeStartingEdge(int start) {
   }
 }
 
+Waypoint sdcHLC::GetCarPoint(){
+  Waypoint carPoint;
+  carPoint.x = car_->x_;
+  carPoint.y = car_->y_;
+  carPoint.direction = car_->GetOrientation().angle;
+
+  return carPoint;
+}
+
+void sdcHLC::StoreAvoidancePath(){
+  while(dataProcessing::IsNearbyObject()){
+
+    avoidancePath_.push_back(GetCarPoint()); 
+}
+
+}
+
 
 void sdcHLC::update() {
   llc_->update();
