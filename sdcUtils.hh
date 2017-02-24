@@ -52,8 +52,8 @@ cv::Point_<T> rotate_point(cv::Point_<T> point, const cv::Point_<T>& axis,
                           T angle) {
   static_assert(std::is_arithmetic<T>::value,
                 "rotatePoint only accepts Points with numeric values");
-  float s = sin(angle);
-  float c = cos(angle);
+  double s = sin(angle);
+  double c = cos(angle);
 
   // translate point to rotate about the origin
   point = point - axis;
@@ -72,8 +72,8 @@ template<typename T>
 cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
   static_assert(std::is_arithmetic<T>::value,
                 "rotatePoint only accepts Points with numeric values");
-  float s = sin(angle);
-  float c = cos(angle);
+  double s = sin(angle);
+  double c = cos(angle);
 
   // rotate point by angle about the origin
   point.x = point.x * c - point.y * s;
@@ -81,15 +81,16 @@ cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
 
   return point;
 }
+
 /*
  * Returns a point rotated about the origin by angle.
  */
 template<typename T_1, typename T_2, typename T_3>
-T_1 rotate_generic(T_1& point, const T_2& axis, T_3 angle) {
+T_1 rotate_generic(T_1 point, const T_2& axis, T_3 angle) {
   static_assert(std::is_arithmetic<T_3>::value,
                 "rotatePoint only accepts Points with numeric values");
-  float s = sin(angle);
-  float c = cos(angle);
+  double s = sin(angle);
+  double c = cos(angle);
 
   // translate point to rotate about the origin
   point.x = point.x - axis.x;
