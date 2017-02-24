@@ -10,6 +10,17 @@
 #include "Waypoints.hh"
 
 /*
+ * Clamps v to be within the range [min, max]
+ */
+template<typename T>
+T clamp(T v, T min, T max) {
+  static_assert(std::is_arithmetic<T>::value,
+                "clamp only accepts numeric values");
+  const T t = v < min ? min : v;
+  return t > max ? max : t;
+}
+
+/*
  * Computes the pythagorean theorem (for distance calculation), and only
  * accepts numeric types.
  */
