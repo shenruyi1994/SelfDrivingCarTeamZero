@@ -82,8 +82,9 @@ namespace gazebo {
     sdcAngle GetAngleAtTime(double time) const;
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
-
-
+    void BackToLane();
+    void LaneSwitchCalc();
+    
   private:
     sdcCar* car_;
     sdcLLC* llc_;
@@ -98,7 +99,13 @@ namespace gazebo {
 
     double lastX_ = 0;
     double lastY_ = 0;
-
+    
+    bool return_point_computed_ = false;
+    math::Vector2d car_vector;
+    math::Vector2d vector_to_obstacle;
+    double returnX_ = 0;
+    double returnY_ = 0;
+    
     common::Time lastUpdateTime_;
 
     // ================================================

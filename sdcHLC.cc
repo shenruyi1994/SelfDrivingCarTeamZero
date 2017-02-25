@@ -51,12 +51,18 @@ sdcHLC::~sdcHLC() {
 ////////////////////////////////
 ////////////////////////////////
 
+
 /*
  * Handles all logic for driving, is called every time the car receives an update
  * request from Gazebo
  */
 void sdcHLC::Drive() {
   dataProcessing::UpdateCarDirection();
+  
+  if (roadState_ == FOLLOW_16){
+    car_vector = dataProcessing::getCarVector();
+  }
+  
   common::Time curTime = car_->model_->GetWorld()->GetSimTime();
   if (curTime.Double() - lastUpdateTime_.Double() < .01) {
     UpdatePathDistance();
@@ -67,6 +73,12 @@ void sdcHLC::Drive() {
 
   if (dataProcessing::IsNearbyObject()) {
     roadState_ = AVOID_16;
+  } else if (!dataProcessing::IsNearbyObject() && roadState_ == AVOID_16) {
+    // >>>>>>>> CHANGE MADE BY 2.24
+    //vector_to_obstacle = dataProcessing::getVectorToObstacle();
+    //LaneSwitchCalc();
+    // >>>>>>>> 
+    roadState_ = RETURN_16;
   } else {
     roadState_ = FOLLOW_16;
   }
@@ -87,10 +99,12 @@ void sdcHLC::Drive() {
       break;
 
     case AVOID_16:
+      // >>>>>> I commented the following thing out because I am not using it to find go-back point any more
       AvoidObstacle();
       break;
     
     case RETURN_16:
+      BackToLane();
       break;
       
     case FOLLOW_16: // fall through, follow waypoints with no obstacle
@@ -280,7 +294,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(0.8);
+  car_->SetTargetSpeed(5);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
   printf("DRIVING STATE\n");
@@ -508,13 +522,65 @@ void sdcHLC::Follow() {
  * for stopping and one for swerving. Also provides a navigation case for maneuvering around objects in front
  * of the car
  */
-void sdcHLC::AvoidObstacle() {
-  // get a target point to the left side of an obstacle
-  cv::Point2d obstacle = dataProcessing::getObstacleCoords();
+void sdcHLC::LaneSwitchCalc() {
+  double laneWidth = dataProcessing::returnLaneWidth();
+  bool curvedOrNot = dataProcessing::returnWhetherCurvedRoad();
+  printf("THIS IS A CURVED ROAD? %i", curvedOrNot);
+  // curved
+  cv::Point2d car_v;
+  double unitx, unity;
+  if (curvedOrNot){
+      unitx = (car_vector[0]+ vector_to_obstacle[0])/2;
+      unity = (car_vector[1]+ vector_to_obstacle[1])/2;
+  } else {   // straght
+      unitx = car_vector[0];
+      unity = car_vector[1];
+  }
+  printf("unit x,y are  (%f,%f)", unitx, unity);
+  cv::Point2d laneWidthVect;
+  
+  if (unitx>=0 && unity>=0) {
+    printf("CASE 1");
+    laneWidthVect = cv::Point2d(laneWidth * car_vector[0], -laneWidth * car_vector[1]);
+  } else if (unitx>0 && unity<0) {
+    printf("CASE 2");
+    laneWidthVect = cv::Point2d(-laneWidth * car_vector[0], laneWidth * car_vector[1]);
+  } else if (unitx<0 && unity>0) {
+    printf("CASE 3");
+    laneWidthVect = cv::Point2d(-laneWidth * car_vector[0], laneWidth * car_vector[1]);
+  } else {
+    printf("CASE 4");
+    laneWidthVect = cv::Point2d(laneWidth * car_vector[0], -laneWidth * car_vector[1]);
+  }
+  
+  cv::Point2d longUnitVect = cv::Point2d(8 * unitx, 8 * unity);
+  cv::Point2d newTargetVect = cv::Point2d(laneWidthVect.x + longUnitVect.x, laneWidthVect.y + longUnitVect.y);
+  returnX_ = newTargetVect.x + car_->x_;
+  returnY_ = newTargetVect.y + car_->y_;
+  printf("THE GO BACK TARGET POINT IS: (%f,%f)", returnX_, returnY_);
+}
 
+void sdcHLC::AvoidObstacle() {
   cv::Point2d targetPoint = dataProcessing::getObstacleCoords();
   printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
-
+  
+  if (!return_point_computed_) {
+    double long_dist = dataProcessing::getLongDist();
+    std::array<cv::Point2d, 3> waypointList = dataProcessing::getWaypoints();
+    cv::Point2d firstWaypoint = waypointList[0];
+    // calculate out the proportion of car-to-2ndWaypoint distance over the car-to-obstacle distance
+    double prop = (long_dist+14)/sqrt(pow(firstWaypoint.x - car_->x_, 2) + pow(firstWaypoint.y - car_->y_, 2));
+    
+    returnX_ = car_->x_ + prop * (firstWaypoint.x - car_->x_);
+    returnY_ = car_->y_ + prop * (firstWaypoint.y - car_->y_);
+    
+    printf("Car Vector: (%f,%f)\n", car_vector[0], car_vector[1]);
+    printf("Long Dist: %f\n", long_dist);
+    printf("Car Position: (%f,%f)\n", car_->x_, car_->y_);
+    
+    return_point_computed_ = true;
+  }
+  
   car_->SetTargetPoint(targetPoint);
   /*
   Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
@@ -526,6 +592,13 @@ void sdcHLC::AvoidObstacle() {
   llc_->dubins_->calculateDubins(avoidPoint, carPoint, MIN_TURNING_RADIUS);
   */
   //steeringAngles.push_back(car_->GetDirection().angle);
+}
+
+void sdcHLC::BackToLane(){
+  
+  cv::Point2d targetPoint = cv::Point2d(returnX_, returnY_);
+  printf("RETURN STATE! Go to (%f,%f)\n", returnX_, returnY_);
+  car_->SetTargetPoint(targetPoint);
 }
 
 //////////////////////////////////////////

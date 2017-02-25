@@ -47,7 +47,13 @@ namespace gazebo
       static math::Vector2d ComputeObstacleVector(double lat_dist, double long_dist, double angle);
       static double GetVectorMagnitude(double x, double y);
       static math::Vector2d getCarVector();
-        
+      static double getLongDist();
+      static void updateLaneWidth(double newLaneWidth);
+      static double returnLaneWidth();
+      static math::Vector2d getVectorToObstacle();
+      static void updateCurvedRoad(bool curvedOrNot);
+      static bool returnWhetherCurvedRoad();
+    
     private:
       static double carX;
       static double carY;

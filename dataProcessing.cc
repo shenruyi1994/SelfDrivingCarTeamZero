@@ -36,9 +36,13 @@ double prev_y;
 double cur_x;
 double cur_y;
 math::Vector2d unitVector;
+math::Vector2d vector_to_obstacle;
+double long_dist;
 bool isNearby_ = false;
 float brightness_ = 255;
 sdcVisibleObject* dataProcessing::object_;
+double laneWidth = 3;
+bool curvedOrNot_ = false;
 
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
@@ -189,6 +193,7 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
   // scale by magnitude
   double x_scaled = x_rot * mag;
   double y_scaled = y_rot * mag;
+  vector_to_obstacle = math::Vector2d(x_scaled, y_scaled);
   
   // now take the width of the car into account (how many ever unit vectors you want)
   double x_orthogonal = x_scaled - unitVector[0] * long_dist;
@@ -224,6 +229,8 @@ cv::Point2d dataProcessing::getObstacleCoords(){
   
   double left_lat = left.GetLateralDist();
   double left_long = left.GetLongitudinalDist();
+  long_dist = left_long;
+  
   double left_angle = FindAngle(left_lat, left_long);
   
   math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
@@ -233,11 +240,34 @@ cv::Point2d dataProcessing::getObstacleCoords(){
   //std::cout << "Angle: " << left_angle << std::endl;
   //std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
   //std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
-  //std::cout << std::endl;
-  
+  //std::cout << "Lateral: " << left_lat << ", Long: " << //left_long << std::endl;
+
   return leftP;
 }
 
 math::Vector2d dataProcessing::getCarVector(){
   return unitVector;
+}
+
+math::Vector2d dataProcessing::getVectorToObstacle(){
+  return vector_to_obstacle;
+}
+
+double dataProcessing::getLongDist(){
+  return long_dist;
+}
+
+void dataProcessing::updateLaneWidth(double newLaneWidth){
+  laneWidth = newLaneWidth;
+}
+
+double dataProcessing::returnLaneWidth(){
+  return laneWidth;
+}
+
+void dataProcessing::updateCurvedRoad(bool curvedOrNot) {
+  curvedOrNot_ = curvedOrNot;
+}
+bool dataProcessing::returnWhetherCurvedRoad(){
+  return curvedOrNot_;
 }

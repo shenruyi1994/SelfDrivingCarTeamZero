@@ -31,6 +31,7 @@ namespace gazebo
     public: double getAngle(const cv::Point2d& p1, const cv::Point2d& p2);
     private: sensors::MultiCameraSensorPtr parentSensor;
     private: event::ConnectionPtr updateConnection;
+
   };
 }
 

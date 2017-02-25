@@ -36,6 +36,8 @@ sensors::MultiCameraSensorPtr parentSensor;
 
 Mat image;
 vector<Point2d> sidePoints;
+bool foundLaneWidth = false; 
+double laneWidth_ = 0;
 
 void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 {
@@ -158,6 +160,17 @@ void CameraPlugin::OnUpdate()
 
         circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
     }
+  
+    // check whether this is a curved road or a straight road
+    cv::Point2d realWldPt1 = worldPts[0];
+    std::cout << "realWldPt1 " << realWldPt1 << std::endl;
+    cv::Point2d realWldPt3 = worldPts[2];
+    std::cout << "realWldPt3 " << realWldPt3 << std::endl;
+    if (fabs(realWldPt3.y - realWldPt1.y) > 1.5) {
+      dataProcessing::updateCurvedRoad(true);
+    } else {
+      dataProcessing::updateCurvedRoad(false);
+    }
 
     // print out side points
     for(size_t i = 0; i < sidePoints.size(); i++)
@@ -180,6 +193,7 @@ void CameraPlugin::OnUpdate()
     double newAngleThree = waypointAngles[0];
     waypointAngles[0] = newAngleOne;
     waypointAngles[2] = newAngleThree;
+  
 
     dataProcessing::updateWaypoints(worldPts);
     dataProcessing::updateWaypointsAngles(waypointAngles);
@@ -299,6 +313,29 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 
     cv::Point2d p1 = cv::Point2d(waypoint_x1, lo);
     cv::Point2d p2 = cv::Point2d(waypoint_x2, lo);
+  
+    // calculate out the laneWidth
+    if (!foundLaneWidth) {
+      // get real coordinates for p1,p2
+      math::Vector3 originCoord1,originCoord2,direction1,direction2;
+      this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x1, lo, originCoord1, direction1);
+      this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x2, lo, originCoord2, direction2);
+
+      // get the realworld coordinates
+      double prop1 = - double(originCoord1[2])/direction1[2];
+      double newX1 = prop1 * direction1[0] + originCoord1[0];
+      double newY1 = prop1 * direction1[1] + originCoord1[1];
+      
+      double prop2 = - double(originCoord2[2])/direction2[2];
+      double newX2 = prop2 * direction2[0] + originCoord2[0];
+      double newY2 = prop2 * direction2[1] + originCoord2[1];
+      
+      laneWidth_ = sqrt(pow(newX1 - newX2, 2) + pow(newY1 - newY2, 2));
+      foundLaneWidth = true;
+      dataProcessing::updateLaneWidth(laneWidth_);
+      printf("\n lane width is %f" , laneWidth_);
+    }
+  
     sidePoints.push_back(p1);
     sidePoints.push_back(p2);
 
@@ -336,16 +373,10 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
 
-    // cout << "viewportWidth originCoord is " << originCoord << endl;
-    // cout << "viewportWidth direction is " << direction << endl;
-
     // get the realworld coordinates
     double prop = - double(originCoord[2])/direction[2];
     double newX = prop * direction[0] + originCoord[0];
     double newY = prop * direction[1] + originCoord[1];
-
-    // cout << "realworld X is" << newX << endl;
-    // cout << "realworld Y is " << newY << endl;
 
     std::ofstream roadPoints;
     roadPoints.open("roadPoints.csv", std::ios_base::app);
