@@ -21,7 +21,7 @@ using namespace gazebo;
 
 double dataProcessing::carX = 0;
 double dataProcessing::carY = 0;
-double dataProcessing::carZ = 0;
+double dataProcessing::carYaw = 0;
 std::vector<double>* dataProcessing::frontLidarData = new std::vector<double>();
 std::vector<double>* dataProcessing::backLidarData = new std::vector<double>();
 std::map<LidarPosition, LidarInfo> dataProcessing::lidarInfo = std::map<LidarPosition, LidarInfo>();
@@ -46,10 +46,14 @@ void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolu
 }
 
 // Update the absolute coordinates of the car in the world
-void dataProcessing::UpdateCarPosition(double x, double y, double z) {
+void dataProcessing::UpdateGPS(double x, double y, double z) {
   carX = x;
   carY = y;
-  carZ = z;
+  carYaw = z;
+}
+
+cv::Point2d dataProcessing::GetCarLocation() {
+  return cv::Point2d(carX, carY);
 }
 
 // Update lidar data
@@ -125,11 +129,12 @@ ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
 
 void dataProcessing::UpdateIsNearbyObject(bool isNearby) {
   isNearby_ = isNearby;
-  // printf("WE ARE HERE\n");
 }
 
 void dataProcessing::UpdateObject(sdcVisibleObject* obj){
   object_ = obj;
+//  printf("left edge of object coords: %f, %f \n", object_->GetLeftPos(cv::Point2d(0,0))[0], object_->GetLeftPos(cv::Point2d(0,0))[1]);
+//  printf("right edge of object coords: %f, %f \n", object_->GetRightPos(cv::Point2d(0,0))[0], object_->GetRightPos(cv::Point2d(0,0))[1]);
 }
 
 // Update car's current and previous positions and

@@ -184,6 +184,7 @@ void sdcHLC::Drive() {
  */
 void sdcHLC::MatchTargetDirection() {
   dataProcessing::UpdateCarDirection();
+  
   sdcAngle directionAngleChange = car_->GetDirection() - car_->targetDirection_;
   // If the car needs to turn, set the target steering amount
   if (!directionAngleChange.WithinMargin(DIRECTION_MARGIN_OF_ERROR)) {
@@ -255,7 +256,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
       car_->turning_ = true;
     }
     if (car_->turning_ == true) {
-      car_->SetTurningLimit(20);
+      car_->SetTurningLimit(30);
       GridTurning(WAYPOINT_VEC[progress].waypointType);
     } else {
       math::Vector2d nextTarget = {WAYPOINT_VEC[progress].pos.first,WAYPOINT_VEC[progress].pos.second};
@@ -279,7 +280,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(3);
+  car_->SetTargetSpeed(0.8);
 
   cv::Point2d targetPoint = FindDubinsTargetPoint();
   printf("DRIVING STATE\n");

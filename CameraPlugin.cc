@@ -238,6 +238,8 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     int houghVotes = 105;
     if(roi_ID == 0)
         houghVotes = 52;
+//    else if(roi_ID == 1)
+//        houghVotes = 80;
 
     vector<Vec2f> lines;
 

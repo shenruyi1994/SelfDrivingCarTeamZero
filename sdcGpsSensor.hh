@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "sdcSensorData.hh"
+#include "dataProcessing.hh"
 
 namespace gazebo
 {
