@@ -111,7 +111,6 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
   int lo = 10;
   
   int waypoint_x = (lo-b1)/a1;
-  //printf("Waypoint: (%i, %i)", waypoint_x, lo);
   
   circle(processed, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
   

@@ -73,11 +73,6 @@ void dataProcessing::UpdateLidarData(LidarPosition pos, std::vector<double>* new
     default:
     break;
   }
-  //std::cout << "Update(Lidar)\n";  // check for update
-}
-
-void dataProcessing::GetLanePosition() {
-  std::cout << "Get lane position data\n";
 }
 
 // Retrieve lidar data
