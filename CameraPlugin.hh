@@ -22,16 +22,22 @@ namespace gazebo
 {
   class GAZEBO_VISIBLE CameraPlugin : public SensorPlugin
   {
-    public: virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/);
-    public: void OnUpdate();
-    public: void ROI(cv::Mat &m, int lo, int hi);
-    public: cv::Mat preprocess(cv::Mat m);
-    public: void updateObjectBrightness(sdcVisibleObject* visibleObject);
-    public: std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
-    public: double getAngle(const cv::Point2d& p1, const cv::Point2d& p2);
-    private: sensors::MultiCameraSensorPtr parentSensor;
-    private: event::ConnectionPtr updateConnection;
-
+    public:
+      virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/);
+      void OnUpdate();
+      void ROI(cv::Mat &m, int lo, int hi);
+      cv::Mat preprocess(cv::Mat m);
+      void updateObjectBrightness(sdcVisibleObject* visibleObject);
+      void WaypointSearch(int width, int height);
+      void ReturnPointSearch(int width, int height);
+      std::pair<cv::Point2d, cv::Point> vanishPoint(cv::Mat m, int mid);
+      double getAngle(const cv::Point2d& p1, const cv::Point2d& p2);
+      static void SetReturnMode(bool mode);
+      
+      
+    private:
+      sensors::MultiCameraSensorPtr parentSensor;
+      event::ConnectionPtr updateConnection;
   };
 }
 

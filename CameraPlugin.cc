@@ -36,8 +36,8 @@ sensors::MultiCameraSensorPtr parentSensor;
 
 Mat image;
 vector<Point2d> sidePoints;
-bool foundLaneWidth = false; 
-double laneWidth_ = 0;
+bool returnMode = false;
+
 
 void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
 {
@@ -63,156 +63,163 @@ void CameraPlugin::OnUpdate()
   int width = (int)this->parentSensor->GetImageWidth(0);
   int height = (int)this->parentSensor->GetImageHeight(0);
   const unsigned char* imageData = this->parentSensor->GetImageData(0);
-
-  // added to check about the viewport
-  int viewportWidth = (int)this->parentSensor->GetCamera(0)->GetViewportWidth();
-  int viewportHeight = (int)this->parentSensor->GetCamera(0)->GetViewportHeight();
-  // cout << "viewportWidth pixels is " << viewportWidth << endl;
-  // cout << "viewportHeight pixels is " << viewportHeight << endl;
-
-  // math::Vector3 originCoord;
-  // math::Vector3 direction;
-  // this->parentSensor->GetCamera(0)->GetCameraToViewportRay(200, 200, originCoord, direction);
-  //
-  // // cout << "viewportWidth originCoord is " << originCoord << endl;
-  // // cout << "viewportWidth direction is " << direction << endl;
-  // double directionx = direction[0];
-  // double directiony = direction[1];
-  // double directionz = direction[2];
-
-  // create image matrix
   image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
-
-
-    // Rectangular region of interest
-    double ROI_lo = 40;
-    double ROI_hi = height;
-
-    Mat rect_roi(image.size(), image.type());
-    image.copyTo(rect_roi);
-    ROI(rect_roi, ROI_lo, ROI_hi);
-
-
-    // Create sub ROIs
-    int n_sub = 3;
-    double interval = (ROI_hi-ROI_lo)/2;
-    double lo_increment = interval/2;
-
-    double sub_lo = ROI_lo;
-    double sub_hi;
-
-    vector<Mat> subs;
-
-    for(int i = 0; i < n_sub; i++)
-    {
-        Mat sub(rect_roi.size(), rect_roi.type());
-        rect_roi.copyTo(sub);
-        sub_hi = sub_lo + interval;
-        ROI(sub, sub_lo, sub_hi);
-        subs.push_back(sub);
-        sub_lo += lo_increment;
-    }
-
-    // --------------------------------------
-    // EDITED ROI III
-    /*
-    for(int i = 0; i < n_sub-1; i++)
-    {
-        Mat sub(rect_roi.size(), rect_roi.type());
-        rect_roi.copyTo(sub);
-        sub_hi = sub_lo + interval;
-        ROI(sub, sub_lo, sub_hi);
-        subs.push_back(sub);
-        sub_lo = sub_hi;
-    }
-
-    sub_hi = sub_lo + interval;
-    sub_lo -= 220;
-    Mat sub(rect_roi.size(), rect_roi.type());
-    rect_roi.copyTo(sub);
-    ROI(sub, sub_lo, sub_hi);
-    subs.push_back(sub);
-     */
-    // EDITED ROI I
-    // --------------------------------------
-
-    //  Process each sub ROI
-    vector<Mat> proc_subs;
-    for(size_t i = 0; i < subs.size(); i++)
-    {
-        proc_subs.push_back(preprocess(subs[i]));
-    }
-
-    // For each sub ROI, find vanishing point
-    vector<cv::Point2d> pts;
-    vector<cv::Point2d> worldPts;
-    vector<cv::Point> imagePts;
-    vector<double> waypointAngles;
-
-    for(size_t i = 0; i < proc_subs.size(); i++)
-    {
-        int lo = ROI_lo + i * lo_increment;
-        int hi = lo + interval;
-
-        std::pair<cv::Point2d, cv::Point> pts = vanishPoint(proc_subs[i], lo);
-        worldPts.push_back(std::get<0>(pts));
-        imagePts.push_back(std::get<1>(pts));
-
-        circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
-    }
   
-    // check whether this is a curved road or a straight road
-    cv::Point2d realWldPt1 = worldPts[0];
-    std::cout << "realWldPt1 " << realWldPt1 << std::endl;
-    cv::Point2d realWldPt3 = worldPts[2];
-    std::cout << "realWldPt3 " << realWldPt3 << std::endl;
-    if (fabs(realWldPt3.y - realWldPt1.y) > 1.5) {
-      dataProcessing::updateCurvedRoad(true);
-    } else {
-      dataProcessing::updateCurvedRoad(false);
-    }
+  if (returnMode) {
+    ReturnPointSearch(width, height);
+  } else {
+    WaypointSearch(width, height);
+  }
+}
 
-    // print out side points
-    for(size_t i = 0; i < sidePoints.size(); i++)
-    {
-        circle(image, sidePoints[i], 2, Scalar(0,0,255), 3);
-    }
-    sidePoints.clear();
-
-    cv::Point originaPoint = cv::Point2d(320,400);
-    imagePts.push_back(originaPoint);
-
-    for(int i = 3; i > 0; i--)
-    {
-        double angle = getAngle(worldPts[i], worldPts[i-1]);
-        // std::cout << "angle " << i <<" is " << angle << '\n';
-        waypointAngles.push_back(angle);
-    }
-
-    double newAngleOne = waypointAngles[2];
-    double newAngleThree = waypointAngles[0];
-    waypointAngles[0] = newAngleOne;
-    waypointAngles[2] = newAngleThree;
+void CameraPlugin::ReturnPointSearch(int width, int height){
+  double ROI_lo = width/2;
+  Mat rect_roi(image.size(), image.type());
+  image.copyTo(rect_roi);
   
-
-    dataProcessing::updateWaypoints(worldPts);
-    dataProcessing::updateWaypointsAngles(waypointAngles);
-
-    if (dataProcessing::IsNearbyObject()) {
-        // printf("CPCheck1\n");
-        sdcVisibleObject* obj = dataProcessing::GetNearbyObject();
-        // printf("CPCheck2\n");
-        std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
-        if (!obj->getBrightnessDetected()){
-              updateObjectBrightness(obj);
+  for(size_t i = 0; i < rect_roi.rows; i++){
+    for(size_t j = 0; j < rect_roi.cols/1.95; j++){
+      rect_roi.at<Vec3b>(i,j)[0] = 0;
+      rect_roi.at<Vec3b>(i,j)[1] = 0;
+      rect_roi.at<Vec3b>(i,j)[2] = 0;
+    }
+  }
+  Mat processed = preprocess(rect_roi);  
+  
+  vector<Vec2f> lines;
+  HoughLines(processed, lines, 1, PI/180, 50, 0, 0);
+  
+  float rho_right = FLT_MAX, theta_right = FLT_MAX;
+  for(size_t i = 0; i < lines.size(); i++)
+  {
+    float rho = lines[i][0], theta = lines[i][1];
+    if((0.15 < theta && theta < 1.54) || (theta > 1.62 && theta < 3))
+    {
+      if(theta > PI/2)
+      {
+        if(theta-PI/2 < theta_right-PI/2)
+        {
+          theta_right = theta;
+          rho_right = rho;
         }
+      }
     }
-    // printf("CPCheck0\n");
+  }
+  
+  double a1 = -(cos(theta_right)/sin(theta_right));
+  double b1 = rho_right/sin(theta_right);
+  int lo = 10;
+  
+  int waypoint_x = (lo-b1)/a1;
+  //printf("Waypoint: (%i, %i)", waypoint_x, lo);
+  
+  circle(processed, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
+  
+  math::Vector3 originCoord;
+  math::Vector3 direction;
+  this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
+
+  // get the realworld coordinates
+  double prop = - double(originCoord[2])/direction[2];
+  double newX = prop * direction[0] + originCoord[0];
+  double newY = prop * direction[1] + originCoord[1];
+  dataProcessing::UpdatePassPoint(cv::Point2d(newX,newY));
+  dataProcessing::UpdatePassPointAngle(theta_right);
+  
+  imshow("Return State", processed);
+  waitKey(4);
+}
+
+void CameraPlugin::WaypointSearch(int width, int height){
+  // Rectangular region of interest
+  double ROI_lo = 40;
+  double ROI_hi = height;
+
+  Mat rect_roi(image.size(), image.type());
+  image.copyTo(rect_roi);
+  ROI(rect_roi, ROI_lo, ROI_hi);
+
+  // Create sub ROIs
+  int n_sub = 3;
+  double interval = (ROI_hi-ROI_lo)/2;
+  double lo_increment = interval/2;
+
+  double sub_lo = ROI_lo;
+  double sub_hi;
+
+  vector<Mat> subs;
+
+  for(int i = 0; i < n_sub; i++)
+  {
+      Mat sub(rect_roi.size(), rect_roi.type());
+      rect_roi.copyTo(sub);
+      sub_hi = sub_lo + interval;
+      ROI(sub, sub_lo, sub_hi);
+      subs.push_back(sub);
+      sub_lo += lo_increment;
+  }
+
+  //  Process each sub ROI
+  vector<Mat> proc_subs;
+  for(size_t i = 0; i < subs.size(); i++)
+  {
+      proc_subs.push_back(preprocess(subs[i]));
+  }
+
+  // For each sub ROI, find vanishing point
+  vector<cv::Point2d> pts;
+  vector<cv::Point2d> worldPts;
+  vector<cv::Point> imagePts;
+  vector<double> waypointAngles;
+
+  for(size_t i = 0; i < proc_subs.size(); i++)
+  {
+      int lo = ROI_lo + i * lo_increment;
+      int hi = lo + interval;
+
+      std::pair<cv::Point2d, cv::Point> pts = vanishPoint(proc_subs[i], lo);
+      worldPts.push_back(std::get<0>(pts));
+      imagePts.push_back(std::get<1>(pts));
+
+      circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
+  }
+
+  // print out side points
+  for(size_t i = 0; i < sidePoints.size(); i++)
+  {
+      circle(image, sidePoints[i], 2, Scalar(0,0,255), 3);
+  }
+  sidePoints.clear();
+
+  cv::Point originaPoint = cv::Point2d(320,400);
+  imagePts.push_back(originaPoint);
+
+  for(int i = 3; i > 0; i--)
+  {
+      double angle = getAngle(worldPts[i], worldPts[i-1]);
+      waypointAngles.push_back(angle);
+  }
+
+  double newAngleOne = waypointAngles[2];
+  double newAngleThree = waypointAngles[0];
+  waypointAngles[0] = newAngleOne;
+  waypointAngles[2] = newAngleThree;
 
 
-    imshow("img", image);
-    imwrite("waypoints.png", image);
-    waitKey(4);
+  dataProcessing::updateWaypoints(worldPts);
+  dataProcessing::updateWaypointsAngles(waypointAngles);
+
+  if (dataProcessing::IsNearbyObject()) {
+      sdcVisibleObject* obj = dataProcessing::GetNearbyObject();
+      std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
+      if (!obj->getBrightnessDetected()){
+            updateObjectBrightness(obj);
+      }
+  }
+
+  imshow("img", image);
+  imwrite("waypoints.png", image);
+  waitKey(4); 
 }
 
 double CameraPlugin::getAngle(const cv::Point2d& p1, const cv::Point2d& p2)
@@ -251,9 +258,9 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     int roi_ID = lo/130;
     int houghVotes = 105;
     if(roi_ID == 0)
-        houghVotes = 52;
-//    else if(roi_ID == 1)
-//        houghVotes = 80;
+      houghVotes = 52;
+    else if(roi_ID == 1)
+      houghVotes = 80;
 
     vector<Vec2f> lines;
 
@@ -294,47 +301,12 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     double a2 = -(cos(theta_right)/sin(theta_right));
     double b2 = rho_right/sin(theta_right);
 
-    // find intersection of two equations
-    /*double x = (b1-b2)/(a2-a1);
-    double y = a1 * x + b1;
-
-    double x2 = mat.cols/2;
-    double y2 = mat.rows;
-
-    // y = mx + n, x = (y-n)/m
-    double m = (y2-y)/(x2-x);
-    double n = -m*x+y;
-
-    int waypoint_x = (lo-n)/m;*/
-
     // find x, given y = mid
     int waypoint_x1 = (lo-b1)/a1;
     int waypoint_x2 = (lo-b2)/a2;
 
     cv::Point2d p1 = cv::Point2d(waypoint_x1, lo);
     cv::Point2d p2 = cv::Point2d(waypoint_x2, lo);
-  
-    // calculate out the laneWidth
-    if (!foundLaneWidth) {
-      // get real coordinates for p1,p2
-      math::Vector3 originCoord1,originCoord2,direction1,direction2;
-      this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x1, lo, originCoord1, direction1);
-      this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x2, lo, originCoord2, direction2);
-
-      // get the realworld coordinates
-      double prop1 = - double(originCoord1[2])/direction1[2];
-      double newX1 = prop1 * direction1[0] + originCoord1[0];
-      double newY1 = prop1 * direction1[1] + originCoord1[1];
-      
-      double prop2 = - double(originCoord2[2])/direction2[2];
-      double newX2 = prop2 * direction2[0] + originCoord2[0];
-      double newY2 = prop2 * direction2[1] + originCoord2[1];
-      
-      laneWidth_ = sqrt(pow(newX1 - newX2, 2) + pow(newY1 - newY2, 2));
-      foundLaneWidth = true;
-      dataProcessing::updateLaneWidth(laneWidth_);
-      printf("\n lane width is %f" , laneWidth_);
-    }
   
     sidePoints.push_back(p1);
     sidePoints.push_back(p2);
@@ -367,8 +339,6 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 
     imshow(std::to_string(roi_ID), mat);
 
-
-
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
@@ -378,12 +348,8 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     double newX = prop * direction[0] + originCoord[0];
     double newY = prop * direction[1] + originCoord[1];
 
-    std::ofstream roadPoints;
-    roadPoints.open("roadPoints.csv", std::ios_base::app);
-    roadPoints << newX << ", " << newY << std::endl;
-
+    
     return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,lo));
-    //return cv::Point2d(waypoint_x,mid);
 }
 
 // Gray -> Gaussian Blur -> Morph Open -> Edge
@@ -392,13 +358,14 @@ Mat CameraPlugin::preprocess(Mat mat)
     Mat gray, morph, canny;
     cvtColor(mat, gray, CV_BGR2GRAY);
     GaussianBlur(gray, gray, cv::Size(5,5), 0, 0);
-
     Mat erosion(7, 7, CV_8U, Scalar(1));
     morphologyEx(gray, morph, MORPH_OPEN, erosion);
-
     Canny(gray, canny, 128, 255);
-
     return canny;
+}
+
+void CameraPlugin::SetReturnMode(bool mode){
+  returnMode = mode;
 }
 
 ///////////// obstacle code ////////////////
@@ -432,16 +399,9 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
 
     circle(image, points_in_roi[points_in_roi.size() - 1], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
 
-//    int blue_avg = (blue_sum/3)%255;
-//    int green_avg = (green_sum/3)%255;
-//    int red_avg = (red_sum/3)%255;
     int brightness = sum/3/points_in_roi.size();
 
     Vec3f avg_color(brightness, brightness, brightness);
-    //std::cout << "obstacle color: " << brightness << std::endl;
-
-    //-- Show detected keypoints
-    //imshow("Average sample locations", image);
 
     visibleObject->SetBrightness(brightness);
     visibleObject->setBrightnessDetected();

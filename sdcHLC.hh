@@ -12,6 +12,7 @@
 #include "sdcIntersection.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
+#include "CameraPlugin.hh"
 
 namespace gazebo {
   typedef struct {
@@ -83,7 +84,7 @@ namespace gazebo {
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
     void BackToLane();
-    void LaneSwitchCalc();
+    bool IsBackToLane();
     
   private:
     sdcCar* car_;
@@ -99,12 +100,6 @@ namespace gazebo {
 
     double lastX_ = 0;
     double lastY_ = 0;
-    
-    bool return_point_computed_ = false;
-    math::Vector2d car_vector;
-    math::Vector2d vector_to_obstacle;
-    double returnX_ = 0;
-    double returnY_ = 0;
     
     common::Time lastUpdateTime_;
 
