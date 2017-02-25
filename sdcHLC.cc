@@ -215,7 +215,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(2);
+  car_->SetTargetSpeed(3);
   cv::Point2d targetPoint;
   
   if(roadState_ == FOLLOW_16){
