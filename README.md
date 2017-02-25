@@ -1,5 +1,3 @@
-ReadMe
-
 # Self Driving Car Comps
 
 # Overview
