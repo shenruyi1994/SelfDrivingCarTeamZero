@@ -215,12 +215,16 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  * along sharp turns in the curve.
  */
 void sdcHLC::FollowWaypoints() {
-  car_->SetTargetSpeed(5);
+  car_->SetTargetSpeed(2);
   cv::Point2d targetPoint;
+  
   if(roadState_ == FOLLOW_16){
     targetPoint = FindDubinsTargetPoint();
   } else {
+    
+    // If in RETURN_16 state, but CameraPlugin hasn't finished computing targetPoint
     if (targetPoint.x == 0 && targetPoint.y == 0 && dataProcessing::GetPassPointAngle() == 0){
+      // Do as it does in FOLLOW_16 state
       targetPoint = FindDubinsTargetPoint();
     } else {
       targetPoint = dataProcessing::GetPassPoint();
