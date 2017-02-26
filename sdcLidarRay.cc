@@ -25,7 +25,7 @@ sdcLidarRay::sdcLidarRay(sdcAngle angle, double dist) {
  * sensor producing these rays, negative values are to the left and
  * positive are to the right
  */
-double sdcLidarRay::GetLateralDist() {
+double sdcLidarRay::GetLateralDist() const {
     return sin(this->angle.angle) * dist * (-1);
 }
 
@@ -33,7 +33,7 @@ double sdcLidarRay::GetLateralDist() {
  * Gets the longitudinal distance of this ray. When compared to the lidar sensor,
  * larger values are further away and smaller values are closer
  */
-double sdcLidarRay::GetLongitudinalDist() {
+double sdcLidarRay::GetLongitudinalDist() const {
     return cos(this->angle.angle) * dist;
 }
 
@@ -47,6 +47,6 @@ gazebo::math::Vector2d sdcLidarRay::GetAsPoint() {
 /*
  * Returns the angle of a lidar ray
  */
-double sdcLidarRay::GetAngle(){
+double sdcLidarRay::GetAngle() const {
     return this->angle.angle;
 }

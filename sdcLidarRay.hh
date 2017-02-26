@@ -8,9 +8,9 @@ class sdcLidarRay {
 public:
     sdcLidarRay();
     sdcLidarRay(sdcAngle angle, double dist);
-    double GetAngle();
-    double GetLateralDist();
-    double GetLongitudinalDist();
+    double GetAngle() const;
+    double GetLateralDist() const;
+    double GetLongitudinalDist() const;
     gazebo::math::Vector2d GetAsPoint();
 
     sdcAngle angle;
