@@ -64,7 +64,7 @@ void CameraPlugin::OnUpdate()
   int height = (int)this->parentSensor->GetImageHeight(0);
   const unsigned char* imageData = this->parentSensor->GetImageData(0);
   image = Mat(height, width, CV_8UC3, const_cast<unsigned char*>(imageData));
-  
+
   if (returnMode) {
     ReturnPointSearch(width, height);
   } else {
@@ -76,7 +76,7 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
   double ROI_lo = width/2;
   Mat rect_roi(image.size(), image.type());
   image.copyTo(rect_roi);
-  
+
   for(size_t i = 0; i < rect_roi.rows; i++){
     for(size_t j = 0; j < rect_roi.cols/1.95; j++){
       rect_roi.at<Vec3b>(i,j)[0] = 0;
@@ -84,11 +84,11 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
       rect_roi.at<Vec3b>(i,j)[2] = 0;
     }
   }
-  Mat processed = preprocess(rect_roi);  
-  
+  Mat processed = preprocess(rect_roi);
+
   vector<Vec2f> lines;
   HoughLines(processed, lines, 1, PI/180, 50, 0, 0);
-  
+
   float rho_right = FLT_MAX, theta_right = FLT_MAX;
   for(size_t i = 0; i < lines.size(); i++)
   {
@@ -105,15 +105,15 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
       }
     }
   }
-  
+
   double a1 = -(cos(theta_right)/sin(theta_right));
   double b1 = rho_right/sin(theta_right);
   int lo = 10;
-  
+
   int waypoint_x = (lo-b1)/a1;
-  
+
   circle(processed, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
-  
+
   math::Vector3 originCoord;
   math::Vector3 direction;
   this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
@@ -124,7 +124,7 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
   double newY = prop * direction[1] + originCoord[1];
   dataProcessing::UpdatePassPoint(cv::Point2d(newX,newY));
   dataProcessing::UpdatePassPointAngle(theta_right);
-  
+
   imshow("Return State", processed);
   waitKey(4);
 }
@@ -210,7 +210,7 @@ void CameraPlugin::WaypointSearch(int width, int height){
 
   if (dataProcessing::IsNearbyObject()) {
       sdcVisibleObject* obj = dataProcessing::GetNearbyObject();
-      std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
+      // std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
       if (!obj->getBrightnessDetected()){
             updateObjectBrightness(obj);
       }
@@ -218,7 +218,7 @@ void CameraPlugin::WaypointSearch(int width, int height){
 
   imshow("img", image);
   imwrite("waypoints.png", image);
-  waitKey(4); 
+  waitKey(4);
 }
 
 double CameraPlugin::getAngle(const cv::Point2d& p1, const cv::Point2d& p2)
@@ -306,7 +306,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 
     cv::Point2d p1 = cv::Point2d(waypoint_x1, lo);
     cv::Point2d p2 = cv::Point2d(waypoint_x2, lo);
-  
+
     sidePoints.push_back(p1);
     sidePoints.push_back(p2);
 
@@ -347,7 +347,7 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     double newX = prop * direction[0] + originCoord[0];
     double newY = prop * direction[1] + originCoord[1];
 
-    
+
     return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,lo));
 }
 

@@ -283,14 +283,14 @@ bool sdcVisibleObject::getBrightnessDetected() const{
 cv::Point2d sdcVisibleObject::GetLeftPos(cv::Point2d carPos) const {
     double leftDistanceLat = left_.GetLateralDist();
     double leftDistanceLong = left_.GetLongitudinalDist();
-    return cv::Point2d(leftDistanceLat + carPos.x, leftDistanceLong + carPos.y);
+    return cv::Point2d(carPos.x - leftDistanceLong, leftDistanceLat + carPos.y);
 }
 
 // Get real world coordinates of rightmost point of object
 cv::Point2d sdcVisibleObject::GetRightPos(cv::Point2d carPos) const {
     double rightDistanceLat = right_.GetLateralDist();
     double rightDistanceLong = right_.GetLongitudinalDist();
-    return cv::Point2d(rightDistanceLat + carPos.x, rightDistanceLong + carPos.y);
+    return cv::Point2d(carPos.x - rightDistanceLong, rightDistanceLat + carPos.y);
 }
 
 void sdcVisibleObject::updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex){
