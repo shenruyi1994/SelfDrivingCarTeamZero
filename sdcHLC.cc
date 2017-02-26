@@ -16,7 +16,7 @@
 #include "sdcLLC.hh"
 #include "sdcRotatedBoundingBox.hh"
 #include "Waypoints.hh"
-
+#include "CameraPlugin.hh"
 
 using namespace gazebo;
 
@@ -51,12 +51,19 @@ sdcHLC::~sdcHLC() {
 ////////////////////////////////
 ////////////////////////////////
 
+bool sdcHLC::IsBackToLane() {
+  double angle = dataProcessing::GetPassPointAngle();
+  printf("Angle: %f\n", angle);
+  return (angle >= 2.46) ? true : false;
+}
+
 /*
  * Handles all logic for driving, is called every time the car receives an update
  * request from Gazebo
  */
 void sdcHLC::Drive() {
   dataProcessing::UpdateCarDirection();
+  
   common::Time curTime = car_->model_->GetWorld()->GetSimTime();
   if (curTime.Double() - lastUpdateTime_.Double() < .01) {
     UpdatePathDistance();
@@ -67,6 +74,8 @@ void sdcHLC::Drive() {
 
   if (dataProcessing::IsNearbyObject()) {
     roadState_ = AVOID_16;
+  } else if ((!dataProcessing::IsNearbyObject() && roadState_ == AVOID_16) || (roadState_ == RETURN_16)) {
+    roadState_ = RETURN_16;
   } else {
     roadState_ = FOLLOW_16;
   }
@@ -92,6 +101,7 @@ void sdcHLC::Drive() {
       break;
     
     case RETURN_16:
+      BackToLane();
       break;
       
     case FOLLOW_16: // fall through, follow waypoints with no obstacle
@@ -102,81 +112,6 @@ void sdcHLC::Drive() {
   // Attempt to turn towards the target direction and match target speed
   MatchTargetDirection();
   MatchTargetSpeed();
-
-  /*
-  // If not in avoidance, check if we should start following the thing
-  // in front of us. If following is done, kick out to default state
-  if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
-    // If there's a stop sign, assume we're at an intersection
-    if (car_->ignoreStopSignsCounter_ == 0 && sdcSensorData::stopSignFrameCount > 5) {
-      currentState_ = INTERSECTION;
-    }
-
-    // If something is ahead of us, default to trying to follow it
-    if (car_->ObjectDirectlyAhead()) {
-      currentState_ = FOLLOW;
-    } else if (currentState_ == FOLLOW && !car_->isTrackingObject_) {
-      currentState_ = DEFAULT_STATE;
-    }
-
-    // Look for objects in danger of colliding with us, react appropriately
-    if (car_->ObjectOnCollisionCourse()) {
-      currentState_ = AVOIDANCE;
-    }
-  }
-
-  car_->ignoreStopSignsCounter_ = fmax(car_->ignoreStopSignsCounter_ - 1, 0);
-
-
-  // Possible states: stop, waypoint, intersection, follow, avoidance
-  switch(currentState_) {
-    // Final state, car is finished driving
-    case STOP:
-      llc_->Stop();
-      break;
-
-    // Default state; drive straight to target location
-    case  WAYPOINT:
-      // Handle lane driving
-
-      llc_->Accelerate();
-      // llc_->Stop();
-      //WaypointDriving(WAYPOINT_VEC);
-      break;
-
-    // At a stop sign, performing a turn
-    case INTERSECTION:
-      if (car_->stoppedAtSign_ && car_->stationaryCount_ > 2000) {
-        currentState_ = DEFAULT_STATE;
-        car_->ignoreStopSignsCounter_ = 3000;
-      } else if (car_->stoppedAtSign_ && car_->GetSpeed() < 0.5) {
-        car_->stationaryCount_++;
-      } else if (!car_->stoppedAtSign_ && sdcSensorData::sizeOfStopSign > 6000) {
-        llc_->Stop();
-        car_->stoppedAtSign_ = true;
-        car_->stationaryCount_ = 0;
-      }
-
-    break;
-
-    // Follows object that is going in same direction/towards same target
-    case FOLLOW:
-      Follow();
-      // Handle lane driving
-      break;
-
-    // Smarter way to avoid objects; stopping, swerving, etc.
-    case AVOIDANCE:
-      // Cases: stop, swerve, go around
-      Avoidance();
-      break;
-
-    // Parks the car
-    case PARKING:
-      PerpendicularPark();
-      // ParallelPark();
-      break;
-  } */
 }
 
 /*
@@ -185,6 +120,7 @@ void sdcHLC::Drive() {
  */
 void sdcHLC::MatchTargetDirection() {
   dataProcessing::UpdateCarDirection();
+  
   sdcAngle directionAngleChange = car_->GetDirection() - car_->targetDirection_;
   // If the car needs to turn, set the target steering amount
   if (!directionAngleChange.WithinMargin(DIRECTION_MARGIN_OF_ERROR)) {
@@ -256,7 +192,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
       car_->turning_ = true;
     }
     if (car_->turning_ == true) {
-      car_->SetTurningLimit(20);
+      car_->SetTurningLimit(30);
       GridTurning(WAYPOINT_VEC[progress].waypointType);
     } else {
       math::Vector2d nextTarget = {WAYPOINT_VEC[progress].pos.first,WAYPOINT_VEC[progress].pos.second};
@@ -281,25 +217,29 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  */
 void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
-
-  cv::Point2d targetPoint = FindDubinsTargetPoint();
-  printf("DRIVING STATE\n");
+  cv::Point2d targetPoint;
+  
+  if(roadState_ == FOLLOW_16){
+    targetPoint = FindDubinsTargetPoint();
+  } else {
+    
+    // If in RETURN_16 state, but CameraPlugin hasn't finished computing targetPoint
+    if (targetPoint.x == 0 && targetPoint.y == 0 && dataProcessing::GetPassPointAngle() == 0){
+      // Do as it does in FOLLOW_16 state
+      targetPoint = FindDubinsTargetPoint();
+    } else {
+      targetPoint = dataProcessing::GetPassPoint();
+      printf("PASS POINT! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
+      car_->SetTargetPoint(targetPoint);
+      if (IsBackToLane()) {
+        roadState_ = FOLLOW_16;
+        CameraPlugin::SetReturnMode(false);
+        dataProcessing::UpdatePassPoint(cv::Point(0.0));
+        dataProcessing::UpdatePassPointAngle(0);
+      }
+    }
+  }
   car_->SetTargetPoint(targetPoint);
-
-  // printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
-  // printf("  speed: %f\n", car_->GetSpeed());
-  // printf("  location: (%f, %f)\n", car_->x_, car_->y_);
-  // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
-
-  /*  uncomment to track path of car for plot.py
-  std::ofstream targetPoints;
-  targetPoints.open("targetPoints.csv", std::ios_base::app);
-  targetPoints << targetPoint.x << ", " << targetPoint.y << std::endl;
-
-  std::ofstream locationPoints;
-  locationPoints.open("locationPoints.csv", std::ios_base::app);
-  locationPoints << car_->x_ << ", " << car_->y_ << std::endl;
-  */
 }
 
 /*
@@ -314,11 +254,6 @@ void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
   double denominator = lookaheadScalor_ * car_->GetSpeed();
 
   sdcAngle directionAngle = atan2(numerator, denominator);
-
-  // We can't set the wheel angle directly, so instead we set the steering
-  //printf("    +++++ directionAngle: %f\n", directionAngle.angle);
-  //printf("    +++++ steeringAmount: %f\n", directionAngle.angle * car_->steeringRatio_);
-  // car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
 }
 
 /*
@@ -332,9 +267,6 @@ void sdcHLC::UpdatePathDistance() {
   if (car_->model_->GetWorld()->GetSimTime().Double() < 0.01) {
     pathDist_ = 0;
   }
-  // double avgVelocity = (car_->GetSpeed() + lastSpeed_) / 2;
-  // lastTime_ = car_->model_->GetWorld()->GetSimTime();
-  // lastSpeed_ = car_->GetSpeed();
 
   // double distanceTravelled = avgVelocity * dt.Double();
   pathDist_ += pythag_thm(car_->x_ - lastX_, car_->y_ - lastY_);
@@ -356,31 +288,6 @@ cv::Point2d sdcHLC::FindDubinsTargetPoint() {
     pathDist_ = 0;
   }
   cv::Point2d tempTarget = llc_->GetDubinsPoint(lookaheadDistance);
-
-  // double distanceToDubins = coord_distance(location, tempTarget);
-  // double adjustment = distanceToDubins - lookaheadDistance;
-  // double maxError = 0.1;
-  // double tempPathDist = pathDist_;
-  //
-  // // finds a point along the dubins path that is beyond the ideal target distance
-  // while (distanceToDubins < lookaheadDistance) {
-  //   tempPathDist += adjustment;
-  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
-  //   adjustment *= 2;
-  // }
-  //
-  // // does a binary search to find the correct distance along the path that we
-  // // need to aim for
-  // while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
-  //   if (distanceToDubins > lookaheadDistance) {
-  //     tempPathDist -= adjustment;
-  //   } else {
-  //     tempPathDist += adjustment;
-  //   }
-  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
-  //   adjustment *= .5;
-  // }
-
   return tempTarget;
 }
 
@@ -509,23 +416,14 @@ void sdcHLC::Follow() {
  * of the car
  */
 void sdcHLC::AvoidObstacle() {
-  // get a target point to the left side of an obstacle
-  cv::Point2d obstacle = dataProcessing::getObstacleCoords();
-
   cv::Point2d targetPoint = dataProcessing::getObstacleCoords();
   printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
-
   car_->SetTargetPoint(targetPoint);
-  /*
-  Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
-  Waypoint carPoint;
-  carPoint.x = car_->x_;
-  carPoint.y = car_->y_;
-  carPoint.direction = car_->GetDirection().angle;
+}
 
-  llc_->dubins_->calculateDubins(avoidPoint, carPoint, MIN_TURNING_RADIUS);
-  */
-  //steeringAngles.push_back(car_->GetDirection().angle);
+void sdcHLC::BackToLane(){
+  CameraPlugin::SetReturnMode(true);
+  FollowWaypoints();
 }
 
 //////////////////////////////////////////

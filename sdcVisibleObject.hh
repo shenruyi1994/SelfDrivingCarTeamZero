@@ -31,8 +31,6 @@ namespace gazebo {
 
     sdcLidarRay Left() const { return left_; };
     sdcLidarRay Right() const { return right_; };
-    math::Vector2d LeftPos(double carPos) const;
-    math::Vector2d RightPos(double carPos) const;
     double Dist() const { return dist_; };
     double LineSlope() const { return lineSlope_; };
     double LineIntercept() const { return lineIntercept_; };
@@ -48,6 +46,9 @@ namespace gazebo {
 
     void setBrightnessDetected();
     bool getBrightnessDetected() const;
+    
+    math::Vector2d GetLeftPos(cv::Point2d carPos);
+    math::Vector2d GetRightPos(cv::Point2d carPos);
 
     void updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex);
 
