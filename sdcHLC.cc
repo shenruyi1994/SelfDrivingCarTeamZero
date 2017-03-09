@@ -307,20 +307,6 @@ bool sdcHLC::CanStopBeforeObject(const sdcVisibleObject* obj) const {
 }
 
 /*
- * Sets dangerousObj_ to the first object encountered that is on a collision
- * course with the car, or NULL if no such object exists.
- */
-void sdcHLC::CheckNearbyObjectsForCollision() {
-  for (sdcVisibleObject* obj : car_->frontObjects_) {
-    if (IsObjectOnCollisionCourse(obj)) {
-      dangerousObj_ = obj;
-      return;
-    }
-  }
-  dangerousObj_ = NULL;
-}
-
-/*
  * Checks if the object is on a collision course with the car.
  */
 bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {

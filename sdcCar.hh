@@ -87,14 +87,10 @@ namespace gazebo {
     // Begin Non-Gazebo Related Definitions //
     //////////////////////////////////////////
 
-    enum RelativeDirection { forward, aligned, backward, right, left };
-
     ///////////////////////////
     // SDC-defined variables //
     ///////////////////////////
 
-    RelativeDirection destDir_;
-    RelativeDirection destDirSide_;
     Direction currentDir_;
 
     // High and low level controllers for the car
@@ -110,21 +106,12 @@ namespace gazebo {
     // Position/rotation variables
     sdcAngle yaw_;
 
-    // Waypoint variables
-    int waypointProgress_;
-
-    // Intersection variables
-    bool stoppedAtSign_;
-    int ignoreStopSignsCounter_;
-    int atIntersection_;
-
     // Car limit variables
     int maxCarSpeed_;
     double maxCarReverseSpeed_;
     double turningLimit_;
 
     // Flags for the car's actions
-    bool turning_;
     bool reversing_;
     bool stopping_;
 
@@ -133,24 +120,6 @@ namespace gazebo {
     double targetSteeringAmount_;
     double steeringAmount_;
     double targetSpeed_;
-
-    // Parking variables
-    sdcAngle targetParkingAngle_;
-    bool parkingAngleSet_;
-    bool isFixingParking_;
-    bool parkingSpotSet_;
-
-    // Follow variables
-    bool isTrackingObject_;
-    int stationaryCount_;
-
-    // Avodiance variables
-    math::Vector2d navWaypoint_;
-    bool trackingNavWaypoint_;
-
-    // Variables relating to tracking objects in front of the car
-    std::vector<sdcVisibleObject*> frontObjects_;
-    int frontLidarLastUpdate_;
 
     // The x and y position of the car
     double x_;
@@ -168,19 +137,11 @@ namespace gazebo {
     void UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects);
 
     sdcAngle AngleToTarget(math::Vector2d target) const;
-    bool ObjectDirectlyAhead() const;
-    bool IsObjectDirectlyAhead(const sdcVisibleObject* obj) const;
-    bool ObjectOnCollisionCourse() const;
-    bool IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const;
-    bool IsObjectTooFast(const sdcVisibleObject* obj) const;
-    bool IsObjectTooFurious(const sdcVisibleObject* obj) const;
 
     bool IsMovingForwards() const;
     double GetSpeed() const;
-    double GetDistance(math::Vector2d navWaypoint_) const;
     sdcAngle GetDirection() const;
     sdcAngle GetOrientation() const;
-    void GetNSEW();
     double GetMaxSafeTime() const;
     double GetMinTurningRadius() const;
 
