@@ -85,8 +85,8 @@ namespace gazebo {
                                      double time) const;
     void BackToLane();
     bool IsBackToLane();
-    
-  private:
+
+    private:
     sdcCar* car_;
     sdcLLC* llc_;
 
@@ -162,6 +162,8 @@ namespace gazebo {
     RoadState roadState_;
 
     sdcVisibleObject* dangerousObj_;
+
+    std::vector<Waypoint> avoidancePath_; 
 
     //dijkstra's stuff
     std::vector<int> unvisited_;
