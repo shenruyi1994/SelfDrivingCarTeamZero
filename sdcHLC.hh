@@ -37,14 +37,6 @@ namespace gazebo {
     void MatchTargetSpeed();
     void DetectIntersection();
 
-    //Dijkstra Methods
-    void GenerateWaypoints();
-    void initializeGraph();
-    int getFirstIntersection();
-    void removeStartingEdge(int start);
-    std::vector<int> dijkstras(int start, int dest);
-    void insertWaypointTypes(std::vector<int> path, Direction startDir);
-
     // Dubins path following functions
     void FollowWaypoints();
     void UpdatePathDistance();
