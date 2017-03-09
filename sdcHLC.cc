@@ -25,16 +25,8 @@ std::vector<sdcWaypoint> WAYPOINT_VEC;
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
 
-  // Initialize state enums
-  DEFAULT_STATE = WAYPOINT;
-  currentState_ = DEFAULT_STATE;
-
   roadState_ = FOLLOW_16;
-
-  currentAvoidanceState_ = notAvoiding;
-
   lastUpdateTime_ = common::Time(0);
-
   lastX_ = car_->x_;
   lastY_ = car_->y_;
 }
@@ -485,39 +477,6 @@ sdcAngle sdcHLC::GetAngleAtTime(double time) const {
 sdcAngle sdcHLC::GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   return sdcAngle();
-}
-
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-// BEGIN OTHER STATEFUL ALGORITHMS FROM 2015 //
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-
-/*
- * Executes a turn at an intersection
- */
-void sdcHLC::GridTurning(int turn) {
-  int progress = car_->waypointProgress_;
-  if (turn == 3) {
-    car_->waypointProgress_++;
-    currentState_ = STOP;
-    return;
-  } else if (turn == 0) {
-    car_->waypointProgress_++;
-    car_->turning_ = false;
-    return;
-  }
-  math::Vector2d nextTarget = {
-    WAYPOINT_VEC[progress+1].pos.first,
-    WAYPOINT_VEC[progress+1].pos.second
-  };
-  sdcAngle targetAngle = car_->AngleToTarget(nextTarget);
-  car_->SetTargetDirection(targetAngle);
-  sdcAngle margin = car_->GetOrientation().FindMargin(targetAngle);
-  if (margin < .1 && margin > -.1) {
-    car_->turning_ = false;
-    car_->waypointProgress_++;
-  }
 }
 
 void sdcHLC::update() {

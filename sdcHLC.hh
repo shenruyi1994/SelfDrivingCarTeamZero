@@ -15,12 +15,6 @@
 #include "CameraPlugin.hh"
 
 namespace gazebo {
-  typedef struct {
-    double time;
-    math::Vector2d worldLocation;
-    math::Vector2d carLocation;
-  } CollisionEvent;
-
   class sdcCar;
   class sdcLLC;
 
@@ -35,7 +29,6 @@ namespace gazebo {
     void Drive();
     void MatchTargetDirection();
     void MatchTargetSpeed();
-    void DetectIntersection();
 
     // Dubins path following functions
     void FollowWaypoints();
@@ -48,8 +41,6 @@ namespace gazebo {
     std::vector<double> steeringAngles;
 
     // Driving algorithms
-    void LanedDriving();
-    void GridTurning(int turn);
     void AvoidObstacle();
 
     // Collision detection/avoidance functions
@@ -109,39 +100,11 @@ namespace gazebo {
       RETURN_16 // return to our lane after passing
     };
 
-    // ================================================
-    // 2015 states
-    // ================================================
-
-    // The different states the car can be in. The logic and behavior of
-    // the car will change depending on which state it's in, with various
-    // sensor readings affecting the decision to transition states
-    enum CarState {
-      STOP, WAYPOINT, INTERSECTION, FOLLOW, AVOIDANCE
-    };
-
-    // The different states available when attempting to avoid objects
-    enum AvoidanceState {
-      emergencyStop, emergencySwerve, navigation, notAvoiding
-    };
-
-    AvoidanceState currentAvoidanceState_;
-
-    // The current state of the car
-    CarState DEFAULT_STATE;
-    CarState currentState_;
-
     // Current state of the car, 2016 version
     MetaState metaState_;
     RoadState roadState_;
 
     sdcVisibleObject* dangerousObj_;
-
-    //dijkstra's stuff
-    std::vector<int> unvisited_;
-    std::vector<sdcIntersection> intersections_;
-    const int size = 5;
-    const std::pair<double,double> destination_ = {0,0};
   };
 }
 #endif
