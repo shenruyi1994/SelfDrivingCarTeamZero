@@ -10,7 +10,6 @@
 #include <vector>
 #include <iostream>
 
-#include "sdcSensorData.hh"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
