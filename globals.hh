@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "sdcAngle.hh"
-#include "sdcWaypoint.hh"
 
 // SDC-defined constants
 const double PI = 3.14159265359;

@@ -19,8 +19,6 @@
 
 using namespace gazebo;
 
-std::vector<sdcWaypoint> WAYPOINT_VEC;
-
 sdcHLC::sdcHLC(sdcCar* car): car_(car) {
   llc_ = new sdcLLC(car_);
 

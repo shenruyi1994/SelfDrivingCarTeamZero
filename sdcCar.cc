@@ -42,7 +42,6 @@
 #include "sdcAngle.hh"
 #include "sdcHLC.hh"
 #include "sdcUtils.hh"
-#include "sdcWaypoint.hh"
 
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(sdcCar)

@@ -21,9 +21,6 @@ target_link_libraries(sdcBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(waypoints SHARED Waypoints.cc)
 target_link_libraries(waypoints ${GAZEBO_LIBRARIES} ${BOOST_LIBRARIES})
 
-add_library(sdcFlyingBox SHARED sdcFlyingBox.cc)
-target_link_libraries(sdcFlyingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
 add_library(sdcAngle SHARED sdcAngle.cc)
 target_link_libraries(sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -38,9 +35,6 @@ target_link_libraries(sdcGpsSensor data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcCameraSensor SHARED sdcCameraSensor.cc)
 target_link_libraries(sdcCameraSensor ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
-
-add_library(sdcWaypoint SHARED sdcWaypoint.cc)
-target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
 target_link_libraries(sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
@@ -68,9 +62,9 @@ add_library(camera SHARED CameraPlugin.cc)
 target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(dubins SHARED dubins.cc)
-target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(dubins sdcAngle waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar camera data sdcWaypoint sdcAngle sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar camera data sdcAngle sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 
