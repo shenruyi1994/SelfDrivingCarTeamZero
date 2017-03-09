@@ -23,10 +23,7 @@ void sdcGpsSensor::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
 void sdcGpsSensor::OnUpdate() {
     math::Pose pose = this->gpsLink->GetWorldPose();
     dataProcessing::UpdateGPS(pose.pos.x, pose.pos.y, pose.rot.GetYaw());
-    sdcSensorData::UpdateGPS(pose.pos.x, pose.pos.y, pose.rot.GetYaw());
-
 }
-
 
 // Pointer to the update event connection
 event::ConnectionPtr updateConnection;

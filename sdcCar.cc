@@ -38,9 +38,9 @@
 
 #include "globals.hh"
 
+#include "dataProcessing.hh"
 #include "sdcAngle.hh"
 #include "sdcHLC.hh"
-#include "sdcSensorData.hh"
 #include "sdcUtils.hh"
 #include "sdcWaypoint.hh"
 
@@ -109,7 +109,7 @@ sdcAngle sdcCar::GetOrientation() const {
  * Returns the angle from the car's current position to a target position
  */
 sdcAngle sdcCar::AngleToTarget(math::Vector2d target) const {
-  math::Vector2d position = sdcSensorData::GetPosition();
+  math::Vector2d position = dataProcessing::GetPosition();
   math::Vector2d targetVector = math::Vector2d(target.x - position.x, target.y - position.y);
   return sdcAngle(atan2(targetVector.y, targetVector.x));
 }
@@ -237,11 +237,11 @@ void sdcCar::OnUpdate() {
   // Get the current velocity of the car
   velocity_ = chassis_->GetWorldLinearVel();
   // Get the cars current position
-  math::Vector2d pose = sdcSensorData::GetPosition();
+  math::Vector2d pose = dataProcessing::GetPosition();
   x_ = pose.x;
   y_ = pose.y;
   // Get the cars current rotation
-  yaw_ = sdcSensorData::GetYaw();
+  yaw_ = dataProcessing::GetYaw();
 
   // Call our Drive function, which is the brain for the car
   hlc_->Drive();

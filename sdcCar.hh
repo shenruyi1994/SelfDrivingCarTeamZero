@@ -30,7 +30,6 @@
 #include "globals.hh"
 
 #include "sdcAngle.hh"
-#include "sdcSensorData.hh"
 #include "sdcWaypoint.hh"
 #include <opencv2/opencv.hpp>
 
@@ -132,9 +131,6 @@ namespace gazebo {
     /////////////////////////
 
     // Helper methods
-    void FrontLidarUpdate();
-    void UpdateFrontObjects(std::vector<sdcVisibleObject*> newObjects);
-
     sdcAngle AngleToTarget(math::Vector2d target) const;
 
     bool IsMovingForwards() const;
