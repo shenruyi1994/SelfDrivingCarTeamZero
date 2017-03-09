@@ -30,7 +30,6 @@
 #include "globals.hh"
 
 #include "sdcAngle.hh"
-#include "sdcIntersection.hh"
 #include "sdcSensorData.hh"
 #include "sdcWaypoint.hh"
 #include <opencv2/opencv.hpp>

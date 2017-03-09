@@ -9,7 +9,6 @@
 #include <opencv2/opencv.hpp>
 
 #include "globals.hh"
-#include "sdcIntersection.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
 #include "CameraPlugin.hh"

@@ -45,12 +45,6 @@ target_link_libraries(sdcSensorData sdcVisibleObject sdcLidarRay sdcLidarSensorI
 add_library(sdcFrontLidarSensor SHARED sdcFrontLidarSensor.cc)
 target_link_libraries(sdcFrontLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcTopLidarSensor SHARED sdcTopLidarSensor.cc)
-target_link_libraries(sdcTopLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
-add_library(sdcSideLidarSensor SHARED sdcSideLidarSensor.cc)
-target_link_libraries(sdcSideLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
 add_library(sdcBackLidarSensor SHARED sdcBackLidarSensor.cc)
 target_link_libraries(sdcBackLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -62,10 +56,6 @@ target_link_libraries(sdcCameraSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_
 
 add_library(sdcWaypoint SHARED sdcWaypoint.cc)
 target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
-add_library(sdcIntersection SHARED sdcIntersection.cc)
-target_link_libraries(sdcIntersection ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
 
 add_library(sdcBoundingBox SHARED sdcBoundingBox.cc)
 target_link_libraries(sdcBoundingBox ${GAZEBO_LIBRARIES} ${OpenCV_LIBS})
@@ -97,6 +87,6 @@ target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} 
 
 
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar camera data sdcWaypoint sdcIntersection sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar camera data sdcWaypoint sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 

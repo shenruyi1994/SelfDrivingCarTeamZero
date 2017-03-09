@@ -11,7 +11,6 @@
 #include "sdcBoundingBox.hh"
 #include "sdcBoundingCircle.hh"
 #include "sdcCar.hh"
-#include "sdcIntersection.hh"
 #include "sdcUtils.hh"
 #include "sdcLLC.hh"
 #include "sdcRotatedBoundingBox.hh"

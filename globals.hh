@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "sdcAngle.hh"
-#include "sdcIntersection.hh"
 #include "sdcWaypoint.hh"
 
 // SDC-defined constants
