@@ -59,8 +59,6 @@ namespace gazebo {
     void LanedDriving();
     void GridTurning(int turn);
     void AvoidObstacle();
-    void PerpendicularPark();
-    void ParallelPark();
 
     // Collision detection/avoidance functions
     void CheckNearbyObjectsForCollision();
@@ -127,19 +125,7 @@ namespace gazebo {
     // the car will change depending on which state it's in, with various
     // sensor readings affecting the decision to transition states
     enum CarState {
-      STOP, WAYPOINT, INTERSECTION, FOLLOW, AVOIDANCE, PARKING
-    };
-
-    // The different states the car can be in while performing a back
-    // parallel park
-    enum ParallelParkingState {
-      rightBack, leftBack, rightForward, straightForward, doneParallel
-    };
-
-    // The different states the car can be in while performing a back
-    // perpendicular park
-    enum PerpendicularParkingState {
-      stopPark, frontPark, straightPark, backPark, donePark
+      STOP, WAYPOINT, INTERSECTION, FOLLOW, AVOIDANCE
     };
 
     // The different states available when attempting to avoid objects
@@ -147,8 +133,6 @@ namespace gazebo {
       emergencyStop, emergencySwerve, navigation, notAvoiding
     };
 
-    PerpendicularParkingState currentPerpendicularState_;
-    ParallelParkingState currentParallelState_;
     AvoidanceState currentAvoidanceState_;
 
     // The current state of the car
