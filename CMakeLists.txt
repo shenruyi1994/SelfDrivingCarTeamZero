@@ -4,9 +4,7 @@ find_package(gazebo REQUIRED)
 include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-
 include_directories(FADBAD++)
-
 
 if(NOT OpenCV_DIR)
  find_path(OpenCV_DIR "OpenCVConfig.cmake" DOC "Root directory of OpenCV" HINTS    "/opt/ros/fuerte/share/OpenCV/")
@@ -29,30 +27,17 @@ target_link_libraries(sdcFlyingBox ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_library(sdcAngle SHARED sdcAngle.cc)
 target_link_libraries(sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(sdcLidarSensorInfo SHARED sdcLidarSensorInfo.cc)
-target_link_libraries(sdcLidarSensorInfo sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
 add_library(sdcLidarRay SHARED sdcLidarRay.cc)
 target_link_libraries(sdcLidarRay sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcVisibleObject SHARED sdcVisibleObject.cc)
 target_link_libraries(sdcVisibleObject sdcAngle sdcLidarRay  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
-add_library(sdcSensorData SHARED sdcSensorData.cc)
-
-target_link_libraries(sdcSensorData sdcVisibleObject sdcLidarRay sdcLidarSensorInfo sdcAngle ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
-add_library(sdcFrontLidarSensor SHARED sdcFrontLidarSensor.cc)
-target_link_libraries(sdcFrontLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
-add_library(sdcBackLidarSensor SHARED sdcBackLidarSensor.cc)
-target_link_libraries(sdcBackLidarSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-
 add_library(sdcGpsSensor SHARED sdcGpsSensor.cc)
-target_link_libraries(sdcGpsSensor sdcSensorData data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(sdcGpsSensor data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(sdcCameraSensor SHARED sdcCameraSensor.cc)
-target_link_libraries(sdcCameraSensor sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCameraSensor ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(sdcWaypoint SHARED sdcWaypoint.cc)
 target_link_libraries(sdcWaypoint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
@@ -74,7 +59,7 @@ add_library(LidarInfo SHARED LidarInfo.cc)
 target_link_libraries(LidarInfo ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(data SHARED dataProcessing.cc)
-target_link_libraries(data LidarInfo sdcVisibleObject sdcLidarRay sdcSensorData ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(data LidarInfo sdcVisibleObject sdcLidarRay ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(lidar SHARED LidarPlugin.cc)
 target_link_libraries(lidar data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
@@ -85,8 +70,7 @@ target_link_libraries(camera data ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenC
 add_library(dubins SHARED dubins.cc)
 target_link_libraries(dubins sdcWaypoint sdcAngle waypoints ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
-
 add_library(sdcCar SHARED sdcCar.cc sdcHLC.cc sdcLLC.cc)
-target_link_libraries(sdcCar camera data sdcWaypoint sdcAngle sdcSensorData sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(sdcCar camera data sdcWaypoint sdcAngle sdcBoundingBox sdcRotatedBoundingBox sdcBoundingCircle dubins waypoints  ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES}  ${GOBJECT_LIBRARIES} ${OpenCV_LIBS})
 
 
