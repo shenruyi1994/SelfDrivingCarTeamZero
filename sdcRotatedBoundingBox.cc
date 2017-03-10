@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "sdcBoundingBox.hh"
+#include "sdcBoundingCircle.hh"
 #include "sdcUtils.hh"
 
 using namespace gazebo;
@@ -77,4 +78,19 @@ bool sdcRotatedBoundingBox::DoProjectionsOntoLineIntersect(
   }
 
   return selfMin <= boxMax && selfMax >= boxMin;
+}
+
+bool sdcRotatedBoundingBox::DoesIntersect(const sdcBoundingCircle& circle) const {
+  // rotate coordinate system such that the box has sides parallel to the axes
+  cv::Point2d c = rotate_generic(circle.center, this->center, -this->angle);
+
+  // Find the closest point to the circle within the rectangle
+  cv::Point2d closestPoint = cv::Point2d(
+    clamp(c.x, this->left, this->right),
+    clamp(c.y, this->top, this->bottom)
+  );
+
+  // return true if the distance from closestPoint to the center of the circle
+  // is less than the radius
+  return coord_distance(c, closestPoint) < circle.radius;
 }

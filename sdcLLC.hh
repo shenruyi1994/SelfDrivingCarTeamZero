@@ -9,6 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "globals.hh"
+#include "sdcAngle.hh"
 #include "Waypoints.hh"
 #include "dubins.hh"
 
@@ -25,7 +26,9 @@ namespace gazebo {
 
     void update();
 
-    cv::Point2d GetDubinsPoint(double distance);
+    std::pair<Path, double> GetPathFromDistance(double distance) const;
+    double GetDubinsAngle(double distance, bool genNew = true);
+    cv::Point2d GetDubinsPoint(double distance, bool genNew = true);
     void GenerateNewDubins();
     bool BeyondPath(double distance) const;
 

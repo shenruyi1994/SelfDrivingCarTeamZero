@@ -12,6 +12,7 @@
 #include "sdcIntersection.hh"
 #include "sdcVisibleObject.hh"
 #include "Waypoints.hh"
+#include "CameraPlugin.hh"
 
 namespace gazebo {
   typedef struct {
@@ -78,15 +79,14 @@ namespace gazebo {
                                               double time) const;
     std::vector<sdcWaypoint*>* ComputeAvoidancePath(sdcVisibleObject* obj,
                                                     math::Vector2d collision);
-    math::Vector2d GetPositionAtTime(double time) const;
-    Waypoint GetCarPoint();
+    cv::Point2d GetPositionAtTime(double time) const;
     sdcAngle GetAngleAtTime(double time) const;
     sdcAngle GetCollisionAngleAtTime(const sdcVisibleObject* obj,
                                      double time) const;
+    void BackToLane();
+    bool IsBackToLane();
 
-    void StoreAvoidancePath();
-
-  private:
+    private:
     sdcCar* car_;
     sdcLLC* llc_;
 
@@ -100,7 +100,7 @@ namespace gazebo {
 
     double lastX_ = 0;
     double lastY_ = 0;
-
+    
     common::Time lastUpdateTime_;
 
     // ================================================

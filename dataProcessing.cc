@@ -21,13 +21,15 @@ using namespace gazebo;
 
 double dataProcessing::carX = 0;
 double dataProcessing::carY = 0;
-double dataProcessing::carZ = 0;
+double dataProcessing::carYaw = 0;
 std::vector<double>* dataProcessing::frontLidarData = new std::vector<double>();
 std::vector<double>* dataProcessing::backLidarData = new std::vector<double>();
 std::map<LidarPosition, LidarInfo> dataProcessing::lidarInfo = std::map<LidarPosition, LidarInfo>();
 cv::Point2d waypoint1;
 cv::Point2d waypoint2;
 cv::Point2d waypoint3;
+cv::Point2d passPoint;
+double passPointAngle;
 double waypointAngle1;
 double waypointAngle2;
 double waypointAngle3;
@@ -40,16 +42,21 @@ bool isNearby_ = false;
 float brightness_ = 255;
 sdcVisibleObject* dataProcessing::object_;
 
+
 // When initializing a lidar, store its information such as minimum angle, resoltuion and range
 void dataProcessing::InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays) {
   lidarInfo[pos] = LidarInfo(minAngle, resolution, maxRange, numRays);
 }
 
 // Update the absolute coordinates of the car in the world
-void dataProcessing::UpdateCarPosition(double x, double y, double z) {
+void dataProcessing::UpdateGPS(double x, double y, double z) {
   carX = x;
   carY = y;
-  carZ = z;
+  carYaw = z;
+}
+
+cv::Point2d dataProcessing::GetCarLocation() {
+  return cv::Point2d(carX, carY);
 }
 
 // Update lidar data
@@ -66,11 +73,6 @@ void dataProcessing::UpdateLidarData(LidarPosition pos, std::vector<double>* new
     default:
     break;
   }
-  //std::cout << "Update(Lidar)\n";  // check for update
-}
-
-void dataProcessing::GetLanePosition() {
-  std::cout << "Get lane position data\n";
 }
 
 // Retrieve lidar data
@@ -125,7 +127,6 @@ ObjectType dataProcessing::GetObjectType(const sdcVisibleObject* obj) {
 
 void dataProcessing::UpdateIsNearbyObject(bool isNearby) {
   isNearby_ = isNearby;
-  // printf("WE ARE HERE\n");
 }
 
 void dataProcessing::UpdateObject(sdcVisibleObject* obj){
@@ -215,24 +216,34 @@ math::Vector2d dataProcessing::ComputeObstacleVector(double lat_dist, double lon
 
 cv::Point2d dataProcessing::getObstacleCoords(){
   sdcVisibleObject* object = GetNearbyObject();
+  
+  // get left ray
   sdcLidarRay left = object->getLeftRay();
   
+  // lateral and longitudinal distance to the left edge
   double left_lat = left.GetLateralDist();
   double left_long = left.GetLongitudinalDist();
   double left_angle = FindAngle(left_lat, left_long);
   
+  // find the vector to the left side of the obstacle
   math::Vector2d left_vector = ComputeObstacleVector(left_lat, left_long, left_angle);
-  
   cv::Point2d leftP = cv::Point2d(cur_x+left_vector[0], cur_y+left_vector[1]);
-  
-  //std::cout << "Angle: " << left_angle << std::endl;
-  //std::cout << "Left Point: (" << leftP.x << "," << leftP.y << ")" << std::endl;
-  //std::cout << "Current: (" << cur_x << "," << cur_y << ")" << std::endl;
-  //std::cout << std::endl;
-  
+
   return leftP;
 }
 
-math::Vector2d dataProcessing::getCarVector(){
-  return unitVector;
+void dataProcessing::UpdatePassPoint(cv::Point2d point){
+  passPoint = point;
+}
+
+cv::Point2d dataProcessing::GetPassPoint(){
+  return passPoint;
+}
+
+void dataProcessing::UpdatePassPointAngle(double theta){
+  passPointAngle = theta;
+}
+
+double dataProcessing::GetPassPointAngle(){
+  return passPointAngle;
 }

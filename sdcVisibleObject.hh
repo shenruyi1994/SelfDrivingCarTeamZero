@@ -43,9 +43,15 @@ namespace gazebo {
 
     int getLeftRayIndex() const;
     int getRightRayIndex() const;
-      
+
     void setBrightnessDetected();
     bool getBrightnessDetected() const;
+
+    cv::Point2d GetLeftPos(cv::Point2d carPos) const;
+    cv::Point2d GetRightPos(cv::Point2d carPos) const;
+
+    void updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex);
+
 
   private:
     sdcLidarRay left_;

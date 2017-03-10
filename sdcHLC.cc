@@ -16,7 +16,7 @@
 #include "sdcLLC.hh"
 #include "sdcRotatedBoundingBox.hh"
 #include "Waypoints.hh"
-
+#include "CameraPlugin.hh"
 
 using namespace gazebo;
 
@@ -51,12 +51,19 @@ sdcHLC::~sdcHLC() {
 ////////////////////////////////
 ////////////////////////////////
 
+bool sdcHLC::IsBackToLane() {
+  double angle = dataProcessing::GetPassPointAngle();
+  // printf("Angle: %f\n", angle);
+  return (angle >= 2.46) ? true : false;
+}
+
 /*
  * Handles all logic for driving, is called every time the car receives an update
  * request from Gazebo
  */
 void sdcHLC::Drive() {
   dataProcessing::UpdateCarDirection();
+
   common::Time curTime = car_->model_->GetWorld()->GetSimTime();
   if (curTime.Double() - lastUpdateTime_.Double() < .01) {
     UpdatePathDistance();
@@ -65,15 +72,22 @@ void sdcHLC::Drive() {
     lastUpdateTime_ = common::Time(curTime);
   }
 
-  if (dataProcessing::IsNearbyObject()) {
+  bool isDangerousObj =
+    dataProcessing::IsNearbyObject()
+    && IsObjectOnCollisionCourse(dataProcessing::GetNearbyObject());
+
+  if (isDangerousObj) {
     roadState_ = AVOID_16;
-  } else {
+  } else if ((!dataProcessing::IsNearbyObject() && roadState_ == AVOID_16) || (roadState_ == RETURN_16)) {
+    roadState_ = RETURN_16;
+  } else if (!dataProcessing::IsNearbyObject()) {
     roadState_ = FOLLOW_16;
   }
 
   switch (roadState_) {
     case WAIT_16:
       // increment timer, pass eventually
+      car_->SetTargetSpeed(0);
       break;
 
     case PASS_16:
@@ -89,10 +103,11 @@ void sdcHLC::Drive() {
     case AVOID_16:
       AvoidObstacle();
       break;
-    
+
     case RETURN_16:
+      BackToLane();
       break;
-      
+
     case FOLLOW_16: // fall through, follow waypoints with no obstacle
     default:
       FollowWaypoints();
@@ -101,81 +116,6 @@ void sdcHLC::Drive() {
   // Attempt to turn towards the target direction and match target speed
   MatchTargetDirection();
   MatchTargetSpeed();
-
-  /*
-  // If not in avoidance, check if we should start following the thing
-  // in front of us. If following is done, kick out to default state
-  if (currentState_ != INTERSECTION && currentState_ != AVOIDANCE) {
-    // If there's a stop sign, assume we're at an intersection
-    if (car_->ignoreStopSignsCounter_ == 0 && sdcSensorData::stopSignFrameCount > 5) {
-      currentState_ = INTERSECTION;
-    }
-
-    // If something is ahead of us, default to trying to follow it
-    if (car_->ObjectDirectlyAhead()) {
-      currentState_ = FOLLOW;
-    } else if (currentState_ == FOLLOW && !car_->isTrackingObject_) {
-      currentState_ = DEFAULT_STATE;
-    }
-
-    // Look for objects in danger of colliding with us, react appropriately
-    if (car_->ObjectOnCollisionCourse()) {
-      currentState_ = AVOIDANCE;
-    }
-  }
-
-  car_->ignoreStopSignsCounter_ = fmax(car_->ignoreStopSignsCounter_ - 1, 0);
-
-
-  // Possible states: stop, waypoint, intersection, follow, avoidance
-  switch(currentState_) {
-    // Final state, car is finished driving
-    case STOP:
-      llc_->Stop();
-      break;
-
-    // Default state; drive straight to target location
-    case  WAYPOINT:
-      // Handle lane driving
-
-      llc_->Accelerate();
-      // llc_->Stop();
-      //WaypointDriving(WAYPOINT_VEC);
-      break;
-
-    // At a stop sign, performing a turn
-    case INTERSECTION:
-      if (car_->stoppedAtSign_ && car_->stationaryCount_ > 2000) {
-        currentState_ = DEFAULT_STATE;
-        car_->ignoreStopSignsCounter_ = 3000;
-      } else if (car_->stoppedAtSign_ && car_->GetSpeed() < 0.5) {
-        car_->stationaryCount_++;
-      } else if (!car_->stoppedAtSign_ && sdcSensorData::sizeOfStopSign > 6000) {
-        llc_->Stop();
-        car_->stoppedAtSign_ = true;
-        car_->stationaryCount_ = 0;
-      }
-
-    break;
-
-    // Follows object that is going in same direction/towards same target
-    case FOLLOW:
-      Follow();
-      // Handle lane driving
-      break;
-
-    // Smarter way to avoid objects; stopping, swerving, etc.
-    case AVOIDANCE:
-      // Cases: stop, swerve, go around
-      Avoidance();
-      break;
-
-    // Parks the car
-    case PARKING:
-      PerpendicularPark();
-      // ParallelPark();
-      break;
-  } */
 }
 
 /*
@@ -184,6 +124,7 @@ void sdcHLC::Drive() {
  */
 void sdcHLC::MatchTargetDirection() {
   dataProcessing::UpdateCarDirection();
+
   sdcAngle directionAngleChange = car_->GetDirection() - car_->targetDirection_;
   // If the car needs to turn, set the target steering amount
   if (!directionAngleChange.WithinMargin(DIRECTION_MARGIN_OF_ERROR)) {
@@ -255,7 +196,7 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
       car_->turning_ = true;
     }
     if (car_->turning_ == true) {
-      car_->SetTurningLimit(20);
+      car_->SetTurningLimit(30);
       GridTurning(WAYPOINT_VEC[progress].waypointType);
     } else {
       math::Vector2d nextTarget = {WAYPOINT_VEC[progress].pos.first,WAYPOINT_VEC[progress].pos.second};
@@ -280,25 +221,29 @@ void sdcHLC::WaypointDriving(std::vector<sdcWaypoint> WAYPOINT_VEC) {
  */
 void sdcHLC::FollowWaypoints() {
   car_->SetTargetSpeed(3);
+  cv::Point2d targetPoint;
 
-  cv::Point2d targetPoint = FindDubinsTargetPoint();
-  printf("DRIVING STATE\n");
+  if(roadState_ == FOLLOW_16){
+    targetPoint = FindDubinsTargetPoint();
+  } else {
+
+    // If in RETURN_16 state, but CameraPlugin hasn't finished computing targetPoint
+    if (targetPoint.x == 0 && targetPoint.y == 0 && dataProcessing::GetPassPointAngle() == 0){
+      // Do as it does in FOLLOW_16 state
+      targetPoint = FindDubinsTargetPoint();
+    } else {
+      targetPoint = dataProcessing::GetPassPoint();
+      // printf("PASS POINT! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
+      car_->SetTargetPoint(targetPoint);
+      if (IsBackToLane()) {
+        roadState_ = FOLLOW_16;
+        CameraPlugin::SetReturnMode(false);
+        dataProcessing::UpdatePassPoint(cv::Point(0.0));
+        dataProcessing::UpdatePassPointAngle(0);
+      }
+    }
+  }
   car_->SetTargetPoint(targetPoint);
-
-  // printf("targetPoint: (%f, %f)\n", targetPoint.x, targetPoint.y);
-  // printf("  speed: %f\n", car_->GetSpeed());
-  // printf("  location: (%f, %f)\n", car_->x_, car_->y_);
-  // AngleWheelsTowardsTarget(to_math_vec(targetPoint));
-
-  /*  uncomment to track path of car for plot.py
-  std::ofstream targetPoints;
-  targetPoints.open("targetPoints.csv", std::ios_base::app);
-  targetPoints << targetPoint.x << ", " << targetPoint.y << std::endl;
-
-  std::ofstream locationPoints;
-  locationPoints.open("locationPoints.csv", std::ios_base::app);
-  locationPoints << car_->x_ << ", " << car_->y_ << std::endl;
-  */
 }
 
 /*
@@ -313,11 +258,6 @@ void sdcHLC::AngleWheelsTowardsTarget(const math::Vector2d& target) {
   double denominator = lookaheadScalor_ * car_->GetSpeed();
 
   sdcAngle directionAngle = atan2(numerator, denominator);
-
-  // We can't set the wheel angle directly, so instead we set the steering
-  //printf("    +++++ directionAngle: %f\n", directionAngle.angle);
-  //printf("    +++++ steeringAmount: %f\n", directionAngle.angle * car_->steeringRatio_);
-  // car_->SetSteeringAmount(directionAngle.angle * car_->steeringRatio_);
 }
 
 /*
@@ -331,9 +271,6 @@ void sdcHLC::UpdatePathDistance() {
   if (car_->model_->GetWorld()->GetSimTime().Double() < 0.01) {
     pathDist_ = 0;
   }
-  // double avgVelocity = (car_->GetSpeed() + lastSpeed_) / 2;
-  // lastTime_ = car_->model_->GetWorld()->GetSimTime();
-  // lastSpeed_ = car_->GetSpeed();
 
   // double distanceTravelled = avgVelocity * dt.Double();
   pathDist_ += pythag_thm(car_->x_ - lastX_, car_->y_ - lastY_);
@@ -346,40 +283,15 @@ void sdcHLC::UpdatePathDistance() {
  */
 cv::Point2d sdcHLC::FindDubinsTargetPoint() {
   cv::Point2d location = cv::Point2d(car_->x_, car_->y_);
-  //printf("pathdist_: %f\n", pathDist_);
-  //  double lookaheadDistance = ScaledLookaheadDistance();
-    double lookaheadDistance = 20;
+  // printf("pathdist_: %f\n", pathDist_);
+  // double lookaheadDistance = ScaledLookaheadDistance();
+  double lookaheadDistance = 20;
 
   if (llc_->BeyondPath(pathDist_ + lookaheadDistance)) {
     llc_->GenerateNewDubins();
     pathDist_ = 0;
   }
   cv::Point2d tempTarget = llc_->GetDubinsPoint(lookaheadDistance);
-
-  // double distanceToDubins = coord_distance(location, tempTarget);
-  // double adjustment = distanceToDubins - lookaheadDistance;
-  // double maxError = 0.1;
-  // double tempPathDist = pathDist_;
-  //
-  // // finds a point along the dubins path that is beyond the ideal target distance
-  // while (distanceToDubins < lookaheadDistance) {
-  //   tempPathDist += adjustment;
-  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
-  //   adjustment *= 2;
-  // }
-  //
-  // // does a binary search to find the correct distance along the path that we
-  // // need to aim for
-  // while (fabs(distanceToDubins - lookaheadDistance) > maxError) {
-  //   if (distanceToDubins > lookaheadDistance) {
-  //     tempPathDist -= adjustment;
-  //   } else {
-  //     tempPathDist += adjustment;
-  //   }
-  //   distanceToDubins = coord_distance(location, llc_->GetDubinsPoint(tempPathDist));
-  //   adjustment *= .5;
-  // }
-
   return tempTarget;
 }
 
@@ -508,23 +420,14 @@ void sdcHLC::Follow() {
  * of the car
  */
 void sdcHLC::AvoidObstacle() {
-  // get a target point to the left side of an obstacle
-  cv::Point2d obstacle = dataProcessing::getObstacleCoords();
-
   cv::Point2d targetPoint = dataProcessing::getObstacleCoords();
-  printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
-
+  // printf("AVOIDANCE STATE! Go to (%f,%f)\n", targetPoint.x, targetPoint.y);
   car_->SetTargetPoint(targetPoint);
-  /*
-  Waypoint avoidPoint = Waypoint(obstacle.x, obstacle.y, car_->GetDirection());
-  Waypoint carPoint;
-  carPoint.x = car_->x_;
-  carPoint.y = car_->y_;
-  carPoint.direction = car_->GetDirection().angle;
+}
 
-  llc_->dubins_->calculateDubins(avoidPoint, carPoint, MIN_TURNING_RADIUS);
-  */
-  //steeringAngles.push_back(car_->GetDirection().angle);
+void sdcHLC::BackToLane(){
+  CameraPlugin::SetReturnMode(true);
+  FollowWaypoints();
 }
 
 //////////////////////////////////////////
@@ -575,44 +478,51 @@ void sdcHLC::CheckNearbyObjectsForCollision() {
  * Checks if the object is on a collision course with the car.
  */
 bool sdcHLC::IsObjectOnCollisionCourse(const sdcVisibleObject* obj) const {
-  if (DoMaximumBoundingBoxesCollide(obj)) {
-    double possibleCollisionTime = DoMaximumRadiiCollide(obj);
-    return possibleCollisionTime != -1
-      && DoAccurateVehicleShapesCollide(obj, possibleCollisionTime);
+  double possibleCollisionTime = DoMaximumRadiiCollide(obj);
+  // return possibleCollisionTime != -1;
+  if (possibleCollisionTime != -1) {
+    // printf("radii collide!\n");
+    return true;
   }
   return false;
+  // return possibleCollisionTime != -1
+  //   && DoAccurateVehicleShapesCollide(obj, possibleCollisionTime);
 }
 
-/*
- * Checks if the most pessimistic bounding boxes collide; that
- */
-bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
-  double maxTime = car_->GetMaxSafeTime();
-  math::Vector2d futureCarPos = GetPositionAtTime(maxTime);
-  math::Vector2d futureObjPos = obj->GetProjectedPositionAtTime(maxTime);
-
-  sdcBoundingBox carRect = sdcBoundingBox(
-    fmin(car_->x_, futureCarPos.x),
-    fmin(car_->y_, futureCarPos.y),
-    fmax(car_->x_, futureCarPos.x),
-    fmax(car_->y_, futureCarPos.y));
-  sdcBoundingBox objRect = sdcBoundingBox(
-    fmin(obj->GetCenterPoint().x, futureObjPos.x),
-    fmin(obj->GetCenterPoint().y, futureObjPos.y),
-    fmax(obj->GetCenterPoint().x, futureObjPos.x),
-    fmax(obj->GetCenterPoint().y, futureObjPos.y));
-
-  return carRect.DoesIntersect(objRect);
-}
+// /*
+//  * Checks if the most pessimistic bounding boxes collide; that
+//  */
+// bool sdcHLC::DoMaximumBoundingBoxesCollide(const sdcVisibleObject* obj) const {
+//   double maxTime = car_->GetMaxSafeTime();
+//   math::Vector2d futureCarPos = GetPositionAtTime(maxTime);
+//   math::Vector2d futureObjPos = obj->GetProjectedPositionAtTime(maxTime);
+//
+//   sdcBoundingBox carRect = sdcBoundingBox(
+//     fmin(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmin(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmax(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle),
+//     fmax(car_->GetBackLeft(), GetBackLeft(futureCarPos, GetAngleAtTime(maxTime).angle));
+//
+//   // TODO: determine the
+//   sdcBoundingBox objRect = sdcBoundingBox(
+//     fmin(obj->GetCenterPoint().x, futureObjPos.x),
+//     fmin(obj->GetCenterPoint().y, futureObjPos.y),
+//     fmax(obj->GetCenterPoint().x, futureObjPos.x),
+//     fmax(obj->GetCenterPoint().y, futureObjPos.y));
+//
+//   return carRect.DoesIntersect(objRect);
+// }
 
 /*
  * Returns true if the distance between the car and the dangerous object is
  * ever within (max_radius_car + max_radius_obj) along their projected paths.
  */
 double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
-  for (int i = 0; i < car_->GetMaxSafeTime() * 100; i++) {
-    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / 100)) {
-      return ((double)i) / 100;
+  int numTests = 20;
+  double maxSafeTime = 30 / car_->GetSpeed();
+  for (int i = 0; i < maxSafeTime * numTests; i++) {
+    if (DoMaximumRadiiCollideAtTime(obj, ((double)i) / numTests)) {
+      return ((double)i) / numTests;
     }
   }
   return -1;
@@ -625,15 +535,28 @@ double sdcHLC::DoMaximumRadiiCollide(const sdcVisibleObject* obj) const {
 bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
                                          double time) const {
   sdcBoundingCircle selfCircle = sdcBoundingCircle(
-    to_point(GetPositionAtTime(time)),
+    GetPositionAtTime(time),
     pythag_thm(car_->width_, car_->length_)
   );
 
-  // TODO: figure out how to estimate size of an object
+  cv::Point2d carPos = dataProcessing::GetCarLocation();
+  cv::Point2d objLeft = obj->GetLeftPos(carPos);
+  cv::Point2d objRight = obj->GetRightPos(carPos);
+  cv::Point2d objCenter = cv::Point2d((objLeft.x + objRight.x) / 2,
+                                      (objLeft.y + objRight.y) / 2);
+
   sdcBoundingCircle objCircle = sdcBoundingCircle(
-    to_point(obj->GetProjectedPositionAtTime(time)),
-    1 // placeholder for above TODO
+    objCenter,
+    coord_distance(objCenter, objRight)
   );
+
+  // if (selfCircle.DoesIntersect(objCircle)) {
+  //   printf ("collision!\n");
+  // } else {
+  //   printf("no collision\n");
+  // }
+  // printf("  objLeft: (%f, %f)\n", objLeft.x, objLeft.y);
+  // printf("  carPos:  (%f, %f)\n\n", carPos.x, carPos.y);
 
   return selfCircle.DoesIntersect(objCircle);
 }
@@ -645,11 +568,14 @@ bool sdcHLC::DoMaximumRadiiCollideAtTime(const sdcVisibleObject* obj,
  */
 bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj,
                                             double possibleCollisionTime) const {
-  for (int i = possibleCollisionTime * 100; i < (possibleCollisionTime + 10) * 100; i++) {
-    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / 100)) {
+  int numTests = 20;
+  for (int i = (possibleCollisionTime - 1) * numTests; i < (possibleCollisionTime + 4) * numTests; i++) {
+    if (DoAccurateVehicleShapesCollideAtTime(obj, ((double)i) / numTests)) {
+      // printf("  accurate shapes collide\n");
       return true;
     }
   }
+  // printf("  shapes do not collide\n");
   return false;
 }
 
@@ -659,42 +585,43 @@ bool sdcHLC::DoAccurateVehicleShapesCollide(const sdcVisibleObject* obj,
  */
 bool sdcHLC::DoAccurateVehicleShapesCollideAtTime(const sdcVisibleObject* obj,
                                                   double time) const {
-  math::Vector2d selfPos = GetPositionAtTime(time);
+  cv::Point2d selfPos = GetPositionAtTime(time);
   sdcRotatedBoundingBox selfBox = sdcRotatedBoundingBox(
-    selfPos.x - car_->width_ / 2, selfPos.y + car_->width_ / 2,
-    car_->width_, car_->width_,
+    cv::Point2d(car_->x_, car_->y_),
+    car_->width_ * 1.2, car_->length_ * 1.2,
     GetAngleAtTime(time).angle
   );
 
-  // TODO: figure out a way to estimate the shape of an sdcVisibleObject
-  return false;
+  cv::Point2d objLeft = obj->GetLeftPos(dataProcessing::GetCarLocation());
+  cv::Point2d objRight = obj->GetRightPos(dataProcessing::GetCarLocation());
+  cv::Point2d objCenter = cv::Point2d((objLeft.x + objRight.x) / 2,
+                                      (objLeft.y + objRight.y) / 2);
+
+  sdcBoundingCircle objCircle = sdcBoundingCircle(
+    objCenter,
+    coord_distance(objCenter, objRight)
+  );
+  return selfBox.DoesIntersect(objCircle);
 }
 
 /*
- * TODO: figure out how this will work. For now it is a placeholder, but will
- * eventually be based on the dubins path created by the LLC.
+ * Returns the projected position of the car at the given time.
  */
-math::Vector2d sdcHLC::GetPositionAtTime(double time) const {
-  return math::Vector2d(0, 0);
+cv::Point2d sdcHLC::GetPositionAtTime(double time) const {
+  double distance = car_->GetSpeed() * time;
+  cv::Point2d carPos = dataProcessing::GetCarLocation();
+  cv::Point2d newPos = carPos;
+  newPos.x += distance;
+  return rotate_generic(newPos, carPos, car_->GetOrientation().angle);
+  // return llc_->GetDubinsPoint(distance, false);
 }
 
 /*
- * TODO: figure out how this will work. For now it is a placeholder, but will
- * eventually be based on the dubins path created by the LLC.
+ * Returns the projected angle of the car at the given time.
  */
 sdcAngle sdcHLC::GetAngleAtTime(double time) const {
-  return sdcAngle(0);
-}
-
-/*
- * Generates a new path for the car, given an object and a collision location
- * on a previous path
- * TODO: integrate this with the dubins path algorithms
- */
-std::vector<sdcWaypoint*>* sdcHLC::ComputeAvoidancePath(
-    sdcVisibleObject* obj, math::Vector2d collision) {
-
-    return NULL;
+  double distance = car_->GetSpeed() * time;
+  return llc_->GetDubinsAngle(distance, false);
 }
 
 /*
@@ -1613,24 +1540,6 @@ void sdcHLC::removeStartingEdge(int start) {
       break;
   }
 }
-
-Waypoint sdcHLC::GetCarPoint(){
-  Waypoint carPoint;
-  carPoint.x = car_->x_;
-  carPoint.y = car_->y_;
-  carPoint.direction = car_->GetOrientation().angle;
-
-  return carPoint;
-}
-
-void sdcHLC::StoreAvoidancePath(){
-  while(dataProcessing::IsNearbyObject()){
-
-    avoidancePath_.push_back(GetCarPoint()); 
-}
-
-}
-
 
 void sdcHLC::update() {
   llc_->update();

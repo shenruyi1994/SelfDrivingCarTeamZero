@@ -27,13 +27,13 @@ namespace gazebo
     public:
       static void InitLidar(LidarPosition pos, double minAngle, double resolution, double maxRange, int numRays);
       static void UpdateLidarData(LidarPosition pos, std::vector<double>* newData);
-      static void GetLanePosition();
       static std::vector<double>* GetLidarData(LidarPosition pos);
       static std::array<cv::Point2d, 3> getWaypoints();
       static std::array<double, 3> getWaypointAngles();
       static void updateWaypoints(std::vector<cv::Point2d> waypoints);
       static void updateWaypointsAngles(std::vector<double> waypointAngles);
-      static void UpdateCarPosition(double x, double y, double z);
+      static void UpdateGPS(double x, double y, double z);
+      static cv::Point2d GetCarLocation();
       static sdcVisibleObject* GetNearbyObject();
       static bool IsNearbyObject();
       static ObjectType GetObjectType(const sdcVisibleObject* obj);
@@ -45,12 +45,15 @@ namespace gazebo
       static double FindAngle(double lat_dist, double long_dist);
       static math::Vector2d ComputeObstacleVector(double lat_dist, double long_dist, double angle);
       static double GetVectorMagnitude(double x, double y);
-      static math::Vector2d getCarVector();
-        
+      static void UpdatePassPoint(cv::Point2d point);
+      static cv::Point2d GetPassPoint();
+      static double GetPassPointAngle();
+      static void UpdatePassPointAngle(double theta);
+    
     private:
       static double carX;
       static double carY;
-      static double carZ;
+      static double carYaw;
       static std::vector<double>* frontLidarData;
       static std::vector<double>* backLidarData;
       static std::map<LidarPosition, LidarInfo> lidarInfo;

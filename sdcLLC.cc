@@ -176,12 +176,7 @@ std::vector<Control> dubinsPointHelper(std::vector<Control> controls, double dis
   return newControls;
 }
 
-/*
- * Input: 'Lookahead' distance along path
- * Output: (x,y) coords of point that lies input distance along our current dubins path
- */
-cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
-  GenerateNewDubins();
+std::pair<Path, double> sdcLLC::GetPathFromDistance(double distance) const {
   Path path;
   if (distance <= paths_[0].length) {
     path = paths_[0];
@@ -195,6 +190,27 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance) {
     // Here we should probably eventually handle this with slowing down
     distance = fmin(distance, paths_[2].length);
   }
+
+  return std::make_pair(path, distance);
+}
+
+double sdcLLC::GetDubinsAngle(double distance, bool genNew) {
+  if (genNew) GenerateNewDubins();
+
+  std::pair<Path, double> pathDist = GetPathFromDistance(distance);
+  return pathDist.first.origin.z;
+}
+
+/*
+ * Input: 'Lookahead' distance along path
+ * Output: (x,y) coords of point that lies input distance along our current dubins path
+ */
+cv::Point2d sdcLLC::GetDubinsPoint(double distance, bool genNew) {
+  if (genNew) GenerateNewDubins();
+
+  std::pair<Path, double> pathDist = GetPathFromDistance(distance);
+  Path path = pathDist.first;
+  distance = pathDist.second;
 
   for (int i = 0; i < 3; i++) {
     // printf("========== pathPoint: (%f, %f)\n", paths_[i].origin.x, paths_[i].origin.y);

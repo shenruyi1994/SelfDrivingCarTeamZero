@@ -156,8 +156,8 @@ namespace gazebo {
     double x_;
     double y_;
 
-    double width_;
-    double length_;
+    double width_ = CAR_WIDTH;
+    double length_ = CAR_LENGTH;
 
     /////////////////////////
     // SDC-defined methods //

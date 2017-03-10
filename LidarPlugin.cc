@@ -57,7 +57,7 @@ void LidarPlugin::OnUpdate()
 	for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); i++){
 	  	rays->push_back(this->parentSensor->GetRange(i));
 	}
-  
+
 	getVisibleObjects(rays);
 	dataProcessing::UpdateLidarData(NEWFRONT, rays);
 
@@ -65,13 +65,12 @@ void LidarPlugin::OnUpdate()
 
 void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 	sdcLidarRay left = sdcLidarRay(), right = sdcLidarRay();
-	int leftIndex, rightIndex = -1;
+    int leftIndex, rightIndex = -1;
 	double minDistance = INT_MAX;
 	bool objectIsDetected = false;
     sdcVisibleObject* object;
 
     // printf("GH3\n");
-      
 	for (int i = 0; i < 640; i++) {
 		if (!isinf(objectRays->at(i)) && objectRays->at(i) < minDistance) {
 			minDistance = objectRays->at(i);
@@ -84,17 +83,18 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 
 			sdcAngle leftAngle = sdcAngle((leftIndex-320)*lidarAngle);
 			sdcAngle rightAngle = sdcAngle((rightIndex-320)*lidarAngle);
-
+          
 			sdcLidarRay left  = sdcLidarRay(leftAngle,objectRays->at(leftIndex));
 			sdcLidarRay right = sdcLidarRay(rightAngle,objectRays->at(rightIndex));
 
-		    object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
+		  object = new sdcVisibleObject(left, right, minDistance,leftIndex,rightIndex);
 			break;
 		}
 	}
-    
+  
     // printf("GH4\n");
     //right side edge case
+    
     if(0 <= leftIndex && leftIndex <= 639 && rightIndex == -1)
     {
     	rightIndex = 639;
@@ -108,7 +108,8 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
             object = new sdcVisibleObject(left, right, minDistance, leftIndex, rightIndex);
         }
     }
-
+    
+  
     // printf("GH5\n");
 	// checking if there are obstacles detected
 	if (!objectIsDetected) {
