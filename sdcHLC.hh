@@ -61,8 +61,8 @@ namespace gazebo {
                                      double time) const;
     void BackToLane();
     bool IsBackToLane();
-    
-  private:
+
+    private:
     sdcCar* car_;
     sdcLLC* llc_;
 
@@ -76,7 +76,7 @@ namespace gazebo {
 
     double lastX_ = 0;
     double lastY_ = 0;
-    
+
     common::Time lastUpdateTime_;
 
     // ================================================
@@ -102,6 +102,7 @@ namespace gazebo {
     RoadState roadState_;
 
     sdcVisibleObject* dangerousObj_;
+    std::vector<Waypoint> avoidancePath_;
   };
 }
 #endif
