@@ -15,7 +15,6 @@
 #include "dataProcessing.hh"
 #include "sdcLidarRay.hh"
 #include "sdcCar.hh"
-#include "sdcSensorData.hh"
 
 using namespace gazebo;
 
@@ -147,7 +146,7 @@ void dataProcessing::UpdateObject(sdcVisibleObject* obj){
 // Update car's current and previous positions and
 // compute a unit vector of the car's direction
 void dataProcessing::UpdateCarDirection(){
-  math::Vector2d pos = sdcSensorData::GetPosition();
+  math::Vector2d pos = math::Vector2d(carX, carY);
   double x_coord = pos[0];
   double y_coord = pos[1];
 
@@ -266,4 +265,18 @@ void dataProcessing::UpdatePassPointAngle(double theta){
 // called by controllers to get the angle for the car to get to the passing point
 double dataProcessing::GetPassPointAngle(){
   return passPointAngle;
+}
+
+/*
+ * Get the current sensor readings for position
+ */
+math::Vector2d dataProcessing::GetPosition() {
+    return math::Vector2d(carX, carY);
+}
+
+/*
+ * Get the current sensor readings for orientation
+ */
+sdcAngle dataProcessing::GetYaw() {
+    return carYaw;
 }
