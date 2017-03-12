@@ -72,6 +72,9 @@ void CameraPlugin::OnUpdate()
   }
 }
 
+// This function takes the camera image and returns the return point found on the
+// right half of the image, through general waypoint finding process --
+// canny, hough, finding the right ROI and then find the way point.
 void CameraPlugin::ReturnPointSearch(int width, int height){
   double ROI_lo = width/2;
   Mat rect_roi(image.size(), image.type());
@@ -114,11 +117,11 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
 
   circle(processed, cv::Point(waypoint_x,lo), 2, Scalar(255,255,255), 3);
 
+  // get real world coordinates
   math::Vector3 originCoord;
   math::Vector3 direction;
   this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
 
-  // get the realworld coordinates
   double prop = - double(originCoord[2])/direction[2];
   double newX = prop * direction[0] + originCoord[0];
   double newY = prop * direction[1] + originCoord[1];
@@ -129,6 +132,8 @@ void CameraPlugin::ReturnPointSearch(int width, int height){
   waitKey(4);
 }
 
+// This function takes in the camera image and update the three ways points found in the
+// data processing file.
 void CameraPlugin::WaypointSearch(int width, int height){
   // Rectangular region of interest
   double ROI_lo = 40;
@@ -176,10 +181,12 @@ void CameraPlugin::WaypointSearch(int width, int height){
       int lo = ROI_lo + i * lo_increment;
       int hi = lo + interval;
 
+      // find the image points and real world points from the 3 ROIs
       std::pair<cv::Point2d, cv::Point> pts = vanishPoint(proc_subs[i], lo);
       worldPts.push_back(std::get<0>(pts));
       imagePts.push_back(std::get<1>(pts));
 
+      // circle these points on a camera image
       circle(image, std::get<1>(pts), 2, Scalar(255,0,0), 3);
   }
 
@@ -190,6 +197,7 @@ void CameraPlugin::WaypointSearch(int width, int height){
   }
   sidePoints.clear();
 
+  // get the angles between these waypoints and update them to dataProcessing
   cv::Point originaPoint = cv::Point2d(320,400);
   imagePts.push_back(originaPoint);
 
@@ -204,10 +212,11 @@ void CameraPlugin::WaypointSearch(int width, int height){
   waypointAngles[0] = newAngleOne;
   waypointAngles[2] = newAngleThree;
 
-
+  // Update all the info into dataprocessing
   dataProcessing::updateWaypoints(worldPts);
   dataProcessing::updateWaypointsAngles(waypointAngles);
 
+  // check if there is visibleObject(obstacles), and if so, we would update the object brightness
   if (dataProcessing::IsNearbyObject()) {
       sdcVisibleObject* obj = dataProcessing::GetNearbyObject();
       // std::cout << "detectedYet? " << obj->getBrightnessDetected() << std::endl;
@@ -221,6 +230,7 @@ void CameraPlugin::WaypointSearch(int width, int height){
   waitKey(4);
 }
 
+// this helpful functions helps finding the angles between the two points
 double CameraPlugin::getAngle(const cv::Point2d& p1, const cv::Point2d& p2)
 {
   double angle = atan((p2.x - p1.x) / (p1.y - p2.y));
@@ -236,6 +246,7 @@ double CameraPlugin::getAngle(const cv::Point2d& p1, const cv::Point2d& p2)
   return angle;
 }
 
+// this helpful functions helps dividing the ROI (region of interests)
 void CameraPlugin::ROI(Mat &mat, int lo, int hi)
 {
     for(size_t i = 0; i < mat.rows; i++)
@@ -252,6 +263,9 @@ void CameraPlugin::ROI(Mat &mat, int lo, int hi)
     }
 }
 
+// This helper functino has a certain ROI already, and takes in a camera image
+// then it goes through several steps to look for the vanishing points of the lane
+// and then find the waypoints and angles of the car
 std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 {
     int roi_ID = lo/130;
@@ -338,6 +352,8 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
 
     imshow(std::to_string(roi_ID), mat);
 
+    // Here get the viewport of the camera and shoot out a ray to get its direction and origin
+    // Then we can transform image coordinates to real world coordinates
     math::Vector3 originCoord;
     math::Vector3 direction;
     this->parentSensor->GetCamera(0)->GetCameraToViewportRay(waypoint_x, lo, originCoord, direction);
@@ -347,11 +363,10 @@ std::pair<cv::Point2d, cv::Point> CameraPlugin::vanishPoint(Mat mat, int lo)
     double newX = prop * direction[0] + originCoord[0];
     double newY = prop * direction[1] + originCoord[1];
 
-
     return std::make_pair(cv::Point2d(newX,newY), cv::Point(waypoint_x,lo));
 }
 
-// Gray -> Gaussian Blur -> Morph Open -> Edge
+// Transform the images in the following order, Gray -> Gaussian Blur -> Morph Open -> Edge
 Mat CameraPlugin::preprocess(Mat mat)
 {
     Mat gray, morph, canny;
@@ -367,7 +382,7 @@ void CameraPlugin::SetReturnMode(bool mode){
   returnMode = mode;
 }
 
-///////////// obstacle code ////////////////
+// This function detects obstacle's brightness if ordered to do so.
 void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     std::vector<Point2f> points_in_roi;
 
@@ -377,7 +392,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     //callibrate this based on final camera position/angle
     int height = 50;
 
-    // hard code the boundaries
+    // Set the boundary on where to check the color
     for (int i = leftIndex; i < rightIndex; i = i + (rightIndex-leftIndex)/5) {
         cv::Point2f point_to_avg(i, height);
         points_in_roi.push_back(point_to_avg);
@@ -399,9 +414,7 @@ void CameraPlugin::updateObjectBrightness(sdcVisibleObject* visibleObject) {
     circle(image, points_in_roi[points_in_roi.size() - 1], avgPointRadius, Scalar( 0, 0, 255 ), avgPointThickness, avgLineType);
 
     int brightness = sum/3/points_in_roi.size();
-
     Vec3f avg_color(brightness, brightness, brightness);
-
     visibleObject->SetBrightness(brightness);
     visibleObject->setBrightnessDetected();
 }
