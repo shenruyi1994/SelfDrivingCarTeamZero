@@ -50,6 +50,9 @@ namespace gazebo
       static double GetPassPointAngle();
       static void UpdatePassPointAngle(double theta);
     
+      static math::Vector2d GetPosition();
+      static sdcAngle GetYaw();
+    
     private:
       static double carX;
       static double carY;

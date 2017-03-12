@@ -53,7 +53,7 @@ bool sdcLLC::BeyondPath(double distance) const {
  * Master function to generate a new dubins path between the sdcCar
  */
 void sdcLLC::GenerateNewDubins() {
-  math::Vector2d carPos = sdcSensorData::GetPosition();
+  math::Vector2d carPos = dataProcessing::GetPosition();
   Waypoint carPoint;
   carPoint.x = carPos.x;
   carPoint.y = carPos.y;
@@ -216,7 +216,7 @@ cv::Point2d sdcLLC::GetDubinsPoint(double distance, bool genNew) {
     // printf("========== pathPoint: (%f, %f)\n", paths_[i].origin.x, paths_[i].origin.y);
   }
 
-  math::Vector2d carPos = sdcSensorData::GetPosition();
+  math::Vector2d carPos = dataProcessing::GetPosition();
   cv::Point3d origin = cv::Point3d(path.origin);
 
   std::vector<Control> cont = dubins_->pathToControls(path);
