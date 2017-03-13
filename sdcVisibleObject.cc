@@ -249,9 +249,7 @@ math::Vector2d sdcVisibleObject::GetCenterPoint(sdcLidarRay left,
   sdcLidarRay midRay = sdcLidarRay(left.angle.GetMidAngle(right.angle), dist);
   double x = midRay.GetLateralDist();
   double y = midRay.GetLongitudinalDist();
-
-  // double x = (left.GetLateralDist() + right.GetLateralDist()) / 2.;
-  // double y = (left.GetLongitudinalDist() + right.GetLongitudinalDist()) / 2.;
+  
   return math::Vector2d(x, y);
 }
 
@@ -293,6 +291,7 @@ cv::Point2d sdcVisibleObject::GetRightPos(cv::Point2d carPos) const {
     return cv::Point2d(carPos.x - rightDistanceLong, rightDistanceLat + carPos.y);
 }
 
+// update information for an existing visible object
 void sdcVisibleObject::updateInfo(sdcLidarRay newLeft, sdcLidarRay newRight, int newLeftIndex, int newRightIndex){
   left_ = newLeft;
   right_ = newRight;

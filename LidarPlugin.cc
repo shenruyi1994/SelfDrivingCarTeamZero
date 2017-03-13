@@ -15,7 +15,6 @@ GZ_REGISTER_SENSOR_PLUGIN(LidarPlugin)
 
 double lidarAngle;
 
-// lidar
 LidarPlugin::LidarPlugin() : SensorPlugin()
 {
 }
@@ -26,8 +25,6 @@ LidarPlugin::~LidarPlugin()
 
 void LidarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
     // Get the parent sensor.
-
-	// printf("GH1\n");
     this->parentSensor =
       boost::dynamic_pointer_cast<sensors::RaySensor>(_sensor);
 
@@ -45,32 +42,36 @@ void LidarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
     this->parentSensor->SetActive(true);
 
     lidarAngle = this->parentSensor->GetAngleResolution();
-
 	dataProcessing::InitLidar(NEWFRONT, this->parentSensor->AngleMin().Radian(), this->parentSensor->GetAngleResolution(), this->parentSensor->GetRangeMax(), this->parentSensor->GetRayCount());
 }
 
 void LidarPlugin::OnUpdate()
 {
-	// printf("GH2\n");
 	// vector that holds distance for each beam
 	std::vector<double>* rays = new std::vector<double>();
 	for (unsigned int i = 0; i < this->parentSensor->GetRayCount(); i++){
 	  	rays->push_back(this->parentSensor->GetRange(i));
 	}
 
+	// This function 
 	getVisibleObjects(rays);
 	dataProcessing::UpdateLidarData(NEWFRONT, rays);
 
 }
 
+/* This (potentially poorly named) method turns any object within the range of the lidar sensor
+into an sdcVisibleObject and ubdates the related functions in data processing. It does not 
+return the object. These functions currently assume that you'll only be dealing with one object
+at a time, but this can be changed by passing around a list of sdcVisibleObjects instead of just one. */
 void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
+
 	sdcLidarRay left = sdcLidarRay(), right = sdcLidarRay();
     int leftIndex, rightIndex = -1;
 	double minDistance = INT_MAX;
 	bool objectIsDetected = false;
     sdcVisibleObject* object;
 
-    // printf("GH3\n");
+    // Iterate through the lidar rays to determine where the object is
 	for (int i = 0; i < 640; i++) {
 		if (!isinf(objectRays->at(i)) && objectRays->at(i) < minDistance) {
 			minDistance = objectRays->at(i);
@@ -92,9 +93,8 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
 		}
 	}
   
-    // printf("GH4\n");
-    //right side edge case
-    
+    // Handle the case where an object is detected but it extends beyond the right side
+    // of the lidar ray fan
     if(0 <= leftIndex && leftIndex <= 639 && rightIndex == -1)
     {
     	rightIndex = 639;
@@ -110,23 +110,17 @@ void LidarPlugin::getVisibleObjects(std::vector<double>* objectRays) {
     }
     
   
-    // printf("GH5\n");
-	// checking if there are obstacles detected
+	// Check if there are obstacles detected and update dataProcessing appropriately
 	if (!objectIsDetected) {
 		dataProcessing::UpdateIsNearbyObject(false);
-		// printf("GH6\n");
         dataProcessing::UpdateObject(object);
-        // printf("GH7\n");
 	} else {
 		if (dataProcessing::IsNearbyObject()){
 			sdcVisibleObject* oldObject = dataProcessing::GetNearbyObject();
-	        // printf("GH8\n");
 	        if (!object->IsSameObject(oldObject)) {
 	          dataProcessing::UpdateObject(object);
-	          // printf("GH9\n");
         	}
 		} else {
-			// printf("GH10\n");
 			dataProcessing::UpdateIsNearbyObject(true);
 			dataProcessing::UpdateObject(object);
 		}
