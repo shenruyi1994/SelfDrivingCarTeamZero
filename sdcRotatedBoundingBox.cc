@@ -20,10 +20,10 @@ bool sdcRotatedBoundingBox::DoesIntersect(const sdcRotatedBoundingBox& box) cons
   // Finds a vector parallel to each of the for pairs of sides of the provided
   // box and the own boxes.
   cv::Point2d axes[4];
-  axes[0] = rotate_point(cv::Point2d(width, 0), angle);
-  axes[1] = rotate_point(cv::Point2d(0, height), angle);
-  axes[0] = rotate_point(cv::Point2d(box.width, 0), box.angle);
-  axes[1] = rotate_point(cv::Point2d(0, box.height), box.angle);
+  axes[0] = rotate_generic(cv::Point2d(width, 0), angle);
+  axes[1] = rotate_generic(cv::Point2d(0, height), angle);
+  axes[2] = rotate_generic(cv::Point2d(box.width, 0), box.angle);
+  axes[3] = rotate_generic(cv::Point2d(0, box.height), box.angle);
 
   // Projects the corners of each box onto each axis and checks whether they
   // overlap

@@ -11,8 +11,8 @@ typedef cv::Rect_<double> Rect;
 namespace gazebo {
   class sdcBoundingBox: public sdcBoundingShape, public Rect {
   public:
-    sdcBoundingBox(double left, double top, double height, double width):
-        Rect(left, top, height, width) {}
+    sdcBoundingBox(double left, double top, double width, double height):
+        Rect(left, top, width, height) {}
 
     bool DoesIntersect(const sdcBoundingBox& box) const;
   };

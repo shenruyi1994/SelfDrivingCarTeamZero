@@ -47,44 +47,6 @@ double coord_distance(const T1& p1, const T2& p2) {
 /*
  * Returns a point rotated about axis by angle.
  */
-template<typename T>
-cv::Point_<T> rotate_point(cv::Point_<T> point, const cv::Point_<T>& axis,
-                          T angle) {
-  static_assert(std::is_arithmetic<T>::value,
-                "rotatePoint only accepts Points with numeric values");
-  double s = sin(angle);
-  double c = cos(angle);
-
-  // translate point to rotate about the origin
-  point = point - axis;
-
-  // rotate point by angle about the origin, and translate back
-  point.x = (point.x * c - point.y * s) + axis.x;
-  point.y = (point.x * s + point.y * c) + axis.y;
-
-  return point;
-}
-
-/*
- * Returns a point rotated about the origin by angle.
- */
-template<typename T>
-cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
-  static_assert(std::is_arithmetic<T>::value,
-                "rotatePoint only accepts Points with numeric values");
-  double s = sin(angle);
-  double c = cos(angle);
-
-  // rotate point by angle about the origin
-  point.x = point.x * c - point.y * s;
-  point.y = point.x * s + point.y * c;
-
-  return point;
-}
-
-/*
- * Returns a point rotated about axis by angle.
- */
 template<typename T_1, typename T_2, typename T_3>
 T_1 rotate_generic(T_1 point, const T_2& axis, T_3 angle) {
   static_assert(std::is_arithmetic<T_3>::value,
