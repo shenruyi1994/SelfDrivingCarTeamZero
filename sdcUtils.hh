@@ -83,7 +83,7 @@ cv::Point_<T> rotate_point(cv::Point_<T> point, T angle) {
 }
 
 /*
- * Returns a point rotated about the origin by angle.
+ * Returns a point rotated about axis by angle.
  */
 template<typename T_1, typename T_2, typename T_3>
 T_1 rotate_generic(T_1 point, const T_2& axis, T_3 angle) {
@@ -104,20 +104,20 @@ T_1 rotate_generic(T_1 point, const T_2& axis, T_3 angle) {
 }
 
 /*
- * Returns a vector rotated about an axis by an angle.
+ * Returns a point rotated about the origin by angle.
  */
-template<typename T>
-cv::Vec<T, 2> rotate_vector(cv::Vec<T, 2> vec, T angle) {
-  static_assert(std::is_arithmetic<T>::value,
+template<typename T_1, typename T_2>
+T_1 rotate_generic(T_1 point, T_2 angle) {
+  static_assert(std::is_arithmetic<T_2>::value,
                 "rotatePoint only accepts Points with numeric values");
-  float s = sin(angle);
-  float c = cos(angle);
+  double s = sin(angle);
+  double c = cos(angle);
 
-  // rotate vec by angle about the origin
-  vec.x = vec.x * c - vec.y * s;
-  vec.y = vec.x * s + vec.y * c;
+  // rotate point by angle about the origin
+  point.x = (point.x * c - point.y * s);
+  point.y = (point.x * s + point.y * c);
 
-  return vec;
+  return point;
 }
 
 /*
@@ -128,29 +128,6 @@ T norm2(cv::Point_<T> point) {
   static_assert(std::is_arithmetic<T>::value,
                 "norm only accepts Vecs with numeric values");
   return pythag_thm(point.x, point.y);
-}
-
-/*
- * Returns the length of a vector.
- */
-template<typename T>
-cv::Vec<T, 2> norm2(cv::Vec<T, 2> vec) {
-  static_assert(std::is_arithmetic<T>::value,
-                "norm only accepts Vecs with numeric values");
-  return pythag_thm(vec.x, vec.y);
-}
-
-/*
- * Returns a normalized vector parallel to vec.
- */
-template<typename T>
-cv::Vec<T, 2> normalized(cv::Vec<T, 2> vec) {
-  static_assert(std::is_arithmetic<T>::value,
-                "normalized only accepts Vecs with numeric values");
-  T length = pythag_thm(vec.x, vec.y);
-  vec.x = vec.x / length;
-  vec.y = vec.y / length;
-  return vec;
 }
 
 //////////////////////
