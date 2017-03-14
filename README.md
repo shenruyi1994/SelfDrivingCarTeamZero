@@ -90,3 +90,11 @@ OpenCV
 	
 	- Pass gazebo the name of your worldfile as first paramater
 	- Use -u parameter to start the simulation in a paused state
+
+# Troubleshooting
+
+Gazebo can be inconsistent in how it loads and renders worlds, so if something doesn't look right try running the .world file again. 
+
+If some or all of the models still aren't showing up correctly, copy the directories within the models directory in the repo to the models directory in your .gazebo directory. This is usually located in your home directory. 
+
+Starting the simulation in a paused state often helps with consistency as well. 
